@@ -70,6 +70,11 @@ def county_from_cds(cds_code: str) -> str:
     return CA_COUNTY_CODES.get(cds_clean[:2], "")
 
 
+def get_initials(name: str) -> str:
+    """'Jessica Franklin' -> 'JF'"""
+    return "".join(p[0].upper() for p in name.strip().split() if p)
+
+
 def parse_principal(coordinator_str: str):
     """
     Parse 'Eric Preston, Principal' into (full_name, last_name, title).
@@ -514,6 +519,9 @@ def fill_cover_letter(
     deadline_str = (today + timedelta(days=45)).strftime("%B %d, %Y")
     today_str    = today.strftime("%B %d, %Y")
 
+    # Reviewer initials from the Program Reviewer field
+    reviewer_initials = get_initials(metadata.get("reviewer", ""))
+
     # Global text replacements
     replace_in_doc(doc, {
         "[Date]":              today_str,
@@ -521,6 +529,7 @@ def fill_cover_letter(
         "[School Site]":       school_name,
         "[dates]":             review_dates,
         "[45 calendar days]":  deadline_str,
+        "[initials]":          reviewer_initials,
     })
 
     # Address block, salutation, cc list
