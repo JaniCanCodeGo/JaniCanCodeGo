@@ -95,88 +95,251 @@ def normalize_cds(cds_code: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# CDE School Directory web lookup
+# CDE web helpers
 # ---------------------------------------------------------------------------
 
-def lookup_school_cde(cds_code: str) -> dict:
-    """
-    Look up school address and contact info from the CDE School Directory.
-    Returns a dict with whatever fields were found; empty dict on failure.
-    """
+_CDE_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml",
+}
+
+
+def _fetch_cde_html(url: str, label: str = "") -> str:
+    """Fetch a CDE page and return the HTML string, or '' on failure."""
     import urllib.request
 
-    cds_clean = normalize_cds(cds_code)
-    url = f"https://www.cde.ca.gov/schooldirectory/details?cdscode={cds_clean}"
-    info = {}
-
     try:
-        req = urllib.request.Request(
-            url,
-            headers={
-                "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                ),
-                "Accept": "text/html,application/xhtml+xml",
-            },
-        )
+        req = urllib.request.Request(url, headers=_CDE_HEADERS)
         with urllib.request.urlopen(req, timeout=15) as resp:
             html = resp.read().decode("utf-8", errors="ignore")
     except Exception as e:
-        print(f"  [Info] CDE lookup failed ({type(e).__name__}): address/email will be blank.")
-        return info
+        print(f"  [Info] CDE fetch failed{' (' + label + ')' if label else ''} "
+              f"({type(e).__name__})")
+        return ""
 
     if not html or "Host not in allowlist" in html or len(html) < 200:
-        print("  [Info] CDE website not reachable from this machine; address/email will be blank.")
-        return info
+        print(f"  [Info] CDE not reachable{' (' + label + ')' if label else ''}.")
+        return ""
 
-    # --- Parse with BeautifulSoup if available, else use regex ---
+    return html
+
+
+def _soup_label_value(html: str, label_lower: str) -> str:
+    """
+    Search an HTML page for a table row or dt/dd whose label contains
+    label_lower, and return the adjacent value cell text.
+    Falls back to regex when BeautifulSoup is not installed.
+    """
     try:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "html.parser")
 
-        def _val(label_lower):
-            for row in soup.find_all("tr"):
-                cells = row.find_all(["th", "td"])
-                if len(cells) >= 2:
-                    lbl = cells[0].get_text(" ", strip=True).lower()
-                    val = cells[1].get_text(" ", strip=True)
-                    if label_lower in lbl and val and val.lower() not in ("n/a", "none", ""):
-                        return val
-            for dt in soup.find_all("dt"):
-                lbl = dt.get_text(strip=True).lower()
-                dd = dt.find_next_sibling("dd")
-                if dd and label_lower in lbl:
-                    val = dd.get_text(strip=True)
-                    if val and val.lower() not in ("n/a", "none", ""):
-                        return val
-            return ""
+        for row in soup.find_all("tr"):
+            cells = row.find_all(["th", "td"])
+            if len(cells) >= 2:
+                lbl = cells[0].get_text(" ", strip=True).lower()
+                val = cells[1].get_text(" ", strip=True)
+                if label_lower in lbl and val and val.lower() not in ("n/a", "none", ""):
+                    return val
 
-        info["street"]  = _val("street") or _val("address")
-        info["city"]    = _val("city")
-        info["state"]   = _val("state") or "CA"
-        info["zip"]     = _val("zip")
-        info["phone"]   = _val("phone")
-        info["email"]   = _val("email")
-        info["principal_name"] = _val("administrator") or _val("principal")
+        for dt in soup.find_all("dt"):
+            lbl = dt.get_text(strip=True).lower()
+            dd = dt.find_next_sibling("dd")
+            if dd and label_lower in lbl:
+                val = dd.get_text(strip=True)
+                if val and val.lower() not in ("n/a", "none", ""):
+                    return val
 
     except ImportError:
-        # Regex fallback when bs4 not installed
+        # Plain-text fallback: look for label followed by value on same or next line
+        pattern = rf"{re.escape(label_lower)}[^:\n]*:?\s*([^\n<]{{3,80}})"
+        m = re.search(pattern, html, re.IGNORECASE)
+        if m:
+            return m.group(1).strip()
+
+    return ""
+
+
+def _soup_all_label_values(html: str) -> dict:
+    """Return all label→value pairs from a CDE details page as a dict."""
+    result = {}
+    try:
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
+        for row in soup.find_all("tr"):
+            cells = row.find_all(["th", "td"])
+            if len(cells) >= 2:
+                lbl = cells[0].get_text(" ", strip=True).lower().strip()
+                val = cells[1].get_text(" ", strip=True).strip()
+                if lbl and val and val.lower() not in ("n/a", "none", ""):
+                    result[lbl] = val
+        for dt in soup.find_all("dt"):
+            lbl = dt.get_text(strip=True).lower().strip()
+            dd = dt.find_next_sibling("dd")
+            if dd:
+                val = dd.get_text(strip=True)
+                if lbl and val and val.lower() not in ("n/a", "none", ""):
+                    result[lbl] = val
+    except ImportError:
+        pass
+    return result
+
+
+# ---------------------------------------------------------------------------
+# CDE School Directory lookups
+# ---------------------------------------------------------------------------
+
+def lookup_school_cde(cds_code: str) -> dict:
+    """
+    Look up school address, contact, and principal from the CDE School Directory.
+    Returns a dict with whatever fields were found; empty dict on failure.
+    """
+    cds_clean = normalize_cds(cds_code)
+    url = f"https://www.cde.ca.gov/schooldirectory/details?cdscode={cds_clean}"
+    html = _fetch_cde_html(url, "school directory")
+    if not html:
+        return {}
+
+    fields = _soup_all_label_values(html)
+
+    def _pick(*keys):
+        for k in keys:
+            for fk, fv in fields.items():
+                if k in fk:
+                    return fv
+        return ""
+
+    info = {
+        "street":         _pick("street", "physical address"),
+        "city":           _pick("city"),
+        "state":          _pick("state") or "CA",
+        "zip":            _pick("zip"),
+        "phone":          _pick("phone"),
+        "email":          _pick("email"),
+        "principal_name": _pick("administrator 1", "administrator", "principal"),
+    }
+
+    # Regex email fallback
+    if not info["email"]:
         emails = re.findall(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}", html)
         school_emails = [e for e in emails if "cde.ca.gov" not in e]
         if school_emails:
             info["email"] = school_emails[0]
 
-        phones = re.findall(r"\(?\d{3}\)?[\s\-\.]\d{3}[\s\-\.]\d{4}", html)
-        if phones:
-            info["phone"] = phones[0]
-
-    # Remove empty strings
     info = {k: v for k, v in info.items() if v and v.strip()}
     if info:
-        print(f"  [CDE] Retrieved: {', '.join(info.keys())}")
+        print(f"  [CDE school] Retrieved: {', '.join(info.keys())}")
     return info
+
+
+def lookup_superintendent(cds_code: str) -> str:
+    """
+    Look up the district superintendent from the CDE School Directory district page.
+    Uses the first 7 digits of the CDS code + '0000000' to get the district record.
+    """
+    cds_clean = normalize_cds(cds_code)
+    district_cds = cds_clean[:7] + "0000000"
+    url = f"https://www.cde.ca.gov/schooldirectory/details?cdscode={district_cds}"
+    html = _fetch_cde_html(url, "superintendent")
+    if not html:
+        return ""
+
+    fields = _soup_all_label_values(html)
+
+    # The CDE directory lists administrators as "Administrator 1", "Administrator 2", etc.
+    # alongside a title field. We look for any administrator whose title is Superintendent.
+    try:
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
+        rows = soup.find_all("tr")
+        # Collect (label, value) pairs; look for administrator entries followed by title
+        pairs = []
+        for row in rows:
+            cells = row.find_all(["th", "td"])
+            if len(cells) >= 2:
+                pairs.append((
+                    cells[0].get_text(" ", strip=True),
+                    cells[1].get_text(" ", strip=True),
+                ))
+
+        # Walk pairs: if a label contains "Administrator" and its value or the next
+        # row's value contains "Superintendent", that's our person.
+        for i, (lbl, val) in enumerate(pairs):
+            if "administrator" in lbl.lower() and val:
+                # Check if title in the same cell or next row mentions superintendent
+                context = val.lower()
+                if i + 1 < len(pairs):
+                    context += " " + pairs[i + 1][1].lower()
+                if "superintendent" in context:
+                    # Extract just the name portion (before any " - Title" separator)
+                    name = re.split(r"\s*[-–]\s*", val)[0].strip()
+                    if name:
+                        return name
+
+        # Fallback: any field labeled with "superintendent"
+        for lbl, val in pairs:
+            if "superintendent" in lbl.lower() and val:
+                return val.strip()
+
+    except ImportError:
+        # Regex fallback
+        m = re.search(r"Superintendent[^<\n]*[:\s]+([A-Z][a-z]+ [A-Z][a-z]+)", html)
+        if m:
+            return m.group(1).strip()
+
+    return ""
+
+
+def lookup_coe_lead(county_name: str) -> str:
+    """
+    Look up the COE Monitoring Lead for a given county from the CDE CAIS leads page.
+    URL: https://www.cde.ca.gov/ta/cr/caisleads.asp
+    """
+    url = "https://www.cde.ca.gov/ta/cr/caisleads.asp"
+    html = _fetch_cde_html(url, "COE leads")
+    if not html:
+        return ""
+
+    county_lower = county_name.lower().strip()
+
+    try:
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
+
+        for row in soup.find_all("tr"):
+            cells = row.find_all(["th", "td"])
+            if len(cells) >= 2:
+                cell0 = cells[0].get_text(" ", strip=True).lower()
+                if county_lower in cell0:
+                    # Lead name is typically in the next column
+                    lead = cells[1].get_text(" ", strip=True)
+                    if lead and lead.lower() not in ("n/a", "none", ""):
+                        return lead
+
+        # Broader text search: find county name in the page text and grab nearby name
+        text = soup.get_text("\n")
+        lines = text.splitlines()
+        for i, line in enumerate(lines):
+            if county_lower in line.lower():
+                # Look at the next 1-3 lines for a person's name
+                for j in range(i + 1, min(i + 4, len(lines))):
+                    candidate = lines[j].strip()
+                    # A name typically has 2+ capitalized words
+                    if re.match(r"[A-Z][a-z]+(?: [A-Z][a-z]+)+", candidate):
+                        return candidate
+
+    except ImportError:
+        # Regex fallback
+        pattern = rf"{re.escape(county_name)}[^\n]{{0,60}}\n([A-Z][^\n]{{5,60}})"
+        m = re.search(pattern, html, re.IGNORECASE)
+        if m:
+            return m.group(1).strip()
+
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -245,9 +408,22 @@ def parse_summary_of_findings(path: str):
     metadata["principal_last_name"]  = principal_last
     metadata["principal_title"]      = principal_title
 
-    # --- CDE web lookup for address / email ---
+    # --- CDE web lookups ---
+    cds = metadata.get("cds_code", "")
+    county = metadata.get("county", "")
+
     print("  Looking up school info from CDE School Directory...")
-    metadata["cde_info"] = lookup_school_cde(metadata.get("cds_code", ""))
+    metadata["cde_info"] = lookup_school_cde(cds)
+
+    print("  Looking up superintendent from CDE district page...")
+    metadata["superintendent"] = lookup_superintendent(cds)
+    if metadata["superintendent"]:
+        print(f"  [CDE district] Superintendent: {metadata['superintendent']}")
+
+    print("  Looking up COE Monitoring Lead from CDE CAIS leads page...")
+    metadata["coe_lead"] = lookup_coe_lead(county)
+    if metadata["coe_lead"]:
+        print(f"  [CDE leads] COE Lead ({county}): {metadata['coe_lead']}")
 
     # --- Walk body elements for CRR sections ---
     crr_sections = []
@@ -438,6 +614,8 @@ def _fill_address_block(doc, metadata: dict, today: datetime):
     coordinator_name   = metadata.get("principal_name", "")  # coordinator IS the principal
     district           = metadata.get("district", "")
     county             = metadata.get("county", "")
+    superintendent     = metadata.get("superintendent", "")
+    coe_lead           = metadata.get("coe_lead", "")
     cde                = metadata.get("cde_info", {})
 
     street  = cde.get("street", "")
@@ -493,13 +671,20 @@ def _fill_address_block(doc, metadata: dict, today: datetime):
     # Para [25]: cc list
     p25 = paras[25]
     if coordinator_name:
-        _replace_adjacent_runs(p25, "[Name], Designated CRR Coordinator", f"{coordinator_name}, Designated CRR Coordinator")
+        _replace_adjacent_runs(p25, "[Name], Designated CRR Coordinator",
+                               f"{coordinator_name}, Designated CRR Coordinator")
     if school_name:
         _replace_adjacent_runs(p25, "[School Site]", school_name)
         _replace_adjacent_runs(p25, "[School Site] ", school_name + " ")
+    if superintendent:
+        _replace_adjacent_runs(p25, "[Name], Superintendent",
+                               f"{superintendent}, Superintendent")
     if district:
         _replace_adjacent_runs(p25, "[School District]", district)
         _replace_adjacent_runs(p25, "[School District] ", district + " ")
+    if coe_lead:
+        _replace_adjacent_runs(p25, "[Name], COE Monitoring Lead",
+                               f"{coe_lead}, COE Monitoring Lead")
     if county:
         _replace_adjacent_runs(p25, "[County]", county)
         _replace_adjacent_runs(p25, "[County] ", county + " ")
@@ -584,11 +769,13 @@ def main():
     has_findings = bool(findings)
 
     print()
-    print(f"  School       : {metadata.get('school_name') or '(not found)'}")
-    print(f"  District     : {metadata.get('district') or '(not found)'}")
-    print(f"  County       : {metadata.get('county') or '(not found)'}")
-    print(f"  Principal    : {metadata.get('principal_name') or '(not found)'}")
-    print(f"  Review Dates : {metadata.get('review_dates') or '(not found)'}")
+    print(f"  School        : {metadata.get('school_name') or '(not found)'}")
+    print(f"  District      : {metadata.get('district') or '(not found)'}")
+    print(f"  County        : {metadata.get('county') or '(not found)'}")
+    print(f"  Principal     : {metadata.get('principal_name') or '(not found)'}")
+    print(f"  Superintendent: {metadata.get('superintendent') or '(not found - blank in letter)'}")
+    print(f"  COE Lead      : {metadata.get('coe_lead') or '(not found - blank in letter)'}")
+    print(f"  Review Dates  : {metadata.get('review_dates') or '(not found)'}")
     print(f"  CRR Sections : {len(crr_sections)} parsed")
     print(f"  Findings     : {len(findings)} section(s) with corrective action(s)")
 
