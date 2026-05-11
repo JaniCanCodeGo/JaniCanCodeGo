@@ -1,0 +1,8 @@
+# Generated output documents
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
