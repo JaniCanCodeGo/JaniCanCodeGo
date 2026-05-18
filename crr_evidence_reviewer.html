@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRR Evidence Reviewer — 2025-26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root {
+    --blue:       #1a4fa0;
+    --blue-light: #e8eef8;
+    --blue-mid:   #3567c4;
+    --gold:       #c89a2e;
+    --gold-light: #fdf6e3;
+    --ink:        #1c1c22;
+    --ink2:       #4a4a56;
+    --ink3:       #8a8a98;
+    --rule:       #d4d4de;
+    --surface:    #f7f7fa;
+    --white:      #ffffff;
+    --green:      #1a6640;
+    --green-bg:   #e8f4ed;
+    --amber:      #92600a;
+    --amber-bg:   #fef3dc;
+    --red:        #971c1c;
+    --red-bg:     #fdeaea;
+    --radius:     6px;
+    --mono:       'IBM Plex Mono', monospace;
+    --sans:       'IBM Plex Sans', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--surface); color: var(--ink); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+
+  /* ── Layout ── */
+  .shell { display: grid; grid-template-columns: 260px 1fr; grid-template-rows: 56px 1fr; min-height: 100vh; }
+
+  /* ── Topbar ── */
+  .topbar { grid-column: 1 / -1; background: var(--blue); display: flex; align-items: center; padding: 0 24px; gap: 14px; border-bottom: 2px solid var(--gold); }
+  .topbar-seal { width: 32px; height: 32px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .topbar-title { color: #fff; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; }
+  .topbar-sub { color: rgba(255,255,255,0.55); font-size: 11px; font-family: var(--mono); margin-top: 1px; letter-spacing: 0.04em; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .topbar-badge { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.75); font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.06em; }
+  .key-btn { background: none; border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 12px; font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.65); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; letter-spacing: 0.04em; }
+  .key-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+  .key-btn.key-set { border-color: rgba(26,102,64,0.7); color: #6fcf97; background: rgba(26,102,64,0.2); }
+  .key-btn.key-missing { border-color: rgba(200,154,46,0.7); color: var(--gold); }
+  .key-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* ── Sidebar ── */
+  .sidebar { background: var(--white); border-right: 1px solid var(--rule); display: flex; flex-direction: column; overflow: hidden; }
+  .sidebar-list { overflow-y: auto; flex: 1; padding: 16px 0 0; }
+  .sidebar-section-label { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); padding: 0 16px 8px; }
+  .crr-btn { display: flex; align-items: center; width: 100%; padding: 8px 16px; background: none; border: none; cursor: pointer; text-align: left; gap: 10px; transition: background 0.1s; position: relative; }
+  .crr-btn:hover { background: var(--surface); }
+  .crr-btn.active { background: var(--blue-light); }
+  .crr-btn.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--blue); border-radius: 0 2px 2px 0; }
+  .crr-num { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--blue); min-width: 42px; flex-shrink: 0; }
+  .crr-name { font-size: 12px; color: var(--ink2); line-height: 1.35; }
+  .crr-btn.active .crr-name { color: var(--ink); font-weight: 500; }
+  .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--rule); }
+  .sidebar-update-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; background: none; border: 1px solid var(--rule); border-radius: var(--radius); font-family: var(--mono); font-size: 10px; color: var(--ink3); cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
+  .sidebar-update-btn:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-light); }
+  .instrument-year { font-family: var(--mono); font-size: 9px; color: var(--ink3); margin-bottom: 8px; letter-spacing: 0.06em; text-align: center; }
+
+  /* ── Main ── */
+  .main { overflow-y: auto; padding: 28px 32px 48px; }
+  .panel-title { font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .panel-sub { font-family: var(--mono); font-size: 11px; color: var(--ink3); margin-bottom: 20px; letter-spacing: 0.03em; }
+
+  /* ── Mode tabs ── */
+  .mode-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+  .mode-tab { padding: 8px 20px; background: none; border: none; border-bottom: 2px solid transparent; font-family: var(--sans); font-size: 13px; color: var(--ink3); cursor: pointer; margin-bottom: -1px; transition: color 0.15s; }
+  .mode-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 500; }
+  .mode-tab:hover:not(.active) { color: var(--ink2); }
+
+  /* ── Form ── */
+  .form-block { margin-bottom: 18px; }
+  label { display: block; font-size: 11px; font-weight: 500; font-family: var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+  select, input[type="text"] { width: 100%; padding: 9px 12px; border: 1px solid var(--rule); border-radius: var(--radius); font-family: var(--sans); font-size: 13px; color: var(--ink); background: var(--white); appearance: none; transition: border-color 0.15s, box-shadow 0.15s; }
+  select:focus, input[type="text"]:focus { outline: none; border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(53,103,196,0.1); }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8a98' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── Toggle ── */
+  .toggle-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--white); border: 1px solid var(--rule); border-radius: var(--radius); }
+  .toggle-switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--rule); border-radius: 20px; cursor: pointer; transition: background 0.2s; }
+  .toggle-slider::after { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .toggle-switch input:checked ~ .toggle-slider { background: var(--blue-mid); }
+  .toggle-switch input:checked ~ .toggle-slider::after { transform: translateX(16px); }
+  .toggle-label { font-size: 13px; color: var(--ink2); }
+  .toggle-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-left: auto; }
+  .toggle-badge.first { background: var(--green-bg); color: var(--green); }
+  .toggle-badge.resub { background: var(--amber-bg); color: var(--amber); }
+
+  /* ── Dropzone ── */
+  .dropzone { border: 1.5px dashed var(--rule); border-radius: var(--radius); padding: 24px 20px; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--white); }
+  .dropzone:hover, .dropzone.drag { border-color: var(--blue-mid); background: var(--blue-light); }
+  .dropzone-icon { font-size: 26px; margin-bottom: 8px; }
+  .dropzone-text { font-size: 13px; color: var(--ink2); }
+  .dropzone-hint { font-size: 11px; color: var(--ink3); margin-top: 4px; font-family: var(--mono); }
+  .section-review-hint { font-size: 12px; color: var(--ink2); padding: 10px 14px; background: var(--blue-light); border: 1px solid rgba(26,79,160,0.15); border-radius: var(--radius); margin-bottom: 12px; line-height: 1.5; }
+
+  /* ── File chips ── */
+  .file-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .file-chip { display: flex; align-items: center; gap: 6px; background: var(--white); border: 1px solid var(--rule); border-radius: 4px; padding: 4px 10px; font-size: 11px; font-family: var(--mono); color: var(--ink2); }
+  .file-chip-x { background: none; border: none; cursor: pointer; color: var(--ink3); font-size: 14px; line-height: 1; padding: 0; }
+  .file-chip-x:hover { color: var(--red); }
+
+  /* ── Deep analysis toggle row ── */
+  .option-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .option-row label { margin: 0; text-transform: none; font-size: 12px; color: var(--ink2); letter-spacing: 0; font-family: var(--sans); font-weight: 400; cursor: pointer; }
+  .option-row input[type="checkbox"] { width: 14px; height: 14px; cursor: pointer; accent-color: var(--blue-mid); }
+  .option-badge { font-family: var(--mono); font-size: 9px; padding: 2px 7px; border-radius: 20px; background: var(--gold-light); color: var(--amber); border: 1px solid rgba(146,96,10,0.2); }
+
+  /* ── Divider / Buttons ── */
+  .divider { border: none; border-top: 1px solid var(--rule); margin: 20px 0; }
+  .btn-row { display: flex; gap: 8px; align-items: center; }
+  .btn-primary { padding: 10px 24px; background: var(--blue); color: white; border: none; border-radius: var(--radius); font-family: var(--sans); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.15s; letter-spacing: 0.01em; }
+  .btn-primary:hover:not(:disabled) { background: var(--blue-mid); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-ghost { padding: 10px 16px; background: none; border: 1px solid var(--rule); border-radius: var(--radius); font-family: var(--sans); font-size: 13px; color: var(--ink2); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+  .btn-ghost:hover { border-color: var(--ink3); color: var(--ink); }
+  .btn-copy { padding: 5px 12px; background: none; border: 1px solid var(--rule); border-radius: var(--radius); font-family: var(--mono); font-size: 11px; color: var(--ink3); cursor: pointer; transition: all 0.15s; }
+  .btn-copy:hover { border-color: var(--blue-mid); color: var(--blue); }
+  .btn-copy.copied { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Alerts ── */
+  .alert { padding: 10px 14px; border-radius: var(--radius); font-size: 12px; margin-bottom: 16px; }
+  .alert-error { background: var(--red-bg); color: var(--red); border: 1px solid rgba(151,28,28,0.2); }
+  .alert-info  { background: var(--blue-light); color: var(--blue); border: 1px solid rgba(26,79,160,0.2); font-family: var(--mono); font-size: 11px; }
+
+  /* ── Results ── */
+  .results { margin-top: 28px; animation: fadeUp 0.2s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .results-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .results-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+  .tag-meets   { background: var(--green-bg); color: var(--green); }
+  .tag-partial { background: var(--amber-bg); color: var(--amber); }
+  .tag-notmeet { background: var(--red-bg);   color: var(--red); }
+  .tag-unknown { background: var(--surface);  color: var(--ink3); border: 1px solid var(--rule); }
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); margin-bottom: 0; }
+  .tab-btn { padding: 9px 18px; background: none; border: none; border-bottom: 2px solid transparent; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3); cursor: pointer; margin-bottom: -1px; transition: color 0.15s; }
+  .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .tab-btn:hover:not(.active) { color: var(--ink2); }
+  .tab-panel { background: var(--white); border: 1px solid var(--rule); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 20px; }
+  .output-text { font-size: 13px; line-height: 1.8; color: var(--ink); white-space: pre-wrap; font-family: var(--sans); min-height: 80px; }
+  .tab-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--surface); }
+  .output-meta { font-family: var(--mono); font-size: 10px; color: var(--ink3); }
+
+  /* ── Empty state ── */
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; text-align: center; color: var(--ink3); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-text { font-size: 13px; }
+
+  /* ── Modals ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.15s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal { background: var(--white); border-radius: 8px; padding: 28px; width: 420px; max-width: calc(100vw - 32px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+  .modal-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+  .modal-sub { font-size: 12px; color: var(--ink3); margin-bottom: 18px; line-height: 1.5; }
+  .modal label { font-size: 11px; font-weight: 500; font-family: var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; display: block; }
+  .modal input[type="password"], .modal input[type="text"] { width: 100%; padding: 9px 12px; border: 1px solid var(--rule); border-radius: var(--radius); font-family: var(--mono); font-size: 13px; color: var(--ink); background: var(--white); }
+  .modal input:focus { outline: none; border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(53,103,196,0.1); }
+  .modal-hint { font-size: 11px; color: var(--ink3); margin-top: 6px; line-height: 1.5; }
+  .modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+  .modal-btns .btn-primary { padding: 9px 20px; }
+  .modal-btns .btn-ghost { padding: 9px 16px; }
+  .modal-loading { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--ink3); margin-top: 12px; }
+  .modal-loading .spinner { border-color: rgba(0,0,0,0.15); border-top-color: var(--blue); }
+  .modal-error { font-size: 12px; color: var(--red); margin-top: 10px; padding: 8px 12px; background: var(--red-bg); border-radius: var(--radius); }
+  .modal-success { font-size: 12px; color: var(--green); margin-top: 10px; padding: 8px 12px; background: var(--green-bg); border-radius: var(--radius); }
+
+  /* ── Scrollbar ── */
+  .sidebar-list::-webkit-scrollbar { width: 4px; }
+  .sidebar-list::-webkit-scrollbar-track { background: transparent; }
+  .sidebar-list::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+
+  @media (max-width: 700px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 20px 16px 40px; }
+    .row2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-seal">⚖</div>
+    <div>
+      <div class="topbar-title">CRR Evidence Reviewer</div>
+      <div class="topbar-sub">California Department of Education · 2025-26 Civil Rights Review</div>
+    </div>
+    <div class="topbar-right">
+      <button class="key-btn key-missing" id="key-btn" onclick="openKeyModal()">
+        <span class="key-dot"></span>
+        <span id="key-btn-label">Set API Key</span>
+      </button>
+      <div class="topbar-badge" id="year-badge">2025-26</div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-list" id="sidebar"></div>
+    <div class="sidebar-footer">
+      <div class="instrument-year" id="instrument-year-label">Instrument: 2025-26</div>
+      <button class="sidebar-update-btn" onclick="openInstrumentModal()">
+        ↑ Update Instrument (.docx)
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main" id="main">
+    <div id="empty-state" class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-text">Select a CRR section from the left to begin.</div>
+    </div>
+    <div id="form-area" style="display:none"></div>
+  </main>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-overlay" id="key-modal" style="display:none" onclick="closeKeyModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Anthropic API Key</div>
+    <div class="modal-sub">Your key is stored only in sessionStorage and sent exclusively to <code>api.anthropic.com</code>. It is never saved, logged, or shared.</div>
+    <label for="key-input">API Key</label>
+    <input type="password" id="key-input" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+    <p class="modal-hint">Get your key at console.anthropic.com → API Keys.</p>
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeKeyModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- Instrument Update Modal -->
+<div class="modal-overlay" id="instrument-modal" style="display:none" onclick="closeInstrumentModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Update CRR Instrument</div>
+    <div class="modal-sub">Upload the Program Instrument .docx for a new review year. Claude will parse the sections and evidence requests and update the tool for this session.</div>
+    <label>Instrument .docx File</label>
+    <div class="dropzone" id="inst-dropzone" onclick="document.getElementById('inst-file').click()">
+      <div style="font-size:22px;margin-bottom:6px">📄</div>
+      <div style="font-size:13px;color:var(--ink2)">Click to select or drop the instrument .docx</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:4px;font-family:var(--mono)" id="inst-filename">No file selected</div>
+    </div>
+    <input type="file" id="inst-file" accept=".docx" style="display:none" onchange="onInstFileChange(event)">
+    <div class="modal-loading" id="inst-loading" style="display:none">
+      <div class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:var(--blue)"></div>
+      Parsing instrument with Claude…
+    </div>
+    <div id="inst-error" class="modal-error" style="display:none"></div>
+    <div id="inst-success" class="modal-success" style="display:none"></div>
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeInstrumentModal()">Cancel</button>
+      <button class="btn-primary" id="inst-parse-btn" onclick="parseInstrument()" disabled>Parse &amp; Apply</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   CRR DATA — 2025-26 Instrument
+══════════════════════════════════════════════ */
+let CRR = {
+  "CRR 01": { title: "Continuous Nondiscrimination Notice", er: [
+    { a:"EmplHndbk",              l:"Employee Handbook" },
+    { a:"PrntHndbk(s)",           l:"Parent Handbook(s)" },
+    { a:"PblczdMtrls",            l:"Publicized Materials" },
+    { a:"RcrtmntPblczdMtrls",     l:"Recruitment Publicized Materials" },
+    { a:"StdntAplctns",           l:"Student Applications" },
+    { a:"StdntHndbk",             l:"Student Handbook" },
+    { a:"WbpgNndsrmntnPstngs",    l:"Webpage — Nondiscrimination Postings" },
+  ]},
+  "CRR 02": { title: "Annual Public Notification", er: [
+    { a:"AnnlPblcNtfctn",         l:"Annual Public Notification" },
+    { a:"AnnlPblcNtfctnOthrLngs", l:"Annual Public Notification in Other Languages" },
+    { a:"PblczdMtrls",            l:"Publicized Materials (CTE only)" },
+  ]},
+  "CRR 03": { title: "Title IX and Grievance Procedures", er: [
+    { a:"EmplHndbk",              l:"Employee Handbook" },
+    { a:"PrntHndbk(s)",           l:"Parent Handbook(s)" },
+    { a:"StdntHndbk",             l:"Student Handbook" },
+    { a:"TtlIXCmplncSpprtTm",     l:"Title IX Compliance Support Team" },
+    { a:"TtlIXGrvncPrcdr",        l:"Title IX Grievance Procedures" },
+    { a:"TtlIXTrnng",             l:"Title IX Training" },
+    { a:"WbPstngTtlIX",           l:"Web Posting (Title IX)" },
+    { a:"WrttnDtrmnntn",          l:"Written Determination" },
+  ]},
+  "CRR 04": { title: "Title II / ADA", er: [
+    { a:"DtCmplnts",              l:"Data on Complaints" },
+    { a:"EmplHndbk",              l:"Employee Handbook" },
+    { a:"PrntHndbk(s)",           l:"Parent Handbook(s)" },
+    { a:"StdntHndbk",             l:"Student Handbook" },
+    { a:"TtlIIGrvncPrcdr",        l:"Title II Grievance Procedures" },
+    { a:"WbPstngTtlI",            l:"Web Posting (Title II)" },
+  ]},
+  "CRR 05": { title: "Section 504 and Grievance Procedures", er: [
+    { a:"CnfrmtnSttmnts",         l:"Confirmation Statements" },
+    { a:"DtCmplnts",              l:"Data on Complaints" },
+    { a:"EmplHndbk",              l:"Employee Handbook" },
+    { a:"PrntHndbk(s)",           l:"Parent Handbook(s)" },
+    { a:"PblczdMtrlsAppls",       l:"Publicized Materials – Applicants" },
+    { a:"PblczdMtrlsUnProfOrg",   l:"Publicized Materials — Unions & Professional Organizations" },
+    { a:"Sctn504GrvncPrcdr",      l:"Section 504 Grievance Procedures" },
+    { a:"StdntHndbk",             l:"Student Handbook" },
+    { a:"WbpgNtfctnPstngs",       l:"Webpage — Notification Postings" },
+  ]},
+  "CRR 06": { title: "Recruitment", er: [
+    { a:"CTEPrgrmStffDmgrphcs",           l:"CTE Program Staff Demographics" },
+    { a:"DscrptnRcrtmntActvts",           l:"Description of Recruitment Activities" },
+    { a:"OtrchToStdntsWthDsblts",         l:"Outreach to Students with Disabilities" },
+    { a:"RcrtmntPlns",                    l:"Recruitment Plans" },
+    { a:"RcrtmntPlnsEngLngLrnrStdnts",    l:"Recruitment Plans for ELL Students" },
+    { a:"RcrtmntPblczdMtrls",             l:"Recruitment Publicized Materials" },
+    { a:"RcrtmntTmDmgrphcs",              l:"Recruitment Team Demographics" },
+  ]},
+  "CRR 07": { title: "Promotional Activities", er: [
+    { a:"CTEPrmtnlMtrls",                         l:"CTE Promotional Materials" },
+    { a:"CTEPrmtnlMtrlsOthrLngs",                 l:"CTE Promotional Materials in Other Languages" },
+    { a:"IdntfctnOfLmtdEngPrfCmmnty",             l:"Identification of Limited English Proficient Surrounding Community" },
+  ]},
+  "CRR 08": { title: "Admissions", er: [
+    { a:"CTEAdmsnsPlcyPrcs",          l:"CTE Admissions Policy and Process" },
+    { a:"DmgrphcsCTEApplcnts",        l:"Demographics of CTE Applicants" },
+    { a:"DmgphcsEngLngLrnrApplcnts",  l:"Demographics of ELL Applicants" },
+    { a:"DmgphcsEngLngLrnrStdnts",    l:"Demographics of ELL Students" },
+    { a:"DmgphcsStdntsWthDsblts",     l:"Demographics of Students with Disabilities" },
+    { a:"StdntAplctns",               l:"Student Applications" },
+  ]},
+  "CRR 09": { title: "Student Eligibility", er: [
+    { a:"CTEElgbltyCrtr",  l:"CTE Eligibility Criteria" },
+    { a:"StdntAplctns",    l:"Student Applications" },
+  ]},
+  "CRR 10": { title: "Residency", er: [
+    { a:"DmgphcsAdjngSrvcFclty",  l:"Demographics of Adjoining Service Area(s)" },
+    { a:"MpsAttndcZns",           l:"Maps of Attendance Zones" },
+  ]},
+  "CRR 11": { title: "English Language Learner Admissions", er: [
+    { a:"CTEPrmtnlMtrlsOthrLngs",          l:"CTE Promotional Materials in Other Languages" },
+    { a:"DmgrphcsEngLngLrnrAplcnts",       l:"Demographics of ELL Applicants" },
+    { a:"DmgphcsEngLngLrnrStdnts",         l:"Demographics of ELL Students" },
+    { a:"PlnsfrEngLngLrnrStdnts",          l:"Plans for English Language Learner Students" },
+  ]},
+  "CRR 12": { title: "Counseling", er: [
+    { a:"CTEAssmntSrvys",             l:"CTE Assessment Surveys" },
+    { a:"ClndrCnslngPrCTEActvts",     l:"Calendar of Counseling and Pre-CTE Activities" },
+    { a:"CnslngMtrls",                l:"Counseling Materials" },
+    { a:"CnslngMtrlsOthrLngs",        l:"Counseling Materials in Other Languages" },
+    { a:"CnslngPlnPlcyPrcdr",         l:"Counseling Plan, Policy, or Procedure" },
+    { a:"RvsdCnslngMtrls",            l:"Revised Counseling Materials" },
+  ]},
+  "CRR 13": { title: "Student Financial Assistance", er: [
+    { a:"AwrdsSchlrshpsFnclAstnc",  l:"Awards, Scholarships, and Other Financial Assistance" },
+    { a:"FnclAstnc",                l:"Financial Assistance" },
+  ]},
+  "CRR 14": { title: "Services for Students with Disabilities", er: [
+    { a:"AdsAvlblFrStdntsWthDsblts",  l:"Aids Available to Students with Disabilities" },
+    { a:"DmgphcsStdntsWthDsblts",     l:"Demographics of Students with Disabilities" },
+    { a:"IndvdlEdctnPlns",            l:"Individual Education Plans" },
+    { a:"OtrchToStdntsWthDsblts",     l:"Outreach to Students with Disabilities" },
+    { a:"PrcdrlSfgrds",               l:"Procedural Safeguards" },
+    { a:"Sctn504Plns",                l:"Section 504 Plans" },
+  ]},
+  "CRR 15": { title: "Comparable Facilities", er: [
+    { a:"DmgrphcsStdntsBySx",  l:"Demographics of Students by Sex" },
+    { a:"RvwFclts",            l:"Review of Facilities" },
+    { a:"StFlrPlns",           l:"Site and Floor Plans" },
+  ]},
+  "CRR 16": { title: "CTE Facility Site Selection", er: [
+    { a:"DmgrphcsSrndngCmnts",        l:"Demographics of Surrounding Communities" },
+    { a:"MpsShwngLctnsCTEFclts",      l:"Maps Showing Location of CTE Facilities" },
+    { a:"StFlrPlns",                  l:"Site and Floor Plans" },
+  ]},
+  "CRR 17": { title: "Modifications / Alterations", er: [
+    { a:"MpsShwngLctnsMdfdCTEFclts",                 l:"Maps Showing Location of Modified CTE Facilities" },
+    { a:"StndtDmgrphcsBfrAftrFcltyMdfctns",          l:"Student Demographics Before and After Facility Modifications" },
+  ]},
+  "CRR 18": { title: "Work-Study, Cooperative Ed & Apprenticeship", er: [
+    { a:"AprntcshpPrgrmPlcyPrcdr",                    l:"Apprenticeship Program Policy or Procedure" },
+    { a:"EnrlmntDtaWrkStdyJbPcmntAprntcTrnngPrgrms",  l:"Enrollment Data for Work Study, Job Placement & Apprentice Training" },
+    { a:"WrkplcAgrmnts",                              l:"Workplace Agreements" },
+  ]},
+  "CRR 19": { title: "Employment Practices", er: [
+    { a:"EmplyDmgrphcs",                     l:"Employee Demographics" },
+    { a:"EmplHndbk",                         l:"Employee Handbook" },
+    { a:"EmplymntRcrtmntMtrls",              l:"Employment Recruitment Materials" },
+    { a:"EmplymntRcrtmntPlcsPrcdrs",         l:"Employment Recruitment Policies and Procedures" },
+    { a:"HrngPlcsPrcdrs",                    l:"Hiring Policies and Procedures" },
+    { a:"JbAncmnts",                         l:"Job Announcements" },
+    { a:"JbAplctns",                         l:"Job Applications" },
+    { a:"PlcsPrcdrsRltdEmplysWthDsblts",     l:"Policies and Procedures — Employees with Disabilities" },
+    { a:"SlrySclsRltdPlcy",                  l:"Salary Scales and Related Policy" },
+    { a:"PrgnntPrntngLcttngEmplys",          l:"Pregnant, Parenting, and/or Lactating Employees Policy" },
+  ]},
+  "CRR 20": { title: "Accessible Facilities", er: [
+    { a:"AltrtnAndMdfctnRcrds",  l:"Alteration and Modification Records" },
+    { a:"FcltsRvwPckt",          l:"Facilities Review Packet" },
+    { a:"MntncRcrds",            l:"Maintenance Records" },
+    { a:"RnvtnSchdls",           l:"Renovation Schedules and Records" },
+    { a:"StFlrPlns",             l:"Site and Floor Plans" },
+    { a:"WrkOrdrsCntrcts",       l:"Work Orders or Contracts" },
+  ]},
+};
+
+let instrumentYear = "2025-26";
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+let state = {
+  section: null,
+  mode: "single",        // "single" | "section"
+  evidence: "",
+  schoolName: "",
+  cdsCode: "",
+  isResub: false,
+  files: [],
+  loading: false,
+  deepAnalysis: false,
+  cmtComment: "",
+  reviewerNote: "",
+  activeTab: "cmt",
+  error: "",
+  status: "",
+};
+
+/* ══════════════════════════════════════════════
+   API KEY
+══════════════════════════════════════════════ */
+function getApiKey() { return sessionStorage.getItem("crr_api_key") || ""; }
+function saveKey() {
+  const val = document.getElementById("key-input").value.trim();
+  if (!val) return;
+  sessionStorage.setItem("crr_api_key", val);
+  closeKeyModal();
+  updateKeyBtn();
+}
+function updateKeyBtn() {
+  const btn = document.getElementById("key-btn");
+  const lbl = document.getElementById("key-btn-label");
+  if (getApiKey()) {
+    btn.className = "key-btn key-set";
+    lbl.textContent = "Key saved";
+  } else {
+    btn.className = "key-btn key-missing";
+    lbl.textContent = "Set API Key";
+  }
+}
+function openKeyModal() {
+  document.getElementById("key-input").value = getApiKey();
+  document.getElementById("key-modal").style.display = "flex";
+  setTimeout(() => document.getElementById("key-input").focus(), 50);
+}
+function closeKeyModal(e) {
+  if (e && e.target !== document.getElementById("key-modal")) return;
+  document.getElementById("key-modal").style.display = "none";
+}
+document.getElementById("key-input")?.addEventListener("keydown", e => { if (e.key === "Enter") saveKey(); });
+
+/* ══════════════════════════════════════════════
+   INSTRUMENT UPDATE MODAL
+══════════════════════════════════════════════ */
+let instFile = null;
+function openInstrumentModal() {
+  instFile = null;
+  document.getElementById("inst-filename").textContent = "No file selected";
+  document.getElementById("inst-parse-btn").disabled = true;
+  document.getElementById("inst-loading").style.display = "none";
+  document.getElementById("inst-error").style.display = "none";
+  document.getElementById("inst-success").style.display = "none";
+  document.getElementById("instrument-modal").style.display = "flex";
+}
+function closeInstrumentModal(e) {
+  if (e && e.target !== document.getElementById("instrument-modal")) return;
+  document.getElementById("instrument-modal").style.display = "none";
+}
+function onInstFileChange(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  instFile = f;
+  document.getElementById("inst-filename").textContent = f.name;
+  document.getElementById("inst-parse-btn").disabled = false;
+  document.getElementById("inst-error").style.display = "none";
+  document.getElementById("inst-success").style.display = "none";
+}
+async function parseInstrument() {
+  if (!instFile) return;
+  const apiKey = getApiKey();
+  if (!apiKey) { showInstError("Please set your API key first (click the key button in the top bar)."); return; }
+  document.getElementById("inst-loading").style.display = "flex";
+  document.getElementById("inst-parse-btn").disabled = true;
+  document.getElementById("inst-error").style.display = "none";
+  document.getElementById("inst-success").style.display = "none";
+  try {
+    const result = await window.mammoth.extractRawText({ arrayBuffer: await instFile.arrayBuffer() });
+    const text = result.value.slice(0, 40000);
+    const resp = await callApi(apiKey, `You are parsing a California Department of Education CRR Program Instrument document.
+
+Extract all CRR sections and their evidence requests. Return ONLY a valid JSON object — no markdown, no explanation, nothing else.
+
+JSON format:
+{
+  "year": "YYYY-YY",
+  "sections": {
+    "CRR 01": { "title": "Section Title", "er": [{"a":"Abbreviation","l":"Full Label"}] },
+    ...
+  }
+}
+
+Rules:
+- Keys must be "CRR 01" through "CRR 20" (or however many sections exist)
+- "a" (abbreviation) must be PascalCase with no spaces, e.g. "EmplHndbk"
+- "l" (label) is the full human-readable name
+- Include ALL evidence requests listed under each section
+- For "year", detect the review cycle year (e.g. "2026-27") from the document text; if not found use "unknown"
+
+Document text:
+${text}`, 4000);
+    const jsonMatch = resp.match(/\{[\s\S]+\}/);
+    if (!jsonMatch) throw new Error("No JSON found in response. The instrument format may not be parseable.");
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!parsed.sections || Object.keys(parsed.sections).length < 5) throw new Error("Parsed fewer than 5 sections — the document may not be a CRR instrument.");
+    CRR = parsed.sections;
+    instrumentYear = parsed.year || "updated";
+    document.getElementById("instrument-year-label").textContent = `Instrument: ${instrumentYear}`;
+    document.getElementById("year-badge").textContent = instrumentYear;
+    state.section = null; state.evidence = "";
+    render();
+    const n = Object.keys(CRR).length;
+    document.getElementById("inst-success").textContent = `✓ Instrument updated: ${n} sections loaded for ${instrumentYear}.`;
+    document.getElementById("inst-success").style.display = "block";
+    setTimeout(() => closeInstrumentModal(), 2500);
+  } catch(err) {
+    showInstError(err.message);
+  } finally {
+    document.getElementById("inst-loading").style.display = "none";
+    document.getElementById("inst-parse-btn").disabled = false;
+  }
+}
+function showInstError(msg) {
+  const el = document.getElementById("inst-error");
+  el.textContent = msg;
+  el.style.display = "block";
+}
+
+/* ══════════════════════════════════════════════
+   API CALL
+══════════════════════════════════════════════ */
+async function callApi(apiKey, userPrompt, maxTokens, systemPrompt, msgParts) {
+  const content = msgParts ? [...msgParts, { type: "text", text: userPrompt }]
+                           : [{ type: "text", text: userPrompt }];
+  const body = {
+    model: "claude-sonnet-4-6",
+    max_tokens: maxTokens,
+    messages: [{ role: "user", content }],
+  };
+  if (systemPrompt) body.system = systemPrompt;
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-calls": "true",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error?.message || `API error ${resp.status}`);
+  return data.content.map(b => b.text || "").join("");
+}
+
+/* ══════════════════════════════════════════════
+   SYSTEM PROMPT
+══════════════════════════════════════════════ */
+function buildSystemPrompt(sec, evReq, schoolName, cdsCode, isResub, mode, deepAnalysis) {
+  const submissionNote = isResub
+    ? "RESUBMISSION — focus on whether prior deficiencies have been resolved; note any new issues."
+    : "First submission.";
+
+  const contextBlock = `REVIEW CONTEXT:
+- CRR Section: ${sec ? Object.keys(CRR).find(k => CRR[k] === sec) || "" : "(full section)"} — ${sec?.title || ""}
+- Evidence Request: ${evReq ? evReq.l + " (" + evReq.a + ")" : "Full section review — all evidence requests"}
+- School/LEA: ${schoolName || "Not specified"}
+- CDS Code: ${cdsCode || "Not specified"}
+- Submission: ${submissionNote}`;
+
+  const protocol = deepAnalysis
+    ? `REVIEW PROTOCOL — follow these steps in sequence:
+
+STEP 1 — DOCUMENT IDENTIFICATION
+Before evaluating anything, state:
+• What type of document is this (handbook, letter, form, floor plan, data table, etc.)?
+• Does it match the requested evidence type? If not, this is disqualifying.
+• Approximate scope (number of pages, comprehensiveness).
+
+STEP 2 — ELEMENT INVENTORY
+Scan and explicitly list what you find for each of the following:
+• Nondiscrimination notice: present/absent, location, protected classes listed
+• Title IX Coordinator: name or title | address | phone | EMAIL (email REQUIRED for Title IX)
+• ADA/Title II Coordinator: name or title | address | phone (email not required)
+• Section 504 Coordinator: name or title | address | phone (email not required)
+• Signature: wet handwritten/scanned | typed (NEVER acceptable) | electronic | absent | N/A
+• Letterhead: present/absent/N/A
+• Date of document
+• Any section-specific elements (listed below)
+
+STEP 3 — REQUIREMENTS CHECK
+For EACH required element, explicitly mark: PRESENT ✓ | MISSING ✗ | INCOMPLETE △ | N/A
+
+STEP 4 — VERDICT AND OUTPUT
+Based on steps 1–3, assign compliance status and write the two required outputs.`
+    : `Before writing your outputs, mentally work through: (1) what type of document is this, (2) what required elements are present vs. missing, (3) what is the appropriate compliance verdict. Then produce the two outputs.`;
+
+  const universalChecklist = `═══════════════════════════════
+UNIVERSAL CHECKLIST — applies to all submissions
+═══════════════════════════════
+Required in all publicized materials, handbooks, and communications:
+□ Continuous nondiscrimination notice — must cover: race, color, national origin, sex, disability
+□ Title IX Coordinator: name or title • address • phone • EMAIL ← email is REQUIRED for Title IX
+□ ADA/Title II Coordinator: name or title • address • phone ← email NOT required
+□ Section 504 Coordinator: name or title • address • phone ← email NOT required
+
+SIGNATURE RULE: A wet (handwritten/scanned) signature by the site principal is required on letters and statements. A typed name is NEVER an acceptable wet signature — mark that requirement as DOES NOT MEET.
+
+COMPLIANCE DEFINITIONS:
+• MEETS = All required elements clearly present and adequate
+• PARTIALLY MEETS = Correct document type with some required elements present but specific ones missing
+• DOES NOT MEET = Wrong document type, missing all core content, or typed signature where wet is required`;
+
+  const sectionRequirements = `═══════════════════════════════
+SECTION-SPECIFIC REQUIREMENTS
+═══════════════════════════════
+CRR 01: All document types require the continuous NDC notice with all four coordinator contacts.
+
+CRR 02 — Annual Public Notification must contain ALL elements 2.0–2.6:
+  2.0 Nondiscrimination statement (race, color, national origin, sex, disability) — actual language required, not just a reference
+  2.1 Equal access for Boy Scouts and other designated youth groups — specific mention required
+  2.2 Brief summary of CTE program offerings
+  2.3 Open admissions policy — all students welcome language
+  2.4 Lack of English proficiency is NOT a barrier to CTE enrollment — explicit statement
+  2.5 Title IX Coordinator: name/title, address, phone, email (all four required)
+  2.6 ADA/Title II Coordinator: name/title, address, phone AND Section 504 Coordinator: name/title, address, phone
+
+CRR 03 — Title IX: Coordinator contact (name/title, address, phone, email); grievance procedures must cover BOTH students AND employees; web posting must show both coordinator info and grievance procedures.
+
+CRR 04 — Title II/ADA: Coordinator contact (name/title, address, phone); grievance procedures; web posting must show both coordinator info and grievance procedures.
+
+CRR 05 — Section 504: Coordinator contact (name/title, address, phone); grievance procedures must include the board approval date and be the final board-approved version.
+
+CRR 06 — Recruitment: Demographics and descriptions on letterhead with WET signature by site principal. Materials must not limit outreach by race, color, national origin, sex, or disability.
+
+CRR 07 — Promotional Materials: NDC notice with all coordinator contacts required; must portray diverse student representation.
+
+CRR 08 / CRR 09 — Admissions / Eligibility: If no applications or no eligibility criteria exist, a STATEMENT on letterhead with wet signature by site principal confirming this is required.
+
+CRR 12 — Counseling: If no revision was made to counseling materials, a statement on letterhead with wet signature by site principal is required. All counseling materials must include NDC notice with coordinator info.
+
+CRR 13 — Financial Assistance: Award/scholarship descriptions on letterhead, signed by site principal (wet signature).
+
+CRR 14 — Services for Students with Disabilities: Statement on letterhead, signed by site principal (wet signature).
+
+CRR 15 / CRR 16 — Facilities: Must be legible FLOOR PLANS showing interior room layouts — NOT aerial campus photos or site maps. Changing rooms/showers must show facilities for one sex are comparable to the other.
+
+CRR 17 — Modifications/Alterations: Must include demographic data BEFORE the modification AND AFTER — both required.
+
+CRR 18 — Work-Study/Apprenticeship: Workplace agreements must contain an NDC notice AND bear signatures from BOTH the student/recipient AND the employer.
+
+CRR 19 — Employment Practices: Demographics must show race, disability, national origin, and sex; categorized by program; on letterhead; NO personally identifiable information (names, SSNs); wet signature by site principal.
+
+CRR 20 — Accessible Facilities: Facilities review packet must be typewritten, electronically signed, and dated. DSA-approved blueprints required to verify construction and modification dates.
+
+═══════════════════════════════
+ADDENDA PROCESS
+═══════════════════════════════
+When a required element is missing from a document already distributed to families or staff, the correct remedy is the ADDENDA PROCESS — not reprinting the document. Use this language when applicable:
+"Because the [document] has already been distributed, the school should use the Addenda Process to add the missing [element(s)]. A sample addendum is available in the FPM Box folder. The addendum must be distributed to all original recipients and signed by the site principal."`;
+
+  const outputFormat = mode === "section"
+    ? `═══════════════════════════════
+OUTPUT FORMAT — respond with EXACTLY these two blocks
+═══════════════════════════════
+CMT_COMMENT_START
+[Professional prose for the full section. No bullet points in this section. Open with the section number and overall status. Summarize what was submitted, what is present across all evidence requests, and what is missing. For each deficient evidence request, state what is missing in clear prose. If the addenda process applies, include that language and reference the FPM Box sample. Close with "Thank you,"]
+CMT_COMMENT_END
+
+REVIEWER_NOTE_START
+SECTION OVERVIEW:
+[Brief summary of the submission as a whole]
+
+EVIDENCE REQUEST BREAKDOWN:
+[For each evidence request, one entry: ER abbreviation — MEETS / PARTIALLY MEETS / DOES NOT MEET — key finding in one sentence]
+
+MISSING ELEMENTS ACROSS SECTION:
+[Bullet list of everything missing or deficient]
+
+OVERALL COMPLIANCE STATUS: [Does Not Meet / Partially Meets / Meets]
+
+PRIORITY RESUBMISSIONS:
+[What must be fixed or resubmitted, in priority order]
+
+ADDENDA NEEDED: [Yes / No / Possibly — and for which documents]
+REVIEWER_NOTE_END`
+    : `═══════════════════════════════
+OUTPUT FORMAT — respond with EXACTLY these two blocks
+═══════════════════════════════
+CMT_COMMENT_START
+[Professional prose. No bullet points. Open with the ER abbreviation and compliance outcome on the first line. Describe what is present and what is missing in clear, specific prose. If deficient: "The following elements are missing or incomplete:" followed by natural prose sentences. If the addenda process applies, include that language and reference the FPM Box sample. Close with "Thank you,"]
+CMT_COMMENT_END
+
+REVIEWER_NOTE_START
+WHAT I FOUND:
+[Candid internal summary — what is in the document, what is not, any concerns about document type, quality, or legibility]
+
+MISSING ELEMENTS:
+[Bullet list — be specific, e.g. "- Title IX Coordinator email address absent" not "- coordinator info missing"]
+
+COMPLIANCE STATUS: [Does Not Meet / Partially Meets / Meets]
+
+NEXT STEPS FOR LEA:
+[Specific action items — what exactly must be resubmitted, corrected, or added]
+
+ADDENDA NEEDED: [Yes / No / Possibly]
+REVIEWER_NOTE_END`;
+
+  return [contextBlock, protocol, universalChecklist, sectionRequirements, outputFormat].join("\n\n");
+}
+
+/* ══════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════ */
+function buildSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.innerHTML = '<div class="sidebar-section-label">CRR Sections</div>';
+  Object.keys(CRR).forEach(key => {
+    const btn = document.createElement("button");
+    btn.className = "crr-btn" + (state.section === key ? " active" : "");
+    btn.innerHTML = `<span class="crr-num">${key}</span><span class="crr-name">${CRR[key].title}</span>`;
+    btn.onclick = () => {
+      state.section = key; state.evidence = ""; state.cmtComment = ""; state.reviewerNote = ""; state.status = ""; state.error = "";
+      render();
+    };
+    sidebar.appendChild(btn);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   FORM
+══════════════════════════════════════════════ */
+function buildForm() {
+  const sec = CRR[state.section];
+  const form = document.getElementById("form-area");
+  form.innerHTML = "";
+
+  // Header
+  const hdr = document.createElement("div");
+  hdr.innerHTML = `<p class="panel-title">${state.section}: ${sec.title}</p>
+    <p class="panel-sub">2025-26 Civil Rights Review · Program Instrument Evidence Review</p>`;
+  form.appendChild(hdr);
+
+  // Error
+  if (state.error) {
+    const err = document.createElement("div");
+    err.className = "alert alert-error";
+    err.textContent = state.error;
+    form.appendChild(err);
+  }
+
+  // Mode tabs
+  const modeTabs = document.createElement("div");
+  modeTabs.className = "mode-tabs";
+  ["single", "section"].forEach(m => {
+    const btn = document.createElement("button");
+    btn.className = "mode-tab" + (state.mode === m ? " active" : "");
+    btn.textContent = m === "single" ? "Single Evidence Request" : "Full Section Review";
+    btn.onclick = () => { state.mode = m; state.cmtComment = ""; state.reviewerNote = ""; state.status = ""; render(); };
+    modeTabs.appendChild(btn);
+  });
+  form.appendChild(modeTabs);
+
+  // Evidence request selector (single mode only)
+  if (state.mode === "single") {
+    const evBlock = document.createElement("div");
+    evBlock.className = "form-block";
+    evBlock.innerHTML = `<label for="ev-select">Evidence Request</label>`;
+    const evSel = document.createElement("select");
+    evSel.id = "ev-select";
+    evSel.innerHTML = '<option value="">— Select evidence request —</option>' +
+      sec.er.map(e => `<option value="${e.a}" ${state.evidence === e.a ? "selected" : ""}>${e.l} (${e.a})</option>`).join("");
+    evSel.onchange = e => { state.evidence = e.target.value; };
+    evBlock.appendChild(evSel);
+    form.appendChild(evBlock);
+  } else {
+    const hint = document.createElement("div");
+    hint.className = "section-review-hint";
+    hint.innerHTML = `<strong>Full Section Review:</strong> Upload all evidence documents for ${state.section}. Claude will evaluate each evidence request and give you a consolidated compliance assessment for the entire section.<br><br>
+    <strong>Evidence requests for this section:</strong><br>${sec.er.map(e => `${e.a} — ${e.l}`).join(" &nbsp;·&nbsp; ")}`;
+    form.appendChild(hint);
+  }
+
+  // School + CDS
+  const row2 = document.createElement("div");
+  row2.className = "form-block row2";
+  const c1 = document.createElement("div");
+  c1.innerHTML = `<label for="school-name">School / LEA Name</label>
+    <input type="text" id="school-name" placeholder="e.g. Lincoln High School" value="${state.schoolName}">`;
+  c1.querySelector("input").oninput = e => { state.schoolName = e.target.value; };
+  const c2 = document.createElement("div");
+  c2.innerHTML = `<label for="cds-code">CDS Code <span style="font-weight:300;letter-spacing:0">(optional)</span></label>
+    <input type="text" id="cds-code" placeholder="e.g. 01-61259-4530456" value="${state.cdsCode}">`;
+  c2.querySelector("input").oninput = e => { state.cdsCode = e.target.value; };
+  row2.appendChild(c1); row2.appendChild(c2);
+  form.appendChild(row2);
+
+  // Submission toggle
+  const tBlock = document.createElement("div");
+  tBlock.className = "form-block";
+  tBlock.innerHTML = `<label>Submission Type</label>
+    <div class="toggle-row">
+      <label class="toggle-switch">
+        <input type="checkbox" id="resub-toggle" ${state.isResub ? "checked" : ""}>
+        <div class="toggle-slider"></div>
+      </label>
+      <span class="toggle-label">${state.isResub ? "Resubmission" : "First submission"}</span>
+      <span class="toggle-badge ${state.isResub ? "resub" : "first"}">${state.isResub ? "RESUB" : "FIRST"}</span>
+    </div>`;
+  tBlock.querySelector("#resub-toggle").onchange = e => { state.isResub = e.target.checked; buildForm(); };
+  form.appendChild(tBlock);
+
+  // Dropzone
+  const dzBlock = document.createElement("div");
+  dzBlock.className = "form-block";
+  dzBlock.innerHTML = `<label>Upload Evidence Files</label>`;
+  const dz = document.createElement("div");
+  dz.className = "dropzone";
+  dz.innerHTML = `<div class="dropzone-icon">📂</div>
+    <div class="dropzone-text">Drop files here or click to browse</div>
+    <div class="dropzone-hint">PDF · DOCX · PPTX · PNG · JPG — multiple files accepted</div>`;
+  const fi = document.createElement("input");
+  fi.type = "file"; fi.multiple = true; fi.accept = ".pdf,.docx,.pptx,.png,.jpg,.jpeg"; fi.style.display = "none";
+  fi.onchange = e => addFiles(e.target.files);
+  dz.onclick = () => fi.click();
+  dz.ondragover = e => { e.preventDefault(); dz.classList.add("drag"); };
+  dz.ondragleave = () => dz.classList.remove("drag");
+  dz.ondrop = e => { e.preventDefault(); dz.classList.remove("drag"); addFiles(e.dataTransfer.files); };
+  dzBlock.appendChild(dz);
+  dzBlock.appendChild(fi);
+
+  if (state.files.length > 0) {
+    const chips = document.createElement("div");
+    chips.className = "file-list";
+    state.files.forEach(f => {
+      const chip = document.createElement("div");
+      chip.className = "file-chip";
+      chip.innerHTML = `${f.name} <button class="file-chip-x" data-name="${f.name}">×</button>`;
+      chip.querySelector("button").onclick = () => { removeFile(f.name); };
+      chips.appendChild(chip);
+    });
+    dzBlock.appendChild(chips);
+  }
+  form.appendChild(dzBlock);
+
+  // Deep analysis toggle
+  const optRow = document.createElement("div");
+  optRow.className = "option-row";
+  optRow.innerHTML = `<input type="checkbox" id="deep-toggle" ${state.deepAnalysis ? "checked" : ""}>
+    <label for="deep-toggle">Deep analysis mode — structured step-by-step review</label>
+    <span class="option-badge">thorough · slower</span>`;
+  optRow.querySelector("input").onchange = e => { state.deepAnalysis = e.target.checked; };
+  form.appendChild(optRow);
+
+  // Divider + buttons
+  form.appendChild(Object.assign(document.createElement("hr"), { className: "divider" }));
+  const btnRow = document.createElement("div");
+  btnRow.className = "btn-row";
+  const submit = document.createElement("button");
+  submit.className = "btn-primary";
+  submit.disabled = state.loading;
+  if (state.loading) {
+    submit.innerHTML = `<div class="spinner"></div> Reviewing…`;
+  } else {
+    submit.textContent = state.mode === "section" ? "Review full section" : "Review evidence";
+  }
+  submit.onclick = doSubmit;
+  const reset = document.createElement("button");
+  reset.className = "btn-ghost"; reset.textContent = "Reset"; reset.onclick = doReset;
+  btnRow.appendChild(submit); btnRow.appendChild(reset);
+  form.appendChild(btnRow);
+
+  if (state.cmtComment || state.reviewerNote) buildResults(form);
+}
+
+/* ══════════════════════════════════════════════
+   RESULTS
+══════════════════════════════════════════════ */
+function buildResults(container) {
+  const res = document.createElement("div");
+  res.className = "results";
+  const resHdr = document.createElement("div");
+  resHdr.className = "results-header";
+  resHdr.innerHTML = `<span style="font-size:13px;font-weight:500;color:var(--ink)">Review complete</span>`;
+  if (state.status) {
+    const tagClass = state.status === "Meets" ? "tag-meets"
+      : state.status === "Partially Meets" ? "tag-partial"
+      : state.status.includes("Not") ? "tag-notmeet" : "tag-unknown";
+    resHdr.innerHTML += `<span class="results-tag ${tagClass}">${state.status}</span>`;
+  }
+  res.appendChild(resHdr);
+
+  const tabs = document.createElement("div");
+  tabs.className = "tabs";
+  ["cmt", "note"].forEach(tab => {
+    const btn = document.createElement("button");
+    btn.className = "tab-btn" + (state.activeTab === tab ? " active" : "");
+    btn.textContent = tab === "cmt" ? "CMT Comment" : "Reviewer Note";
+    btn.onclick = () => { state.activeTab = tab; render(); };
+    tabs.appendChild(btn);
+  });
+  res.appendChild(tabs);
+
+  const panel = document.createElement("div");
+  panel.className = "tab-panel";
+  const content = state.activeTab === "cmt" ? state.cmtComment : state.reviewerNote;
+  const textEl = document.createElement("div");
+  textEl.className = "output-text";
+  textEl.textContent = content;
+  panel.appendChild(textEl);
+
+  const footer = document.createElement("div");
+  footer.className = "tab-footer";
+  const meta = document.createElement("div");
+  meta.className = "output-meta";
+  meta.textContent = state.activeTab === "cmt" ? "Paste directly into the CDE Monitoring Tool" : "Internal reviewer note — not for sharing";
+  footer.appendChild(meta);
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "btn-copy";
+  copyBtn.textContent = "Copy to clipboard";
+  copyBtn.onclick = async () => {
+    await navigator.clipboard.writeText(content);
+    copyBtn.textContent = "Copied!"; copyBtn.classList.add("copied");
+    setTimeout(() => { copyBtn.textContent = "Copy to clipboard"; copyBtn.classList.remove("copied"); }, 2200);
+  };
+  footer.appendChild(copyBtn);
+  panel.appendChild(footer);
+  res.appendChild(panel);
+  if (container) container.appendChild(res);
+}
+
+/* ══════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════ */
+function render() {
+  buildSidebar();
+  const empty = document.getElementById("empty-state");
+  const formArea = document.getElementById("form-area");
+  if (!state.section) {
+    empty.style.display = "flex"; formArea.style.display = "none";
+  } else {
+    empty.style.display = "none"; formArea.style.display = "block";
+    buildForm();
+  }
+}
+
+/* ══════════════════════════════════════════════
+   FILE HELPERS
+══════════════════════════════════════════════ */
+function addFiles(incoming) {
+  const exts = ["pdf","docx","pptx","png","jpg","jpeg"];
+  const valid = Array.from(incoming).filter(f => exts.includes(f.name.split(".").pop().toLowerCase()));
+  const names = new Set(state.files.map(f => f.name));
+  state.files = [...state.files, ...valid.filter(f => !names.has(f.name))];
+  render();
+}
+function removeFile(name) { state.files = state.files.filter(f => f.name !== name); render(); }
+function toBase64(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result.split(",")[1]);
+    r.readAsDataURL(file);
+  });
+}
+function getMime(file) {
+  if (file.type) return file.type;
+  const m = { pdf:"application/pdf", png:"image/png", jpg:"image/jpeg", jpeg:"image/jpeg" };
+  return m[file.name.split(".").pop().toLowerCase()] || "application/octet-stream";
+}
+async function extractDocx(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = async e => {
+      try {
+        if (!window.mammoth) { res("[DOCX extraction unavailable]"); return; }
+        const result = await window.mammoth.extractRawText({ arrayBuffer: e.target.result });
+        res(result.value.slice(0, 20000));
+      } catch(err) { res("[Could not extract DOCX: " + err.message + "]"); }
+    };
+    r.readAsArrayBuffer(file);
+  });
+}
+async function extractPptx(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = async e => {
+      try {
+        if (!window.JSZip) { res("[PPTX extraction unavailable]"); return; }
+        const zip = await window.JSZip.loadAsync(e.target.result);
+        const slides = Object.keys(zip.files).filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n)).sort();
+        let text = "";
+        for (const n of slides.slice(0, 30)) {
+          const xml = await zip.files[n].async("text");
+          text += xml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() + "\n\n";
+        }
+        res(text.slice(0, 20000) || "[No text found in PPTX]");
+      } catch(err) { res("[Could not extract PPTX: " + err.message + "]"); }
+    };
+    r.readAsArrayBuffer(file);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   RESET
+══════════════════════════════════════════════ */
+function doReset() {
+  state = { section: state.section, mode: state.mode, evidence: "", schoolName: "", cdsCode: "",
+    isResub: false, files: [], loading: false, deepAnalysis: false,
+    cmtComment: "", reviewerNote: "", activeTab: "cmt", error: "", status: "" };
+  render();
+}
+
+/* ══════════════════════════════════════════════
+   SUBMIT
+══════════════════════════════════════════════ */
+async function doSubmit() {
+  // Read current field values
+  const evSel = document.getElementById("ev-select");
+  if (evSel) state.evidence = evSel.value;
+  const sn = document.getElementById("school-name");
+  if (sn) state.schoolName = sn.value;
+  const cd = document.getElementById("cds-code");
+  if (cd) state.cdsCode = cd.value;
+  const dt = document.getElementById("deep-toggle");
+  if (dt) state.deepAnalysis = dt.checked;
+  const rt = document.getElementById("resub-toggle");
+  if (rt) state.isResub = rt.checked;
+
+  // Validation
+  if (!getApiKey()) { state.error = "Please enter your Anthropic API key (click the 🔑 key button in the top bar)."; render(); return; }
+  if (state.mode === "single" && !state.evidence) { state.error = "Please select an evidence request."; render(); return; }
+  if (state.files.length === 0) { state.error = "Please upload at least one file."; render(); return; }
+
+  state.error = ""; state.loading = true; state.cmtComment = ""; state.reviewerNote = ""; state.status = "";
+  render();
+
+  try {
+    const sec = CRR[state.section];
+    const evReq = state.mode === "single" ? sec.er.find(e => e.a === state.evidence) : null;
+    const msgParts = [];
+    const textParts = [];
+
+    for (const file of state.files) {
+      const ext = file.name.split(".").pop().toLowerCase();
+      if (ext === "docx") {
+        const txt = await extractDocx(file);
+        textParts.push(`--- FILE: ${file.name} (DOCX, extracted text) ---\n${txt}`);
+      } else if (ext === "pptx") {
+        const txt = await extractPptx(file);
+        textParts.push(`--- FILE: ${file.name} (PPTX, extracted text) ---\n${txt}`);
+      } else if (ext === "pdf") {
+        const b64 = await toBase64(file);
+        msgParts.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: b64 } });
+      } else {
+        const b64 = await toBase64(file);
+        const mime = getMime(file);
+        msgParts.push({ type: "image", source: { type: "base64", media_type: mime, data: b64 } });
+      }
+    }
+
+    if (textParts.length) msgParts.push({ type: "text", text: textParts.join("\n\n") });
+
+    const userMsg = state.mode === "section"
+      ? `Review all uploaded documents as evidence for ${state.section}: ${sec.title}. Evaluate each evidence request listed for this section and produce the two required output blocks.`
+      : `Evaluate the uploaded document(s) as evidence for ${evReq?.l} (${evReq?.a}) and produce the two required output blocks.`;
+
+    const systemPrompt = buildSystemPrompt(sec, evReq, state.schoolName, state.cdsCode, state.isResub, state.mode, state.deepAnalysis);
+    const maxTokens = state.deepAnalysis ? 6000 : (state.mode === "section" ? 5000 : 3500);
+
+    const full = await callApi(getApiKey(), userMsg, maxTokens, systemPrompt, msgParts);
+
+    const cmMatch = full.match(/CMT_COMMENT_START\s*([\s\S]*?)\s*CMT_COMMENT_END/);
+    const rnMatch = full.match(/REVIEWER_NOTE_START\s*([\s\S]*?)\s*REVIEWER_NOTE_END/);
+    const stMatch = full.match(/COMPLIANCE STATUS:\s*([^\n]+)/);
+
+    state.cmtComment   = cmMatch ? cmMatch[1].trim() : full;
+    state.reviewerNote = rnMatch ? rnMatch[1].trim() : "(No reviewer note returned)";
+    state.status       = stMatch ? stMatch[1].trim() : "";
+    state.activeTab    = "cmt";
+
+  } catch(err) {
+    const msg = err.message || "";
+    if (msg.includes("401") || msg.toLowerCase().includes("auth") || msg.toLowerCase().includes("api key")) {
+      state.error = "API key rejected. Please check your key and try again (click the 🔑 key button).";
+    } else if (msg.includes("529") || msg.toLowerCase().includes("overloaded")) {
+      state.error = "The API is temporarily overloaded. Please wait a moment and try again.";
+    } else {
+      state.error = "API error: " + msg;
+    }
+  } finally {
+    state.loading = false;
+    render();
+  }
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+updateKeyBtn();
+render();
+</script>
+</body>
+</html>
