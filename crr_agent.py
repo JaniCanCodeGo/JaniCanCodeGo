@@ -446,9 +446,21 @@ def parse_summary_of_findings(path: str):
     return metadata, crr_sections
 
 
+# CDE OEO directive (Randi Solís Thompson, May 12 2026): findings must not be
+# issued for CRR 2 Annual Public Notification for 2025-26 cycle and any pending LOFs.
+_NO_FINDINGS_CRR = frozenset({"CRR 2"})
+
+
 def get_findings(crr_sections: list) -> list:
     findings = []
     for crr in crr_sections:
+        if crr["crr_num"] in _NO_FINDINGS_CRR:
+            real = [a for a in crr["corrective_actions"] if not is_none_action(a)]
+            if real:
+                print(f"  [Policy] {crr['crr_num']} ({crr['crr_title']}) — "
+                      f"{len(real)} corrective action(s) suppressed per CDE OEO "
+                      f"directive (May 2026). No finding will be issued.")
+            continue
         real = [a for a in crr["corrective_actions"] if not is_none_action(a)]
         if real:
             findings.append({**crr, "corrective_actions": real})
