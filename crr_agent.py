@@ -19,8 +19,10 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import re
 import sys
+import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -58,10 +60,10 @@ CA_COUNTY_CODES = {
 # Helpers
 # ---------------------------------------------------------------------------
 
+_NO_ACTION = frozenset({"none", "", "n/a"})
+
 def is_none_action(text: str) -> bool:
-    """Return True if the text is a placeholder meaning 'no action required'."""
-    t = text.strip().lower().rstrip(".")
-    return t in ("none", "", "n/a", " " * 5)
+    return text.strip().lower().rstrip(".") in _NO_ACTION
 
 
 def county_from_cds(cds_code: str) -> str:
@@ -110,8 +112,6 @@ _CDE_HEADERS = {
 
 def _fetch_cde_html(url: str, label: str = "") -> str:
     """Fetch a CDE page and return the HTML string, or '' on failure."""
-    import urllib.request
-
     try:
         req = urllib.request.Request(url, headers=_CDE_HEADERS)
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -126,42 +126,6 @@ def _fetch_cde_html(url: str, label: str = "") -> str:
         return ""
 
     return html
-
-
-def _soup_label_value(html: str, label_lower: str) -> str:
-    """
-    Search an HTML page for a table row or dt/dd whose label contains
-    label_lower, and return the adjacent value cell text.
-    Falls back to regex when BeautifulSoup is not installed.
-    """
-    try:
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(html, "html.parser")
-
-        for row in soup.find_all("tr"):
-            cells = row.find_all(["th", "td"])
-            if len(cells) >= 2:
-                lbl = cells[0].get_text(" ", strip=True).lower()
-                val = cells[1].get_text(" ", strip=True)
-                if label_lower in lbl and val and val.lower() not in ("n/a", "none", ""):
-                    return val
-
-        for dt in soup.find_all("dt"):
-            lbl = dt.get_text(strip=True).lower()
-            dd = dt.find_next_sibling("dd")
-            if dd and label_lower in lbl:
-                val = dd.get_text(strip=True)
-                if val and val.lower() not in ("n/a", "none", ""):
-                    return val
-
-    except ImportError:
-        # Plain-text fallback: look for label followed by value on same or next line
-        pattern = rf"{re.escape(label_lower)}[^:\n]*:?\s*([^\n<]{{3,80}})"
-        m = re.search(pattern, html, re.IGNORECASE)
-        if m:
-            return m.group(1).strip()
-
-    return ""
 
 
 def _soup_all_label_values(html: str) -> dict:
@@ -248,17 +212,11 @@ def lookup_superintendent(cds_code: str) -> str:
     if not html:
         return ""
 
-    fields = _soup_all_label_values(html)
-
-    # The CDE directory lists administrators as "Administrator 1", "Administrator 2", etc.
-    # alongside a title field. We look for any administrator whose title is Superintendent.
     try:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "html.parser")
-        rows = soup.find_all("tr")
-        # Collect (label, value) pairs; look for administrator entries followed by title
         pairs = []
-        for row in rows:
+        for row in soup.find_all("tr"):
             cells = row.find_all(["th", "td"])
             if len(cells) >= 2:
                 pairs.append((
@@ -270,12 +228,10 @@ def lookup_superintendent(cds_code: str) -> str:
         # row's value contains "Superintendent", that's our person.
         for i, (lbl, val) in enumerate(pairs):
             if "administrator" in lbl.lower() and val:
-                # Check if title in the same cell or next row mentions superintendent
                 context = val.lower()
                 if i + 1 < len(pairs):
                     context += " " + pairs[i + 1][1].lower()
                 if "superintendent" in context:
-                    # Extract just the name portion (before any " - Title" separator)
                     name = re.split(r"\s*[-–]\s*", val)[0].strip()
                     if name:
                         return name
@@ -315,7 +271,6 @@ def lookup_coe_lead(county_name: str) -> str:
             if len(cells) >= 2:
                 cell0 = cells[0].get_text(" ", strip=True).lower()
                 if county_lower in cell0:
-                    # Lead name is typically in the next column
                     lead = cells[1].get_text(" ", strip=True)
                     if lead and lead.lower() not in ("n/a", "none", ""):
                         return lead
@@ -325,10 +280,8 @@ def lookup_coe_lead(county_name: str) -> str:
         lines = text.splitlines()
         for i, line in enumerate(lines):
             if county_lower in line.lower():
-                # Look at the next 1-3 lines for a person's name
                 for j in range(i + 1, min(i + 4, len(lines))):
                     candidate = lines[j].strip()
-                    # A name typically has 2+ capitalized words
                     if re.match(r"[A-Z][a-z]+(?: [A-Z][a-z]+)+", candidate):
                         return candidate
 
@@ -408,20 +361,21 @@ def parse_summary_of_findings(path: str):
     metadata["principal_last_name"]  = principal_last
     metadata["principal_title"]      = principal_title
 
-    # --- CDE web lookups ---
-    cds = metadata.get("cds_code", "")
+    # --- CDE web lookups (run in parallel to cut wall-clock time) ---
+    cds    = metadata.get("cds_code", "")
     county = metadata.get("county", "")
 
-    print("  Looking up school info from CDE School Directory...")
-    metadata["cde_info"] = lookup_school_cde(cds)
+    print("  Looking up school, superintendent, and COE lead from CDE (parallel)...")
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+        fut_school = pool.submit(lookup_school_cde, cds)
+        fut_super  = pool.submit(lookup_superintendent, cds)
+        fut_coe    = pool.submit(lookup_coe_lead, county)
+        metadata["cde_info"]      = fut_school.result()
+        metadata["superintendent"] = fut_super.result()
+        metadata["coe_lead"]       = fut_coe.result()
 
-    print("  Looking up superintendent from CDE district page...")
-    metadata["superintendent"] = lookup_superintendent(cds)
     if metadata["superintendent"]:
         print(f"  [CDE district] Superintendent: {metadata['superintendent']}")
-
-    print("  Looking up COE Monitoring Lead from CDE CAIS leads page...")
-    metadata["coe_lead"] = lookup_coe_lead(county)
     if metadata["coe_lead"]:
         print(f"  [CDE leads] COE Lead ({county}): {metadata['coe_lead']}")
 
@@ -467,7 +421,7 @@ def parse_summary_of_findings(path: str):
                     state = "other"
 
             elif state == "corrective_actions" and current_crr:
-                clean = text.replace(" ", "").strip()
+                clean = text.replace(" ", " ").strip()
                 if clean:
                     current_crr["corrective_actions"].append(clean)
 
@@ -765,7 +719,7 @@ def main():
     print()
 
     metadata, crr_sections = parse_summary_of_findings(str(input_path))
-    findings    = get_findings(crr_sections)
+    findings     = get_findings(crr_sections)
     has_findings = bool(findings)
 
     print()
