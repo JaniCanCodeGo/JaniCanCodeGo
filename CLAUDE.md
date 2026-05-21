@@ -47,7 +47,7 @@ All core logic lives in `crr_agent.py`. `crr_mcp_server.py` is a thin wrapper th
    - `lookup_coe_lead(county_name)` → COE Monitoring Lead from `cde.ca.gov/ta/cr/caisleads.asp`
    - All lookups degrade gracefully: if `beautifulsoup4` is missing, regex fallbacks are used; network failures print an `[Info]` notice and return empty.
 
-3. **`get_findings(crr_sections)`** — filters to only sections that have non-empty corrective actions (excludes "None", "N/A", blank). Also applies policy suppression via `_NO_FINDINGS_CRR` (see below).
+3. **`get_findings(crr_sections)`** — filters to only sections that have non-empty corrective actions (excludes "None", "N/A", blank).
 
 4. **`fill_vcp(...)`** — opens `templates/VCP_template.docx`, replaces text placeholders, removes blank table rows, then appends one row per finding.
 
@@ -66,19 +66,11 @@ Word documents store text split across multiple `Run` objects within a paragraph
 
 The templates use bracket placeholders like `[School Name]`, `[Date]`, `[45 days after Date]`, `[Last name]`, `[initials]`. The address block (paras 4–7, 25) uses human-readable placeholder text like `"Name, Principal"` and `"City, State Zip Code"`.
 
-### CRR section suppression policy
+### CRR 2 — Annual Public Notification: reviewer guidance (May 2026)
 
-Some CRR sections must never produce findings due to CDE OEO policy directives. These are listed in the `_NO_FINDINGS_CRR` frozenset in `crr_agent.py`. When a suppressed section has corrective actions in the input document, they are silently dropped from the VCP and do not count toward the "has findings" determination — a `[Policy]` notice is printed to the console instead.
+Per CDE OEO directive from Randi Solís Thompson (May 12, 2026): the APN is a standalone annual requirement and does not need to appear on every CTE-related flyer, publication, or document. A finding for CRR 2 is only appropriate when the school provided **nothing** for the APN (no website publication, no printed notice, nothing). Findings must **not** be issued solely because the APN was absent from individual CTE materials.
 
-**Current suppressions:**
-
-| CRR | Title | Authority | Effective |
-|-----|-------|-----------|-----------|
-| CRR 2 | Annual Public Notification | Email directive from Randi Solís Thompson (CDE OEO Equal Opportunity Officer), May 12, 2026 | All 2025–26 cycle reviews and any LOFs pending issuance |
-
-**Rationale for CRR 2:** The APN is a standalone annual requirement and is not required to appear on every CTE-related material. Findings must not be issued solely because the APN is absent from those materials. Source: `oeocrr@cde.ca.gov` listserv email, 2026-05-12.
-
-To add a future suppression, add the normalized CRR number (e.g. `"CRR 5"`) to `_NO_FINDINGS_CRR` and document it in this table.
+This is guidance for reviewers writing the Summary of Findings — the agent does not enforce it in code. The corrective actions in the VCP will reflect exactly what the reviewer wrote.
 
 ### CDS code conventions
 
