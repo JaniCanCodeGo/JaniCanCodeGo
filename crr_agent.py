@@ -221,21 +221,39 @@ def _parse_cde_detail_page(html: str) -> dict:
     if raw_addr:
         # Strip "Google Map Link..." trailer
         raw_addr = re.sub(r"\s*Google Map.*", "", raw_addr, flags=re.IGNORECASE).strip()
-        # Parse "Street  City, CA Zip" or "Street, City, CA Zip"
-        m = re.match(
-            r"(.+?)\s{2,}([A-Za-z ]+?),?\s*CA\s*(\d{5})",
-            raw_addr,
-        ) or re.match(
-            r"(.+?),\s*([A-Za-z ]+?),?\s*CA\s*(\d{5})",
-            raw_addr,
-        )
-        if m:
-            info["street"] = m.group(1).strip().rstrip(",")
-            info["city"]   = m.group(2).strip().rstrip(",")
-            info["state"]  = "CA"
-            info["zip"]    = m.group(3)
+
+        # CDE format is typically: "123 Main St. Cityname, CA 90000"
+        # or "123 Main St. City Name CA 90000" (no comma before CA)
+        # Strategy: anchor on ", CA XXXXX" or " CA XXXXX" at the end,
+        # then split street vs city at the last street-type suffix word.
+        zip_m = re.search(r',?\s*CA\s+(\d{5})(?:-\d{4})?', raw_addr, re.IGNORECASE)
+        if zip_m:
+            zip_code  = zip_m.group(1)
+            before_ca = raw_addr[:zip_m.start()].strip()
+
+            # Identify the last street suffix — city follows it
+            _SFX = (
+                r"(?:Street|St|Avenue|Ave|Boulevard|Blvd|Road|Rd|Drive|Dr|"
+                r"Way|Lane|Ln|Court|Ct|Circle|Cir|Place|Pl|Terrace|Ter|"
+                r"Highway|Hwy|Parkway|Pkwy|Trail|Trl|Loop|Run|Row|Walk)\.?"
+            )
+            sfx_m = re.search(rf"(?i)\b({_SFX})\s+(.+)$", before_ca)
+            if sfx_m:
+                info["street"] = before_ca[: sfx_m.end(1)].strip().rstrip(",")
+                info["city"]   = sfx_m.group(2).strip().rstrip(",")
+            else:
+                # Fallback: split on the last comma
+                comma_idx = before_ca.rfind(",")
+                if comma_idx > 0:
+                    info["street"] = before_ca[:comma_idx].strip()
+                    info["city"]   = before_ca[comma_idx + 1:].strip()
+                else:
+                    info["street"] = before_ca
+
+            info["state"] = "CA"
+            info["zip"]   = zip_code
         else:
-            info["street"] = raw_addr  # store as-is if can't parse
+            info["street"] = raw_addr  # store as-is if no CA zip found
 
     # --- Phone ---
     phone = _pick("phone number", "phone")
@@ -551,23 +569,85 @@ def _extract_name_only(text: str) -> str:
     return name
 
 
+
+# Hardcoded COE Monitoring Leads table — verified from CDE contact.asp, May 2026
+# Source: https://www.cde.ca.gov/ta/cr/contact.asp
+_COE_LEADS_TABLE = {
+    "alameda":       "Juwen Lam",
+    "amador":        "Sean Snider",
+    "butte":         "Susie Kruse",
+    "calaveras":     "Karen Vail",
+    "colusa":        "Maria Arvizu-Espinoza",
+    "contra costa":  "Debra Pettric",
+    "el dorado":     "Gabrielle Marchini",
+    "fresno":        "Marvin Baker",
+    "glenn":         "April Hine",
+    "humboldt":      "August Deshais",
+    "imperial":      "Claudia Montano",
+    "inyo":          "Ilissa Twomey",
+    "kern":          "Lily Rosenberger",
+    "kings":         "Gen Almanzar",
+    "lake":          "Stacie Ulatan",
+    "lassen":        "James Hall",
+    "los angeles":   "Adrienne Balcazar",
+    "madera":        "Kirk Delmas",
+    "marin":         "Laura Trahan",
+    "mariposa":      "Jeff Aranguena",
+    "mendocino":     "Dr. Nicole Odell",
+    "merced":        "Erika Davalos-Lemus",
+    "modoc":         "Mike Martin",
+    "mono":          "Tammy Bennett Nguyen",
+    "monterey":      "Michelle Archuleta",
+    "napa":          "Lucy Pearson-Edwards",
+    "nevada":        "Christine McCormick",
+    "orange":        "Diane Ehrle",
+    "placer":        "Leslie Wriston",
+    "plumas":        "Ed Thompson",
+    "riverside":     "Lisa Winberg",
+    "sacramento":    "Cathy Morrison",
+    "san benito":    "Mai Cruz",
+    "san bernardino":"Karen Strong",
+    "san diego":     "Patricia Karlin",
+    "san francisco": "Mary Elisalde",
+    "san joaquin":   "Sharon Oberman",
+    "san luis obispo":"Stacy Summer",
+    "san mateo":     "Jared Prolo",
+    "santa barbara": "Shannon Yorke",
+    "santa clara":   "Dawn River",
+    "santa cruz":    "Angela Meeker",
+    "shasta":        "Mike Freeman",
+    "sierra":        "Nona Griesert",
+    "siskiyou":      "Mark Lewin",
+    "solano":        "Andrea Lemos",
+    "sonoma":        "Amanda Welter",
+    "stanislaus":    "Jill Polhemus",
+    "sutter":        "Kristi Johnson",
+    "tehama":        "Cathy Henderson",
+    "trinity":       "Tim Nordstrom",
+    "tulare":        "Gabriela Guzman",
+    "tuolumne":      "Mark Pintor",
+    "ventura":       "Lisa Brown",
+    "yolo":          "Katrina Callaway",
+    "yuba":          "Bobbi Abold",
+}
+
+
 def lookup_coe_lead(county_name: str) -> str:
     """
-    Look up the COE Monitoring Lead for a given county.
+    Return the COE Monitoring Lead for a given county.
 
-    The CDE hosts the contact list at:
-      https://www.cde.ca.gov/ta/cr/contact.asp
-
-    The page is plain text (no table) structured as:
-      [County Name] County Office of Education - [##]
-      [Lead Person Name]
-      Phone: ...
-      Email:
-      [email address]
+    First checks the hardcoded table (verified from CDE contact.asp, May 2026).
+    Falls back to live CDE fetch if county is not in the table.
+    Source: https://www.cde.ca.gov/ta/cr/contact.asp  (Compliance Monitoring > Contact Info)
     """
     import urllib.parse
 
     county_lower = county_name.lower().strip()
+
+    # 1. Hardcoded table — fast, reliable, no network required
+    lead = _COE_LEADS_TABLE.get(county_lower, "")
+    if lead and lead != "TBD":
+        return lead
 
     def _parse_contact_page(html: str) -> str:
         try:
@@ -580,10 +660,8 @@ def lookup_coe_lead(county_name: str) -> str:
         lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
 
         for i, line in enumerate(lines):
-            # Match "[County] County Office of Education"
             if (county_lower in line.lower()
                     and "county office of education" in line.lower()):
-                # Next non-empty line that isn't a phone/email/TBD is the lead name
                 for j in range(i + 1, min(i + 6, len(lines))):
                     candidate = lines[j]
                     if candidate.lower().startswith(("phone", "email", "fax", "tbd", "region")):
@@ -592,27 +670,8 @@ def lookup_coe_lead(county_name: str) -> str:
                         return candidate
         return ""
 
-    # 1. Primary URL
+    # 2. Live CDE fetch fallback
     html = _fetch_cde_html("https://www.cde.ca.gov/ta/cr/contact.asp", "COE leads contact")
-    if html:
-        lead = _parse_contact_page(html)
-        if lead:
-            return lead
-
-    # 2. Old URL fallback
-    html = _fetch_cde_html("https://www.cde.ca.gov/ta/cr/caisleads.asp", "COE leads old")
-    if html:
-        lead = _parse_contact_page(html)
-        if lead:
-            return lead
-
-    # 3. Web search fallback
-    query = urllib.parse.quote_plus(
-        f"site:cde.ca.gov {county_name} County Office of Education monitoring lead"
-    )
-    html = _fetch_cde_html(
-        f"https://html.duckduckgo.com/html/?q={query}", "COE lead web search"
-    )
     if html:
         lead = _parse_contact_page(html)
         if lead:
@@ -982,23 +1041,34 @@ def _fill_address_block(doc, metadata: dict, today: datetime):
         if email_placed:
             break
 
-    # If no placeholder found but we have an email, insert it as a new paragraph
-    # right after the City/State/Zip paragraph
+    # If no placeholder found but we have an email, insert it inside p7
+    # right after the first <w:br/> (which immediately follows the city/zip text)
+    # so it appears between the city/zip line and the "Dear Principal" salutation.
     if email and not email_placed:
         from docx.oxml.ns import qn
-        from copy import deepcopy
-        # Insert a new paragraph after p7 with the email
-        new_para = deepcopy(p7._p)
-        # Clear all runs in the copy and set plain email text
-        for r in new_para.findall(qn("w:r")):
-            new_para.remove(r)
         from docx.oxml import OxmlElement
-        r_elem = OxmlElement("w:r")
-        t_elem = OxmlElement("w:t")
-        t_elem.text = email
-        r_elem.append(t_elem)
-        new_para.append(r_elem)
-        p7._p.addnext(new_para)
+        p7_runs = p7._p.findall(qn("w:r"))
+        first_br_run = next(
+            (r for r in p7_runs if r.find(qn("w:br")) is not None), None
+        )
+        if first_br_run is not None:
+            email_run = OxmlElement("w:r")
+            email_t   = OxmlElement("w:t")
+            email_t.text = email
+            email_run.append(email_t)
+            first_br_run.addnext(email_run)
+        else:
+            # Fallback: insert as a new paragraph after p7
+            from copy import deepcopy
+            new_para = deepcopy(p7._p)
+            for r in new_para.findall(qn("w:r")):
+                new_para.remove(r)
+            r_elem = OxmlElement("w:r")
+            t_elem = OxmlElement("w:t")
+            t_elem.text = email
+            r_elem.append(t_elem)
+            new_para.append(r_elem)
+            p7._p.addnext(new_para)
 
     # Para [25]: cc list
     p25 = paras[25]
@@ -1028,6 +1098,7 @@ def fill_cover_letter(
     metadata: dict,
     has_findings: bool,
     today: datetime,
+    preparer_initials: str = "MM",
 ):
     doc = Document(template_path)
 
@@ -1036,8 +1107,8 @@ def fill_cover_letter(
     deadline_str = (today + timedelta(days=45)).strftime("%B %d, %Y")
     today_str    = today.strftime("%B %d, %Y")
 
-    # Reviewer initials from the Program Reviewer field
-    reviewer_initials = get_initials(metadata.get("reviewer", ""))
+    # Signature: "RST:[preparer initials]" — RST = Randi Solís Thompson (Civil Rights Officer)
+    # preparer_initials = initials of the OEO staff member who prepared the letter (default MM)
 
     # Global text replacements
     replace_in_doc(doc, {
@@ -1046,7 +1117,7 @@ def fill_cover_letter(
         "[School Site]":       school_name,
         "[dates]":             review_dates,
         "[45 calendar days]":  deadline_str,
-        "[initials]":          reviewer_initials,
+        "[initials]":          preparer_initials,
     })
 
     # Address block, salutation, cc list
@@ -1076,6 +1147,9 @@ def main():
                         default=str(TEMPLATE_DIR / "LOF_Findings_template.docx"))
     parser.add_argument("--lof-no-findings-template",
                         default=str(TEMPLATE_DIR / "LOF_NoFindings_template.docx"))
+    parser.add_argument("--preparer", default="MM",
+                        help="Initials of the OEO staff member preparing the letter "
+                             "(used in 'RST:[initials]' signature line). Default: MM")
 
     args = parser.parse_args()
 
@@ -1159,7 +1233,8 @@ def main():
     lof_template = (
         args.lof_findings_template if has_findings else args.lof_no_findings_template
     )
-    fill_cover_letter(lof_template, str(lof_out), metadata, has_findings, today)
+    fill_cover_letter(lof_template, str(lof_out), metadata, has_findings, today,
+                      preparer_initials=args.preparer)
 
     print()
     print("  Generated files:")
