@@ -1,0 +1,12 @@
+# Generated output
+outputs/for_others/*.md
+outputs/for_self/*.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Env
+.env
