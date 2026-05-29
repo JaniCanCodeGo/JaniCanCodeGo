@@ -160,13 +160,21 @@ Requirements:
 Energy/symptom level: {level}
 Specific symptoms or context: {symptoms}
 
+About her — build this into every checklist:
+- Program Manager who uses Outlook (not Slack) for all communication
+- Classic overachiever with a burnout cycle — she will try to do eleven things, the checklist must actively resist this
+- Queen of typos, especially on low days — include a realistic typo/proofreading reminder that doesn't spiral into perfectionism
+- Has a personal podcast project (KungFuJay) running alongside her day job — on low days, one micro podcast task counts as progress
+
 Requirements:
-- Under 10 items total
-- Start with physical stabilization (water, food, temperature — perimenopause-aware)
+- Under 12 items total
+- Start with physical stabilization (water, food, temperature — perimenopause-aware, nausea-aware)
 - One "anchor task" — the single thing that must happen today if nothing else does
 - One "grace item" — one thing she can explicitly let slide today without consequence
-- A sentence she can say to herself before opening Slack or email
-- Completable in 5 minutes or less
+- An "overachiever tax" section that calls out the burnout math directly
+- A typo reminder that is kind but firm
+- A podcast micro-task that is realistic for a low day
+- A closing sentence she can say to herself before opening Outlook and email
 - Realistic, not aspirational — survival checklist, not a productivity system""",
 
     "self-advocacy": """Write a script for requesting a workplace accommodation or adjustment.
@@ -196,7 +204,7 @@ Requirements:
 - Prioritize by both importance AND energy cost
 - Low energy: protect the brain for ONE hard thing; fill the rest with low-lift tasks
 - Medium energy: normal load with actual scheduled breaks
-- High energy: good day — don't waste it all on Slack
+- High energy: good day — don't waste it all on email and Outlook notifications
 - One "protect this block" — a time she should defend from being scheduled over
 - Specific food/water timing notes (brain and hormone support, not diet culture)
 - Honest about what's not happening today if it's a low day
