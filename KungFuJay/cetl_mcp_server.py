@@ -2,6 +2,8 @@
 """
 Clear Enough To Lead — MCP Server for Claude Desktop
 
+No API key needed. The tools build structured prompts; Claude generates the content.
+
 Add to claude_desktop_config.json:
 
   macOS:   ~/Library/Application Support/Claude/claude_desktop_config.json
@@ -11,23 +13,18 @@ Add to claude_desktop_config.json:
     "mcpServers": {
       "clear-enough-to-lead": {
         "command": "python3",
-        "args": ["/ABSOLUTE/PATH/TO/cetl_mcp_server.py"],
-        "env": {
-          "ANTHROPIC_API_KEY": "your_key_here"
-        }
+        "args": ["/ABSOLUTE/PATH/TO/cetl_mcp_server.py"]
       }
     }
   }
 
-Then restart Claude Desktop and ask:
+Restart Claude Desktop, then ask things like:
   "Write me an email to my team about the deadline we missed."
   "Give me a fog recovery protocol — I have no idea what I was doing."
-  "Build me a realistic work plan, energy level is low, I have a 10am standup."
+  "Build me a realistic work plan. Energy level is low, I have a 10am standup."
 """
 
-import io
 import sys
-from contextlib import redirect_stdout
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
@@ -63,21 +60,13 @@ def generate_for_others(
         topic: Meeting topic (for meeting-agenda)
         duration: Meeting length in minutes (for meeting-agenda, default 60)
     """
-    log = io.StringIO()
-    try:
-        with redirect_stdout(log):
-            content = agent.generate_for_others(
-                content_type=content_type,
-                situation=situation,
-                context=context,
-                topic=topic,
-                duration=duration,
-            )
-            out_path = agent.save_output(content, "for-others", content_type)
-        return f"{content}\n\n---\n*Saved to: {out_path}*"
-    except Exception:
-        import traceback
-        return f"ERROR:\n{traceback.format_exc()}"
+    return agent.build_for_others_prompt(
+        content_type=content_type,
+        situation=situation,
+        context=context,
+        topic=topic,
+        duration=duration,
+    )
 
 
 @mcp.tool()
@@ -109,23 +98,15 @@ def generate_for_self(
         symptoms: What you're experiencing today (brain fog, hot flashes, fatigue, etc.)
         commitments: Today's known meetings or deadlines (for energy-plan)
     """
-    log = io.StringIO()
-    try:
-        with redirect_stdout(log):
-            content = agent.generate_for_self(
-                content_type=content_type,
-                input_text=input_text,
-                situation=situation,
-                context=context,
-                level=level,
-                symptoms=symptoms,
-                commitments=commitments,
-            )
-            out_path = agent.save_output(content, "for-self", content_type)
-        return f"{content}\n\n---\n*Saved to: {out_path}*"
-    except Exception:
-        import traceback
-        return f"ERROR:\n{traceback.format_exc()}"
+    return agent.build_for_self_prompt(
+        content_type=content_type,
+        input_text=input_text,
+        situation=situation,
+        context=context,
+        level=level,
+        symptoms=symptoms,
+        commitments=commitments,
+    )
 
 
 if __name__ == "__main__":

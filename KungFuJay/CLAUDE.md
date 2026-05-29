@@ -33,14 +33,17 @@ Use `setup_claude_desktop.bat` on Windows to configure Claude Desktop automatica
 pip install -r requirements.txt
 ```
 
-### API key
-Set `ANTHROPIC_API_KEY` as an environment variable before running.
+No API key needed. The tools build structured prompts; Claude generates the content natively.
 
 ## Architecture
 
-All core logic lives in `cetl_agent.py`. `cetl_mcp_server.py` is a thin wrapper that exposes two MCP tools:
+All core logic and prompt templates live in `cetl_agent.py`. `cetl_mcp_server.py` is a thin wrapper that exposes two MCP tools to Claude Desktop:
 - `generate_for_others(content_type, situation, context, topic, duration)`
 - `generate_for_self(content_type, input_text, situation, context, level, symptoms, commitments)`
+
+The tools return a fully-constructed prompt (persona + request). Claude receives the tool result and generates the content — no internal API calls, no separate key required.
+
+The CLI works the same way: it builds the prompt and saves it to `outputs/`. Paste the prompt into Claude.ai to generate the content.
 
 ## Content types
 
