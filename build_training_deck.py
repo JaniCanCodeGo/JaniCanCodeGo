@@ -249,7 +249,7 @@ agenda = [
     ("1:00",  "UFAS · 1991 ADA · 2010 ADA",              "Slides 26–38"),
     ("2:30",  "Break"),
     ("2:45",  "Measurements reference + CTE deep-dives", "Slides 39–50"),
-    ("3:45",  "Facilities LOF tool walkthrough",         "Slides 51–54"),
+    ("3:45",  "Two reviewer rules: element-by-element & corrective = 2010 ADA", "Slides 51–54"),
     ("4:15",  "Writing findings + case studies",         "Slides 55–61"),
     ("5:00",  "Resources & wrap-up",                     "Slides 62–63"),
 ]
@@ -456,8 +456,9 @@ take § 504 off the table — but Title II still applies because the
 district is a public entity. Belt and suspenders.
 
 Walk through the CFR section numbers slowly. New reviewers find the cite
-chain confusing. Show them the boilerplate in the HTML tool — that same
-chain appears verbatim at the top of every Facilities LOF.
+chain confusing. Show them the boilerplate from the CRR 20 Word
+template — that same chain appears verbatim at the top of every
+Facilities LOF.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -550,7 +551,7 @@ add_bullets(s, Inches(0.75), Inches(2.25), Inches(5.7), Inches(4.7), [
     ("Authorities.", "34 CFR § 104.22 & § 104.23; 28 CFR § 35.151; 28 CFR Part 36 App. D."),
     ("Scope.",     "Buildings and facilities used to deliver CTE — and the common-use areas that serve them (restrooms, drinking fountains, parking, paths of travel)."),
     ("Evidence.",  "Site plans, DSA-approved blueprints, alteration/modification records, work orders, completed Facilities Review Packet."),
-    ("Tool.",      "facilities_lof_tool.html → 18-row findings table → Word LOF."),
+    ("Output.",    "18-row findings table → CRR boilerplate + LOF cover letter (Word)."),
 ], size=12, spacing=6)
 
 add_rect(s, Inches(6.85), Inches(1.55), Inches(6.0), Inches(5.5), CREAM, line=BORDER)
@@ -563,18 +564,20 @@ add_bullets(s, Inches(7.05), Inches(2.25), Inches(5.7), Inches(4.7), [
     ("Authorities.", "Same Section 504 + Title II chain, plus 34 CFR § 100.3 (Title VI siting analysis)."),
     ("Scope.",     "Where CTE programs are located — does siting create disparate impact by disability, race, language, or sex?"),
     ("Evidence.",  "Maps showing CTE locations, student demographics before/after modifications, route accessibility."),
-    ("Overlap.",   "Same accessibility standards apply, same self-assessment, same LOF tool — only the narrative framing changes."),
+    ("Overlap.",   "Same five accessibility standards, same self-assessment, same 18-area LOF table — only the narrative framing changes."),
 ], size=12, spacing=6)
 footer(s, 10)
 add_notes(s, """
 Reviewers need to know which CRR they are assigned to before they walk
-on site. The technical content is nearly identical — same five standards,
-same dimensions, same tool. The narrative framing differs: CRR 20 asks
-"is this building accessible?" while CRR 21 asks "is the siting of CTE
-programs equitable across protected classes?"
+on site. The technical content is nearly identical — same five
+standards, same dimensions, same 18-area structure. The narrative
+framing differs: CRR 20 asks "is this building accessible?" while
+CRR 21 asks "is the siting of CTE programs equitable across protected
+classes?"
 
-For today, treat CRR 20 and CRR 21 as one body of work. Differences are
-in the cover memo and which authority appears first in the cite chain.
+For today, treat CRR 20 and CRR 21 as one body of work. Differences
+are in the cover memo and which authority appears first in the cite
+chain.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -851,50 +854,74 @@ you reveal it.
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 15 — Construction vs ADA modification date
 # ─────────────────────────────────────────────────────────────────────────────
-s = add_slide(); header_bar(s, "Construction date vs. ADA modification date",
+s = add_slide(); header_bar(s, "Element-by-element — the alteration rule",
                             kicker="Slide 15 · Decision tree")
-add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.4),
-         "When something was altered to address accessibility, the alteration date — not the original construction date — controls.",
+add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.45),
+         "Only the altered elements get the new standard. Unaltered elements keep the original construction-date standard. The building does not \"upgrade\" as a whole.",
          size=14, italic=True, color=MUTED)
 
-# Two-column with definitions
-add_rect(s, Inches(0.55), Inches(2.1), Inches(6.0), Inches(4.8), CREAM, line=BORDER)
-add_rect(s, Inches(0.55), Inches(2.1), Inches(6.0), Inches(0.5), NAVY)
-add_text(s, Inches(0.55), Inches(2.1), Inches(6.0), Inches(0.5),
-         "CONSTRUCTION DATE", size=12, bold=True, color=GOLD,
-         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
-add_bullets(s, Inches(0.75), Inches(2.7), Inches(5.7), Inches(4.0), [
-    "The date the building or element was originally built.",
-    "Found in: DSA stamp, original blueprints, school district facilities records.",
-    "Used when the element has never been altered.",
-    "Used when the alteration did NOT affect accessibility (re-roofing, paint, HVAC).",
-], size=13, spacing=8)
+# Access Board quote
+add_rect(s, Inches(0.55), Inches(2.1), Inches(12.3), Inches(1.05), CREAM, line=BORDER)
+add_rect(s, Inches(0.55), Inches(2.1), Inches(0.18), Inches(1.05), GOLD)
+add_text(s, Inches(0.85), Inches(2.2), Inches(11.8), Inches(0.3),
+         "U.S. Access Board — 2010 ADA Scoping § 202.3 (Alterations):",
+         size=11, bold=True, color=NAVY, font="Consolas")
+add_text(s, Inches(0.85), Inches(2.5), Inches(11.7), Inches(0.65),
+         "\"Only those elements or spaces altered are required to comply… If a room or space is completely altered (or built new as part of an alteration), the entire room or space is fully subject to the standards.\"",
+         size=12, italic=True, color=TEXT)
 
-add_rect(s, Inches(6.85), Inches(2.1), Inches(6.0), Inches(4.8), CREAM, line=BORDER)
-add_rect(s, Inches(6.85), Inches(2.1), Inches(6.0), Inches(0.5), NAVY)
-add_text(s, Inches(6.85), Inches(2.1), Inches(6.0), Inches(0.5),
-         "ADA MODIFICATION DATE", size=12, bold=True, color=GOLD,
+# Two columns
+add_rect(s, Inches(0.55), Inches(3.3), Inches(6.0), Inches(3.7), CREAM, line=BORDER)
+add_rect(s, Inches(0.55), Inches(3.3), Inches(6.0), Inches(0.4), NAVY)
+add_text(s, Inches(0.55), Inches(3.3), Inches(6.0), Inches(0.4),
+         "UNALTERED ELEMENTS", size=11, bold=True, color=GOLD,
          align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
-add_bullets(s, Inches(7.05), Inches(2.7), Inches(5.7), Inches(4.0), [
-    "The date an element was altered in a way that affects accessibility.",
-    "Found in: work orders, alteration & modification records, DSA approval for the alteration.",
-    "Examples: ramp installed where there was none; restroom rebuilt; doors widened; new ISA signage installed.",
-    "Bumps that element up to the standard in force on the alteration date.",
-], size=13, spacing=8)
+add_bullets(s, Inches(0.75), Inches(3.8), Inches(5.7), Inches(3.2), [
+    "Standard = original construction-date era.",
+    "Pre-1977 unaltered → Program Access (no findings).",
+    "1985 unaltered → ANSI A117.1 controls.",
+    "Re-roofing, paint, HVAC, electrical upgrades do NOT alter accessibility — element stays at original standard.",
+], size=12, spacing=6)
 
-add_rect(s, Inches(0.55), Inches(7.0), Inches(12.3), Inches(0.25), GOLD)
-add_text(s, Inches(0.55), Inches(6.96), Inches(12.3), Inches(0.3),
-         "Each element can have its OWN date. A 1968 building with a 2018 restroom rebuild = two different standards in one building.",
+add_rect(s, Inches(6.85), Inches(3.3), Inches(6.0), Inches(3.7), CREAM, line=BORDER)
+add_rect(s, Inches(6.85), Inches(3.3), Inches(6.0), Inches(0.4), NAVY)
+add_text(s, Inches(6.85), Inches(3.3), Inches(6.0), Inches(0.4),
+         "ALTERED ELEMENTS ONLY", size=11, bold=True, color=GOLD,
+         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+add_bullets(s, Inches(7.05), Inches(3.8), Inches(5.7), Inches(3.2), [
+    "Standard = standard in effect on alteration date.",
+    "Each altered ELEMENT gets evaluated separately.",
+    "A 1968 restroom with 2018 grab-bar replacement → grab bars under 2010 ADA; toilet, lavatory, mirror still under Program Access (unless they were also altered).",
+    "Whole-room rule: if an entire room is gutted and rebuilt, the entire room is subject to the alteration-date standard.",
+], size=12, spacing=6)
+
+add_rect(s, Inches(0.55), Inches(7.05), Inches(12.3), Inches(0.25), GOLD)
+add_text(s, Inches(0.55), Inches(7.01), Inches(12.3), Inches(0.3),
+         "Reviewer rule — request work orders / DSA records for each altered element. No proof of alteration = default to original construction date.",
          size=12, bold=True, color=NAVY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
 footer(s, 15)
 add_notes(s, """
-The element-by-element rule trips up new reviewers. They want to assign
-"the building" one standard. That is wrong — Title II § 35.151 alterations
-are evaluated element-by-element, not building-by-building.
+This is the single most-misunderstood rule. New reviewers want to assign
+"the building" one standard. The Access Board's 2010 ADA Scoping
+guidance is explicit: alteration analysis is element-by-element.
 
-If the LEA cannot prove an element was altered (no work order, no DSA
-record), default to the construction date. The burden of proof for the
-alteration date is on the LEA, not on the reviewer.
+Concrete example to walk through aloud:
+A 1968 restroom has these elements: WC, lavatory, mirror, grab bars,
+signage, dispensers. In 2018 the LEA replaced the grab bars only —
+work orders confirm. Result:
+- WC, lavatory, mirror, signage, dispensers = Program Access
+  (1968 construction date, no alteration to those elements).
+- Grab bars = 2010 ADA (altered 2018).
+
+This means the reviewer can issue a finding ONLY on the grab bars
+(if they don't meet 2010 ADA 609.4 / 604.5). The reviewer CANNOT
+issue findings on the WC seat height or lavatory rim under any
+standard — those elements remain Program Access.
+
+The "whole room" exception: if the LEA gutted the entire restroom in
+2018 (toilet, lav, walls, plumbing), the WHOLE room becomes 2010 ADA.
+That's the difference between an "element alteration" and a "room
+alteration." Look at the scope of work.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -917,40 +944,55 @@ for i, h in enumerate(hd):
              anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
 
 data = [
-    ("Main classroom wing",         "1962", "None",                "PROGRAM ACCESS",  B_PA),
-    ("Ag building & greenhouse",    "1971", "None",                "PROGRAM ACCESS",  B_PA),
-    ("Wood / metal shop bays",      "1986", "None",                "ANSI A117.1",     B_ANSI),
-    ("Culinary / hospitality bldg.", "2014","None",                "2010 ADA",        B_2010),
-    ("Front parking lot striping",  "1962", "Restriped 2022",      "2010 ADA",        B_2010),
-    ("Front entry restrooms",       "1962", "Gutted & rebuilt 2019", "2010 ADA",     B_2010),
-    ("Library main entrance ramp",  "2003", "None",                "1991 ADA",        B_1991),
+    ("Main classroom wing (unaltered)",             "1962", "None",                "PROGRAM ACCESS",  B_PA),
+    ("Ag bldg & greenhouse (unaltered)",            "1971", "None",                "PROGRAM ACCESS",  B_PA),
+    ("Wood / metal shop bays (unaltered)",          "1986", "None",                "ANSI A117.1",     B_ANSI),
+    ("Culinary bldg — entire building (new build)", "2014", "None",                "2010 ADA",        B_2010),
+    ("Parking-lot striping ONLY (route element)",   "1962", "Restriped 2022",      "2010 ADA",        B_2010),
+    ("Front entry restrooms — GUTTED rebuild",      "1962", "Whole room rebuilt 2019", "2010 ADA",   B_2010),
+    ("Library entry ramp (new install, no prior)",  "2003", "None",                "1991 ADA",        B_1991),
+    ("Locker-room grab bars ONLY (element swap)",   "1962", "Bars replaced 2018",  "2010 ADA (bars only)", B_2010),
 ]
 for i, (el, built, alt, std, fill) in enumerate(data):
-    y = Inches(2.6 + 0.55*i)
+    y = Inches(2.6 + 0.48*i)
     row_bg = WHITE if i % 2 == 0 else CREAM
     for j in range(4):
-        add_rect(s, xs[j], y, ws[j], Inches(0.55), row_bg, line=BORDER)
-    add_text(s, xs[0]+Inches(0.1), y, ws[0], Inches(0.55), el, size=11, color=TEXT, anchor=MSO_ANCHOR.MIDDLE)
-    add_text(s, xs[1], y, ws[1], Inches(0.55), built, size=11, color=TEXT,
+        add_rect(s, xs[j], y, ws[j], Inches(0.48), row_bg, line=BORDER)
+    add_text(s, xs[0]+Inches(0.1), y, ws[0], Inches(0.48), el, size=10, color=TEXT, anchor=MSO_ANCHOR.MIDDLE)
+    add_text(s, xs[1], y, ws[1], Inches(0.48), built, size=10, color=TEXT,
              align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
-    add_text(s, xs[2]+Inches(0.1), y, ws[2], Inches(0.55), alt, size=10, color=TEXT,
+    add_text(s, xs[2]+Inches(0.1), y, ws[2], Inches(0.48), alt, size=9, color=TEXT,
              anchor=MSO_ANCHOR.MIDDLE)
-    std_badge(s, xs[3]+Inches(0.8), y+Inches(0.13), std, fill, w=Inches(1.7))
+    std_badge(s, xs[3]+Inches(0.8), y+Inches(0.10), std, fill, w=Inches(1.7))
 
 footer(s, 16)
 add_notes(s, """
 This is the kind of campus you will actually walk. Most CA schools are
-mixed-era. The reviewer's job is to keep the standards straight building
-by building, element by element.
+mixed-era. The reviewer's job is to keep the standards straight
+ELEMENT BY ELEMENT — not building by building.
 
-Note the restroom row: the building is 1962 (Program Access), but the
-restrooms were gutted in 2019 — that triggers 2010 ADA for just the
-restrooms. The rest of the 1962 wing stays Program Access.
+Key teaching moments per row:
 
-Pause and ask: 'What about the parking lot? Why did restriping bump it
-to 2010 ADA?' Answer: restriping is an accessibility-affecting
-alteration — accessible aisle and ISA signage placement are part of the
-striping job. Compare to re-roofing (does NOT bump up the standard).
+Row 4 (Culinary 2014): whole BUILDING is new construction → entire
+building under 2010 ADA. Every element. This is the only kind of
+"whole building" answer that's clean.
+
+Row 5 (parking-lot striping): striping is itself an accessibility
+ELEMENT. Restriping in 2022 makes the striping subject to 2010 ADA
+502.3.3 (van aisle), 502.6 (ISA), etc. The pavement, vertical clearance,
+and route surface continue to be 1962 elements unless those were also
+altered.
+
+Row 6 (restrooms — GUTTED): the whole-room rule applies — entire
+restroom rebuilt in 2019 = entire restroom under 2010 ADA.
+
+Row 8 (locker-room grab bars): contrast with row 6. Only the bars were
+swapped. The bars become 2010 ADA (must meet 609.4). The toilet,
+lavatory, mirror, and stall geometry remain 1962 elements → Program
+Access. Reviewer can issue a finding ONLY on the bars; cannot issue
+findings on the toilet seat height under any standard.
+
+This is the rule the user MUST internalize before walking a site.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1204,7 +1246,8 @@ add_bullets(s, Inches(0.85), Inches(5.15), Inches(11.7), Inches(2), [
 ], size=12, spacing=4)
 footer(s, 21)
 add_notes(s, """
-This rule is the system prompt in the HTML tool — it is hard-coded:
+This rule is etched into the CRR procedures manual and the CRR 20
+boilerplate — it is non-negotiable:
 "Program Access → ALWAYS None. / None." That language came from us.
 Every reviewer must internalize it.
 
@@ -2741,7 +2784,7 @@ in active use as part of the program's regular configuration.
 # SLIDE 51 — The 18 area review categories
 # ─────────────────────────────────────────────────────────────────────────────
 s = add_slide(); header_bar(s, "The 18 area review categories",
-                            kicker="Slide 51 · LOF tool")
+                            kicker="Slide 51 · Reviewer rules")
 add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.4),
          "Every CRR 20 / 21 self-assessment and LOF table uses this exact sequence — in this exact order.",
          size=14, italic=True, color=MUTED)
@@ -2786,10 +2829,10 @@ add_text(s, Inches(0.55), Inches(6.97), Inches(12.3), Inches(0.3),
          size=11, bold=True, color=NAVY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
 footer(s, 51)
 add_notes(s, """
-The 18-row format is sacred. The HTML tool, the Word template, the
-boilerplate — all assume these 18 areas in this exact order. Don't
-let an LEA submit a self-assessment that combines rows or skips
-categories.
+The 18-row format is sacred. Every CRR 20 / 21 self-assessment, every
+LOF table, every boilerplate — they all assume these 18 areas in this
+exact order. Don't let an LEA submit a self-assessment that combines
+rows or skips categories.
 
 For areas that don't exist on a campus (e.g., a K-8 school with no
 cafeteria), the row still appears in the LOF — marked N/A in the
@@ -2797,200 +2840,217 @@ applicable standard column, with "None." in both finding columns.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 52 — Facilities LOF tool overview
+# SLIDE 52 — Element-by-element alteration rule (DEEP DIVE)
 # ─────────────────────────────────────────────────────────────────────────────
-s = add_slide(); header_bar(s, "The Facilities LOF Generator",
-                            kicker="Slide 52 · LOF tool")
-add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.4),
-         "facilities_lof_tool.html — runs in your browser, calls Claude directly, exports a complete Word LOF.",
+s = add_slide(); header_bar(s, "Reviewer rule #1 — element-by-element alterations",
+                            kicker="Slide 52 · Reviewer rules")
+add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.45),
+         "The single most common reviewer mistake — applying a newer standard to an older facility because part of it was altered. Don't.",
          size=14, italic=True, color=MUTED)
 
-# Mock the header
-add_rect(s, Inches(0.55), Inches(2.1), Inches(12.3), Inches(0.7), NAVY)
-add_rect(s, Inches(0.55), Inches(2.8), Inches(12.3), Inches(0.07), GOLD)
-seal = s.shapes.add_shape(MSO_SHAPE.OVAL, Inches(0.75), Inches(2.25), Inches(0.4), Inches(0.4))
-seal.fill.solid(); seal.fill.fore_color.rgb = GOLD; seal.line.fill.background(); seal.shadow.inherit = False
-add_text(s, Inches(0.75), Inches(2.25), Inches(0.4), Inches(0.4), "CDE",
-         size=9, bold=True, color=NAVY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Georgia")
-add_text(s, Inches(1.3), Inches(2.18), Inches(8), Inches(0.3), "Facilities LOF Generator",
-         size=14, bold=True, color=WHITE, font="Georgia")
-add_text(s, Inches(1.3), Inches(2.5), Inches(8), Inches(0.3),
-         "CIVIL RIGHTS REVIEW · CRR 20 / CRR 21 · BUILDING ACCESSIBILITY",
-         size=8, color=GOLD_LT, font="Consolas")
+# Three example scenarios — same building, different element-level analyses
+scen_h = ["WHAT THE LEA REPORTS", "WHAT THE REVIEWER ASSIGNS"]
+for i, h in enumerate(scen_h):
+    add_rect(s, Inches(0.55+6.2*i), Inches(2.05), Inches(6.0), Inches(0.4), NAVY)
+    add_text(s, Inches(0.55+6.2*i), Inches(2.05), Inches(6.0), Inches(0.4), h,
+             size=11, bold=True, color=GOLD, align=PP_ALIGN.CENTER,
+             anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
 
-# 4 step cards
-steps = [
-    ("01", "Anthropic API Key", "Your sk-ant-... key. Never stored anywhere; used only to call Claude from your browser."),
-    ("02", "School & Review Information", "School name, district, review cycle (CRR 20 or 21), review date."),
-    ("03", "Upload Completed Facilities Review Guide", "PDF or Word. The completed self-assessment packet from the LEA."),
-    ("04", "Review & Edit Findings", "Claude returns an 18-row table. Edit any cell. Export to Word when ready."),
+scenarios52 = [
+    ("1968 restroom — grab bars replaced 2018.\nNo other alterations.",
+     "Grab bars → 2010 ADA (609.4).\nWC seat, lav, mirror, stall, signage → Program Access. NO findings possible on those elements."),
+    ("1985 ramp — entire ramp + handrails rebuilt 2020.\nWhole-element rebuild.",
+     "Entire ramp + handrails → 2010 ADA (405, 505).\nThe ramp is the element; rebuilding it is a whole-element alteration."),
+    ("1962 cafeteria — new tray-slide installed 2016.\nKitchen otherwise unchanged.",
+     "Tray-slide → 2010 ADA (904.4.1, max 34\").\nFixed tables, counter heights elsewhere → Program Access. NO findings."),
+    ("1970 wood shop — entire room gutted & rebuilt 2019.",
+     "Whole-room rule (§ 202.3): entire rebuilt room → 2010 ADA. Every element (workbenches, signage, doors, outlets, eye-wash) evaluated to 2010 ADA."),
 ]
-for i, (num, head, body) in enumerate(steps):
-    y = Inches(3.0 + 1.0*i)
-    add_rect(s, Inches(0.55), y, Inches(0.8), Inches(0.9), GOLD)
-    add_text(s, Inches(0.55), y, Inches(0.8), Inches(0.9), num,
-             size=18, bold=True, color=NAVY, align=PP_ALIGN.CENTER,
-             anchor=MSO_ANCHOR.MIDDLE, font="Georgia")
-    add_rect(s, Inches(1.4), y, Inches(11.4), Inches(0.9), CREAM, line=BORDER)
-    add_text(s, Inches(1.6), y+Inches(0.1), Inches(11), Inches(0.35),
-             head, size=13, bold=True, color=NAVY)
-    add_text(s, Inches(1.6), y+Inches(0.45), Inches(11), Inches(0.5),
-             body, size=11, color=TEXT)
+for i, (lea, rev) in enumerate(scenarios52):
+    y = Inches(2.5 + 1.1*i)
+    add_rect(s, Inches(0.55), y, Inches(6.0), Inches(1.0), CREAM, line=BORDER)
+    add_text(s, Inches(0.7), y+Inches(0.1), Inches(5.75), Inches(0.85), lea,
+             size=11, color=TEXT, italic=True)
+    add_rect(s, Inches(6.75), y, Inches(6.0), Inches(1.0), CREAM, line=GOLD)
+    add_text(s, Inches(6.9), y+Inches(0.1), Inches(5.75), Inches(0.85), rev,
+             size=11, color=NAVY)
+
 footer(s, 52)
 add_notes(s, """
-Walk through the high-level flow. The tool was designed to mirror the
-manual workflow exactly — reviewer collects packet, runs it through
-the tool, reviews the output, edits if needed, exports the LOF.
+Walk row by row. Anchor every example back to the Access Board language:
+"Only those elements or spaces altered are required to comply… If a
+room or space is completely altered, the entire room or space is fully
+subject to the standards."
 
-API keys: the tool sends the key directly from the browser to the
-Anthropic API using the "anthropic-dangerous-direct-browser-access"
-header. The key is not stored, logged, or sent to any CDE server.
-Each reviewer uses their own key.
+Row 1 (grab bars only): this is the most common scenario. The bars were
+the only altered element. The toilet, lav, mirror were not altered and
+do not become 2010 ADA — they remain Program Access (1968).
+
+Row 2 (ramp): the ramp IS the element. If you rebuilt the whole ramp,
+you altered the whole element. 2010 ADA applies to the new ramp.
+
+Row 3 (tray-slide): only the tray-slide was installed/altered. Other
+fixed-counter elements in the kitchen remain at their original
+construction standard.
+
+Row 4 (whole-room rebuild): the "completely altered room" rule from
+§ 202.3 — the entire rebuilt room is fully subject to the standards.
+Every fixture, every outlet, every signage element.
+
+Reviewer takeaway: walk the LEA's work orders element-by-element and
+mark each individually. Do not paint a whole building with one standard.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 53 — Tool walkthrough: input
+# SLIDE 53 — Corrective actions = always 2010 ADA (DEEP DIVE)
 # ─────────────────────────────────────────────────────────────────────────────
-s = add_slide(); header_bar(s, "Tool walkthrough — input",
-                            kicker="Slide 53 · LOF tool")
-add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.4),
-         "What the tool needs from you before it can analyze.",
+s = add_slide(); header_bar(s, "Reviewer rule #2 — corrective actions = always 2010 ADA",
+                            kicker="Slide 53 · Reviewer rules")
+add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.45),
+         "Cite the violation at the standard that applies to the element. Write the corrective action to bring the element into compliance with 2010 ADA — always.",
          size=14, italic=True, color=MUTED)
 
-# Mock Step 02 card
-add_rect(s, Inches(0.55), Inches(2.1), Inches(7.5), Inches(4.9), WHITE, line=BORDER)
-add_rect(s, Inches(0.55), Inches(2.1), Inches(7.5), Inches(0.45), NAVY)
-add_text(s, Inches(0.7), Inches(2.1), Inches(7), Inches(0.45),
-         "STEP 02 — SCHOOL & REVIEW INFORMATION",
-         size=11, bold=True, color=GOLD, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+# CRR boilerplate quote
+add_rect(s, Inches(0.55), Inches(2.1), Inches(12.3), Inches(1.0), CREAM, line=BORDER)
+add_rect(s, Inches(0.55), Inches(2.1), Inches(0.18), Inches(1.0), GOLD)
+add_text(s, Inches(0.85), Inches(2.2), Inches(11.8), Inches(0.3),
+         "CRR 20 boilerplate (Summary of Analysis):",
+         size=11, bold=True, color=NAVY, font="Consolas")
+add_text(s, Inches(0.85), Inches(2.5), Inches(11.7), Inches(0.6),
+         "\"The Office of Civil Rights requires all corrective actions to be made in accordance with 2010 ADA standards; therefore, certain areas will not require corrective action as the noted deficiency is within the 2010 ADA standards.\"",
+         size=12, italic=True, color=TEXT)
 
-# Two field rows
-def field(x, y, w, label, placeholder):
-    add_text(s, x, y, w, Inches(0.25), label.upper(),
-             size=9, bold=True, color=MUTED, font="Consolas")
-    add_rect(s, x, y+Inches(0.3), w, Inches(0.4), CREAM, line=BORDER)
-    add_text(s, x+Inches(0.1), y+Inches(0.3), w, Inches(0.4), placeholder,
-             size=11, color=MUTED, italic=True, anchor=MSO_ANCHOR.MIDDLE)
+# Side-by-side: VIOLATION cite vs CORRECTIVE cite
+add_rect(s, Inches(0.55), Inches(3.3), Inches(6.0), Inches(3.5), CREAM, line=BORDER)
+add_rect(s, Inches(0.55), Inches(3.3), Inches(6.0), Inches(0.45), NAVY)
+add_text(s, Inches(0.55), Inches(3.3), Inches(6.0), Inches(0.45),
+         "VIOLATION COLUMN — cite at the APPLICABLE standard",
+         size=11, bold=True, color=GOLD, align=PP_ALIGN.CENTER,
+         anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+add_bullets(s, Inches(0.75), Inches(3.85), Inches(5.7), Inches(2.9), [
+    "1985 handrail at 30\" → Cite: ANSI A117.1 § 4.8.5 (34–38\" required).",
+    "2003 ramp at 1:9 → Cite: 1991 ADA § 4.8.2 (1:12 max).",
+    "2016 toilet seat at 16\" → Cite: 2010 ADA § 604.4 (17–19\")."
+], size=12, spacing=6)
 
-field(Inches(0.75), Inches(2.7), Inches(3.5), "School Name", "Pacific Career & Technology HS")
-field(Inches(4.4),  Inches(2.7), Inches(3.5), "District Name", "Twin Rivers Unified")
-field(Inches(0.75), Inches(3.7), Inches(3.5), "Review Cycle", "CRR 20 — 2025-26")
-field(Inches(4.4),  Inches(3.7), Inches(3.5), "Review Date", "December 2025")
+add_rect(s, Inches(6.85), Inches(3.3), Inches(6.0), Inches(3.5), CREAM, line=GOLD)
+add_rect(s, Inches(6.85), Inches(3.3), Inches(6.0), Inches(0.45), GOLD)
+add_text(s, Inches(6.85), Inches(3.3), Inches(6.0), Inches(0.45),
+         "CORRECTIVE COLUMN — always cite 2010 ADA",
+         size=11, bold=True, color=NAVY, align=PP_ALIGN.CENTER,
+         anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+add_bullets(s, Inches(7.05), Inches(3.85), Inches(5.7), Inches(2.9), [
+    "Reset handrail to 34–38\" per 2010 ADA § 505.4.",
+    "Re-grade ramp to max 1:12 running, 1:48 cross per 2010 ADA § 405.2 / 405.3.",
+    "Reset water closet seat to 17–19\" per 2010 ADA § 604.4.",
+], size=12, spacing=6)
 
-# Step 3 — upload zone (right column)
-add_rect(s, Inches(8.3), Inches(2.1), Inches(4.55), Inches(4.9), WHITE, line=BORDER)
-add_rect(s, Inches(8.3), Inches(2.1), Inches(4.55), Inches(0.45), NAVY)
-add_text(s, Inches(8.5), Inches(2.1), Inches(4.2), Inches(0.45),
-         "STEP 03 — UPLOAD PACKET",
-         size=11, bold=True, color=GOLD, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
-# Dashed upload zone (use rectangle with dash effect approximation)
-add_rect(s, Inches(8.5), Inches(2.7), Inches(4.2), Inches(2.8), SAGE, line=BORDER)
-add_text(s, Inches(8.5), Inches(3.4), Inches(4.2), Inches(0.5),
-         "📋", size=36, color=NAVY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Calibri")
-add_text(s, Inches(8.5), Inches(4.1), Inches(4.2), Inches(0.4),
-         "Drop file here or click to browse",
-         size=12, bold=True, color=NAVY, align=PP_ALIGN.CENTER, font="Georgia")
-add_text(s, Inches(8.5), Inches(4.55), Inches(4.2), Inches(0.4),
-         "PDF OR WORD (.DOCX) — COMPLETED PACKET",
-         size=8, color=MUTED, align=PP_ALIGN.CENTER, font="Consolas")
-
-# Bottom action
-add_rect(s, Inches(8.5), Inches(5.65), Inches(2.5), Inches(0.55), NAVY)
-add_text(s, Inches(8.5), Inches(5.65), Inches(2.5), Inches(0.55),
-         "Analyze & Generate",
-         size=11, bold=True, color=WHITE, align=PP_ALIGN.CENTER,
-         anchor=MSO_ANCHOR.MIDDLE)
-
-# What gets sent note
-add_text(s, Inches(0.55), Inches(5.7), Inches(7.5), Inches(1.3),
-         "What gets sent to Claude:\n• First 30,000 characters of extracted text\n• School / district / cycle / date (for context)\n• A system prompt with all the rules from this training",
-         size=11, color=MUTED, italic=True)
+# Bottom call-out
+add_rect(s, Inches(0.55), Inches(6.95), Inches(12.3), Inches(0.4), GOLD)
+add_text(s, Inches(0.55), Inches(6.93), Inches(12.3), Inches(0.4),
+         "Why: 2010 ADA is the federal target state. Bringing an old element \"up to its old standard\" doesn't fix the access barrier — only 2010 ADA does.",
+         size=12, bold=True, color=NAVY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
 footer(s, 53)
 add_notes(s, """
-The tool extracts text using PDF.js for PDFs and mammoth.js for Word
-documents — both run in the browser, no upload to a server. The text
-is then sent to Claude with the system prompt that codifies the rules
-we covered today.
+This is reviewer rule #2 — and it's a rule I deliberately did NOT cover
+on the citation-placement slide earlier because it gets confused with
+the "cite the standard that controls the element" rule. Both rules are
+true at the same time, in different columns:
 
-If the packet is huge (say, a 200-page PDF with all the photos), the
-tool truncates to the first 30,000 characters. Tell reviewers to make
-sure the most important text — the standards table, the area-by-area
-findings — is near the front of the document.
+VIOLATION column: cite the standard that controls the ELEMENT
+(ANSI for 1977-1991 elements, 1991 ADA for 1992-2010 elements, 2010
+ADA for 2012+ elements).
+
+CORRECTIVE column: always cite 2010 ADA, because the corrective work
+itself is new construction / alteration happening today — and today's
+work is 2010 ADA.
+
+Example to drive this home aloud:
+
+Violation: "Handrail on the wood shop ramp measured 30\" — does not
+meet ANSI A117.1 § 4.8.5 (34–38\" required at time of 1985
+construction). Cite: ANSI A117.1 § 4.8.5."
+
+Corrective action: "Replace handrail at a height of 34–38\" above the
+ramp surface in conformance with 2010 ADA § 505.4, with 12\" horizontal
+extensions at the top and bottom per § 505.10. Provide photographic
+documentation of completed installation. Complete within 45 days.
+Cite: 2010 ADA § 505.4 and § 505.10."
+
+Note the corrective cites 2010 ADA — NOT ANSI. The fix is being built
+new, so 2010 ADA controls.
+
+This is the rule the CRR 20 boilerplate codifies. Read the boilerplate
+quote at top of the slide aloud. That is the rule.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 54 — Tool walkthrough: output
+# SLIDE 54 — Knowledge check on rules #1 and #2
 # ─────────────────────────────────────────────────────────────────────────────
-s = add_slide(); header_bar(s, "Tool walkthrough — output & editing",
-                            kicker="Slide 54 · LOF tool")
-add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.4),
-         "Claude returns an editable 18-row table. Review every row before exporting.",
-         size=14, italic=True, color=MUTED)
+s = add_slide(); set_bg(s, NAVY)
+add_rect(s, 0, 0, Inches(0.6), SLIDE_H, GOLD)
+add_text(s, Inches(0.85), Inches(0.6), Inches(12), Inches(0.5),
+         "KNOWLEDGE CHECK · 04½",
+         size=12, bold=True, color=GOLD, font="Consolas")
+add_text(s, Inches(0.85), Inches(1.1), Inches(12), Inches(0.9),
+         "Both rules at once",
+         size=32, bold=True, color=WHITE, font="Georgia")
 
-# Summary pills
-pills = [("18 Areas", NAVY, WHITE), ("4 Violations", RED, WHITE),
-         ("9 Compliant", GREEN, WHITE), ("5 Program Access", B_PA, INK)]
-for i, (lbl, fill, txt) in enumerate(pills):
-    x = Inches(0.55 + 2.0*i)
-    add_rect(s, x, Inches(2.05), Inches(1.85), Inches(0.35), fill)
-    add_text(s, x, Inches(2.05), Inches(1.85), Inches(0.35), lbl,
-             size=10, bold=True, color=txt, align=PP_ALIGN.CENTER,
-             anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+add_rect(s, Inches(0.85), Inches(2.15), Inches(11.95), Inches(1.7), NAVY_MID)
+add_text(s, Inches(1.1), Inches(2.3), Inches(11.5), Inches(1.5),
+         "1972 high-school cafeteria. Original 1972 fixed counters, 1972 tray-slide. In 2018 the LEA installed a NEW tray-slide (only) — work orders confirm.\n\nField measurement: new (2018) tray-slide at 36\" above floor.\nField measurement: original 1972 counter at 37\" above floor.",
+         size=14, color=WHITE)
 
-# Mock table
-hd = ["Area + dates", "Standard", "Violation", "Corrective"]
-xs = [Inches(0.55), Inches(4.3), Inches(6.4), Inches(9.6)]
-ws = [Inches(3.75), Inches(2.1), Inches(3.2), Inches(3.25)]
-for i, h in enumerate(hd):
-    add_rect(s, xs[i], Inches(2.65), ws[i], Inches(0.35), NAVY)
-    add_text(s, xs[i], Inches(2.65), ws[i], Inches(0.35), h.upper(),
-             size=9, bold=True, color=GOLD, align=PP_ALIGN.CENTER,
-             anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+# Two-part question
+add_text(s, Inches(0.85), Inches(4.0), Inches(12), Inches(0.4),
+         "ANSWER BOTH PARTS:",
+         size=12, bold=True, color=GOLD, font="Consolas")
 
-# Sample rows
-samp = [
-    ("Accessible Parking — Front Lot · Constructed 1959 · Modified 2022", "2010 ADA",
-     "Van-accessible aisle measured at 84\". Cite: 2010 ADA 502.3.3.",
-     "Restripe the lot to provide a 96\" min van-accessible aisle. Cite: 2010 ADA 502.3.3. Complete within 45 days.",
-     RED, B_2010),
-    ("CTE Classrooms — Wood Shop · Constructed 1965 · Modified N/A", "Program Access",
-     "None.", "None.", MUTED, B_PA),
-    ("Restrooms — Main wing · Constructed 1962 · Modified 2019 (gutted)", "2010 ADA",
-     "Toilet seat height measured 16\" — below 17\"–19\" requirement. Cite: 2010 ADA 604.4.",
-     "Reset water closet to seat-height range 17\"–19\". Cite: 2010 ADA 604.4. Complete within 45 days.",
-     RED, B_2010),
-]
-for i, (area, std, viol, corr, vcol, badge_fill) in enumerate(samp):
-    y = Inches(3.0 + 1.05*i)
-    bg = WHITE if i % 2 == 0 else CREAM
-    for j in range(4):
-        add_rect(s, xs[j], y, ws[j], Inches(1.0), bg, line=BORDER)
-    add_text(s, xs[0]+Inches(0.1), y+Inches(0.05), ws[0], Inches(0.95),
-             area, size=9, color=TEXT)
-    std_badge(s, xs[1]+Inches(0.3), y+Inches(0.35), std, badge_fill, w=Inches(1.5))
-    add_text(s, xs[2]+Inches(0.1), y+Inches(0.05), ws[2], Inches(0.95),
-             viol, size=9, color=vcol, italic=(viol=="None."))
-    add_text(s, xs[3]+Inches(0.1), y+Inches(0.05), ws[3], Inches(0.95),
-             corr, size=9, color=vcol, italic=(corr=="None."))
+add_rect(s, Inches(0.85), Inches(4.5), Inches(5.8), Inches(2.45), NAVY_MID, line=GOLD)
+add_text(s, Inches(1.05), Inches(4.6), Inches(5.5), Inches(0.4),
+         "PART A — 2018 tray-slide @ 36\":",
+         size=13, bold=True, color=GOLD)
+add_text(s, Inches(1.05), Inches(5.0), Inches(5.5), Inches(1.85),
+         "Standard at violation: ____________\n\nCite at violation: ____________\n\nCite at corrective: ____________",
+         size=12, color=GOLD_LT, font="Consolas")
 
-# Bottom: editing reminder
-add_rect(s, Inches(0.55), Inches(6.5), Inches(12.3), Inches(0.7), B_2010, line=GOLD)
-add_text(s, Inches(0.85), Inches(6.5), Inches(12), Inches(0.7),
-         "EVERY ROW IS YOUR FINDING. Read Claude's output critically. Edit citations, dimensions, and language before exporting to Word.",
-         size=12, bold=True, color=NAVY, anchor=MSO_ANCHOR.MIDDLE)
+add_rect(s, Inches(7.05), Inches(4.5), Inches(5.8), Inches(2.45), NAVY_MID, line=GOLD)
+add_text(s, Inches(7.25), Inches(4.6), Inches(5.5), Inches(0.4),
+         "PART B — 1972 counter @ 37\":",
+         size=13, bold=True, color=GOLD)
+add_text(s, Inches(7.25), Inches(5.0), Inches(5.5), Inches(1.85),
+         "Standard at violation: ____________\n\nCite at violation: ____________\n\nCite at corrective: ____________",
+         size=12, color=GOLD_LT, font="Consolas")
 footer(s, 54)
 add_notes(s, """
-The tool is a starting point, not a deliverable. Claude makes mistakes:
-mis-cites, misses violations, occasionally invents dimensions. Every
-row must be reviewed against the source packet.
+Answers:
 
-What to check on every row:
-- Is the date in the right column?
-- Does the standard match the date per our decision tree?
-- For Program Access rows: are both finding columns "None."?
-- For violation rows: does the cite match the standard? (Don't cite
-  ADA 2010 sections against an ANSI building.)
-- Is the corrective action specific and citation-anchored?
+PART A — 2018 tray-slide:
+The tray-slide is a newly-installed ELEMENT in 2018. It is evaluated
+under the standard in effect on the alteration date.
+- Standard at violation: 2010 ADA
+- Cite at violation: 2010 ADA § 904.4.1 (max 34" tray slide height).
+- Cite at corrective: 2010 ADA § 904.4.1.
+(In this case both cites are 2010 ADA because the element was already
+constructed under 2010 ADA — but the corrective rule still applies.)
+
+PART B — 1972 counter:
+The counter is an UNALTERED element on a 1972 building.
+- Standard at violation: PROGRAM ACCESS. No findings can be issued —
+  the original 1972 counter is governed by program access, not by a
+  dimensional standard.
+- Cite at violation: NONE — leave as "None."
+- Cite at corrective: NONE — leave as "None."
+- (Address the access concern in the LOF narrative instead, e.g.,
+  "LEA should designate an accessible alternate counter location.")
+
+The trap: students will want to cite the 1972 counter as a 2010 ADA
+violation because it's at 37" (over the 34" max). That is wrong on two
+counts: (1) the counter was not altered, so 2010 ADA does not apply;
+(2) Program Access has no dimensional standard, so no findings issue.
+
+This double-check is exactly what new reviewers will be tested on by
+their team leads. Master it now.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3064,11 +3124,12 @@ add_text(s, Inches(0.85), Inches(2.6), Inches(11.7), Inches(1.0),
          size=12, italic=True, color=TEXT)
 
 parts = [
-    ("ACTION",     "What the LEA must do — concrete and verifiable.",  "\"Restripe the front parking lot to provide a van-accessible parking space...\""),
-    ("STANDARD",   "The dimensional target.",                          "\"...with an access aisle of not less than 96 inches in width...\""),
-    ("EVIDENCE",   "How the LEA demonstrates completion.",             "\"Provide photographic documentation of completed restriping.\""),
-    ("DEADLINE",   "Always 45 days from LOF receipt.",                 "\"Complete within 45 days of receipt of this Letter of Findings.\""),
-    ("CITE",       "Same cite as the violation column.",               "\"Cite: 2010 ADA 502.3.3.\""),
+    ("ACTION",     "What the LEA must do — concrete and verifiable.",       "\"Restripe the front parking lot to provide a van-accessible parking space...\""),
+    ("STANDARD",   "The 2010 ADA dimensional target — ALWAYS.",             "\"...with an access aisle of not less than 96 inches in width per 2010 ADA § 502.3.3.\""),
+    ("EVIDENCE",   "How the LEA demonstrates completion.",                  "\"Provide photographic documentation of completed restriping.\""),
+    ("DEADLINE",   "Always 45 days from LOF receipt.",                      "\"Complete within 45 days of receipt of this Letter of Findings.\""),
+    ("CITE",       "Cite 2010 ADA — even when the violation cites ANSI / UFAS / 1991 ADA.",
+     "\"Cite: 2010 ADA 502.3.3.\""),
 ]
 for i, (head, body, ex) in enumerate(parts):
     y = Inches(3.85 + 0.62*i)
@@ -3088,6 +3149,12 @@ satisfy them with a vague "we'll look into it" response. Photographic
 documentation is the gold standard for evidence — it's harder to fake
 than a self-attested statement.
 
+THE 2010 ADA CITATION RULE in this column is per CRR 20 boilerplate
+and OCR practice. Even if the violation is cited at ANSI A117.1 for an
+old element, the corrective action is written to bring the element into
+compliance with 2010 ADA — because the corrective work itself is new
+work, and 2010 ADA is the federal target state.
+
 The 45-day deadline is set by CDE OEO's Voluntary Compliance Plan
 process. Some corrective actions cannot reasonably be completed in 45
 days (a full restroom remodel, for example) — in those cases, the
@@ -3098,58 +3165,77 @@ funding commitment within 45 days, with the work to follow.
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 57 — Citation placement rules
 # ─────────────────────────────────────────────────────────────────────────────
-s = add_slide(); header_bar(s, "Citation placement — match standard to date",
+s = add_slide(); header_bar(s, "Citation placement — two rules, one row",
                             kicker="Slide 57 · Writing findings")
-add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.4),
-         "Cite the standard that matches the date in the row — not always 2010 ADA.",
+add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.45),
+         "VIOLATION cite = standard in effect when the element was built/altered.  CORRECTIVE cite = always 2010 ADA.",
          size=14, italic=True, color=MUTED)
 
-# Three example rows: same physical problem, different cites
 add_text(s, Inches(0.55), Inches(2.1), Inches(12.3), Inches(0.4),
-         "Same physical problem — handrail at 30\" above ramp surface — three different cites:",
+         "Same physical problem — handrail at 30\" — three different VIOLATION cites; SAME corrective cite:",
          size=13, bold=True, color=NAVY)
 
 scenarios57 = [
-    ("Ramp installed 1988", "ANSI A117.1 (1961 R1971) applies",
-     "Cite: ANSI A117.1 4.8.5 (Handrails)",
+    ("Ramp installed 1988", "ANSI A117.1 controls",
+     "Violation:  ANSI A117.1 § 4.8.5",
+     "Corrective:  2010 ADA § 505.4",
      B_ANSI, RGBColor(0x71,0x3F,0x12)),
-    ("Ramp installed 2003", "1991 ADA Standards apply",
-     "Cite: 1991 ADA 4.8.5 (Ramp Handrails)",
+    ("Ramp installed 2003", "1991 ADA controls",
+     "Violation:  1991 ADA § 4.8.5",
+     "Corrective:  2010 ADA § 505.4",
      B_1991, RGBColor(0x06,0x4E,0x3B)),
-    ("Ramp installed 2016", "2010 ADA Standards apply",
-     "Cite: 2010 ADA 505.4 (Handrail Height)",
+    ("Ramp installed 2016", "2010 ADA controls",
+     "Violation:  2010 ADA § 505.4",
+     "Corrective:  2010 ADA § 505.4",
      B_2010, RGBColor(0x7F,0x1D,0x1D)),
 ]
-for i, (when, std, cite, fill, tcol) in enumerate(scenarios57):
-    y = Inches(2.65 + 1.3*i)
-    add_rect(s, Inches(0.55), y, Inches(3.5), Inches(1.1), CREAM, line=BORDER)
-    add_rect(s, Inches(0.55), y, Inches(0.18), Inches(1.1), fill)
-    add_text(s, Inches(0.75), y+Inches(0.15), Inches(3.2), Inches(0.4), when,
+for i, (when, std, viol_cite, corr_cite, fill, tcol) in enumerate(scenarios57):
+    y = Inches(2.6 + 1.4*i)
+    add_rect(s, Inches(0.55), y, Inches(3.2), Inches(1.2), CREAM, line=BORDER)
+    add_rect(s, Inches(0.55), y, Inches(0.18), Inches(1.2), fill)
+    add_text(s, Inches(0.75), y+Inches(0.15), Inches(3.0), Inches(0.4), when,
              size=14, bold=True, color=NAVY)
-    add_text(s, Inches(0.75), y+Inches(0.55), Inches(3.2), Inches(0.45), std,
+    add_text(s, Inches(0.75), y+Inches(0.55), Inches(3.0), Inches(0.5), std,
              size=11, color=TEXT, italic=True)
-    arrow = s.shapes.add_connector(1, Inches(4.1), y+Inches(0.55), Inches(5.0), y+Inches(0.55))
-    arrow.line.color.rgb = MUTED; arrow.line.width = Pt(2)
-    add_rect(s, Inches(5.0), y, Inches(7.9), Inches(1.1), fill, line=BORDER)
-    add_text(s, Inches(5.2), y+Inches(0.2), Inches(7.5), Inches(0.4),
-             "Reviewer writes:", size=11, bold=True, color=tcol, font="Consolas")
-    add_text(s, Inches(5.2), y+Inches(0.55), Inches(7.5), Inches(0.5),
-             cite, size=14, bold=True, color=tcol, font="Consolas")
+    # Violation cite box
+    add_rect(s, Inches(3.95), y, Inches(4.3), Inches(1.2), fill, line=BORDER)
+    add_text(s, Inches(4.1), y+Inches(0.25), Inches(4.0), Inches(0.3), "VIOLATION column:",
+             size=10, bold=True, color=tcol, font="Consolas")
+    add_text(s, Inches(4.1), y+Inches(0.55), Inches(4.0), Inches(0.5), viol_cite,
+             size=13, bold=True, color=tcol, font="Consolas")
+    # Corrective cite box — always 2010 ADA gold
+    add_rect(s, Inches(8.45), y, Inches(4.4), Inches(1.2), B_2010, line=GOLD)
+    add_text(s, Inches(8.6), y+Inches(0.25), Inches(4.1), Inches(0.3), "CORRECTIVE column:",
+             size=10, bold=True, color=RGBColor(0x7F,0x1D,0x1D), font="Consolas")
+    add_text(s, Inches(8.6), y+Inches(0.55), Inches(4.1), Inches(0.5), corr_cite,
+             size=13, bold=True, color=RGBColor(0x7F,0x1D,0x1D), font="Consolas")
 
 footer(s, 57)
 add_notes(s, """
-This is the single rule reviewers are most likely to violate. They
-memorize the 2010 ADA citations and use them everywhere. That is
-incorrect for ANSI and 1991 ADA elements.
+This is the dual-citation rule. Reviewers must internalize both halves:
 
-The system prompt in the HTML tool has this rule baked in — Claude
-will usually cite correctly — but you must verify every row. Pay
-particular attention to ramp / handrail / restroom citations from the
-ANSI and 1991 ADA eras.
+VIOLATION column — cite the standard in effect when the ELEMENT was
+constructed or altered. ANSI for 1977-1991 elements. 1991 ADA for
+1992-2010 elements. 2010 ADA for 2012+ elements.
 
-Note that the section NUMBERS change too: ANSI 4.8.5 (handrails) →
-1991 ADA 4.8.5 (handrails) → 2010 ADA 505.4 (handrails). The 2010
-standards renumbered everything.
+CORRECTIVE column — always cite 2010 ADA. Why: the corrective work is
+new construction happening today, and today's federal standard is
+2010 ADA. The CRR 20 boilerplate is explicit on this.
+
+Note the row 3 in the table: when both the violation and the corrective
+are 2010 ADA (because the element was built under 2010 ADA), the two
+cites look identical. They're still two cites — one in each column.
+
+Common mistakes by new reviewers:
+- Citing 2010 ADA in the violation column for a 1985 element (wrong —
+  that's a misapplication of law).
+- Citing ANSI in the corrective column for a 1985 element (wrong — the
+  fix must be 2010 ADA).
+- Omitting the cite from the corrective column entirely.
+
+Reviewer tip: if you're unsure which standard applies to the violation,
+look at the element's date in the SECTION DETAILS box of the
+self-assessment. That date drives the violation cite.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3197,27 +3283,34 @@ Rewrite to model:
 Violation: "Handrail on the south-side ramp serving the wood shop
 measured at 30 inches above the ramp surface. The handrail does not
 meet the 34-inch minimum height specified in ANSI A117.1-1961 (R1971)
-§ 4.8.5. The building was constructed in 1985 and has not been
-altered; ANSI A117.1 (1961 R1971) is the applicable standard under
-34 CFR § 104.23. Cite: ANSI A117.1 4.8.5."
+§ 4.8.5. The building was constructed in 1985 and the handrail has not
+been altered; ANSI A117.1 (1961 R1971) is the applicable standard
+under 34 CFR § 104.23. Cite: ANSI A117.1 § 4.8.5."
 
-Corrective: "Reinstall the south-side wood shop ramp handrail at a
+Corrective: "Replace the south-side wood shop ramp handrail at a
 height not less than 34 inches and not more than 38 inches above the
-ramp surface, with 12-inch horizontal extensions at the top and
-bottom, in conformance with ANSI A117.1 § 4.8.5. Provide photographic
-documentation of the completed installation including dimensional
-measurements. Complete within 45 days of receipt of this Letter of
-Findings. Cite: ANSI A117.1 4.8.5."
+ramp surface, with 12-inch horizontal extensions at the top and bottom
+parallel to the floor at the bottom, in conformance with 2010 ADA
+§ 505.4 and § 505.10. Provide photographic documentation of the
+completed installation including dimensional measurements. Complete
+within 45 days of receipt of this Letter of Findings.
+Cite: 2010 ADA § 505.4 and § 505.10."
+
+NOTE the corrective cites 2010 ADA — NOT ANSI — because corrective
+work is new work and 2010 ADA controls all new work.
 
 Errors in rookie version:
 1. "Too low" — no measurement
-2. "Violates the ADA" — wrong standard. 1985 = ANSI, not ADA.
+2. "Violates the ADA" — wrong: 1985 unaltered = ANSI
 3. No section citation
 4. No specific location (which ramp? which side?)
-5. "Fix it" — not a corrective action; no deadline
+5. "Fix it" — not a corrective action; no deadline; no 2010 ADA target
 
 Have students rewrite individually, then compare to the model. Time: 8
 minutes for rewrite + share.
+
+This is also a good moment to revisit Knowledge Check #4½ (slide 54) —
+the dual-cite rule lives here.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3311,13 +3404,13 @@ for i, (el, std, fill, tcol) in enumerate(ans):
 
 # Violations
 add_text(s, Inches(0.55), Inches(5.15), Inches(12.3), Inches(0.4),
-         "Violations to write:",
+         "Violations + correctives (note: violation cite varies; corrective always 2010 ADA):",
          size=14, bold=True, color=NAVY)
 viols = [
-    "Ramp running slope 1:11 exceeds 2010 ADA 405.2 maximum (1:12). Cite: 2010 ADA 405.2.",
-    "Ramp handrail 32\" is below 2010 ADA 505.4 minimum (34\"). Cite: 2010 ADA 505.4.",
-    "ISA sign baseline 62\" exceeds 2010 ADA 703.4.1 maximum (60\"). Cite: 2010 ADA 703.4.1.",
-    "Welding booth frame 30\" — Program-Access concern. ANSI 1961 has no specific welding spec; address via narrative.",
+    "Ramp slope 1:11  →  VIOLATION: 2010 ADA § 405.2 (built 2018; 1:12 max).  CORRECTIVE: 2010 ADA § 405.2.",
+    "Ramp handrail 32\"  →  VIOLATION: 2010 ADA § 505.4 (built 2018).  CORRECTIVE: 2010 ADA § 505.4.",
+    "ISA sign 62\"  →  VIOLATION: 2010 ADA § 703.4.1 (installed 2018).  CORRECTIVE: 2010 ADA § 703.4.1.",
+    "Welding booth frame 30\" (1979 element)  →  No coded violation; ANSI 1961 silent on welding booths. Program-access narrative recommendation only.",
 ]
 add_bullets(s, Inches(0.55), Inches(5.55), Inches(12.3), Inches(1.8), viols, size=11, spacing=4)
 footer(s, 60)
@@ -3415,12 +3508,26 @@ Violations:
 5. Hand-wash lavatory rim 37" — cite 2010 ADA 606.3 (34" max).
 6. Tray-slide at 36" — cite 2010 ADA 904.4.1 (34" max).
 
-Corrective actions: replace minimum one prep station with knee/toe
-clearance (902.4), install one cooktop alternate at 34" max with knee
-clearance (or revise rotation plan to use the cart in active config),
-relocate spray-arm controls within 48" reach, widen pantry door to
-32" min, lower hand-wash sink to 34" max, lower tray-slide to 34" max.
-All within 45 days.
+Corrective actions — all cited at 2010 ADA (even though here the
+violation cites are also 2010 ADA because the building is 2014):
+
+1. Provide minimum one fixed accessible prep station with knee/toe
+   clearance per 2010 ADA § 306 and accessible work surface per § 902.4.
+   Cite: 2010 ADA § 306 and § 902.4.
+2. Provide minimum one cooktop at 34" max height with knee/toe
+   clearance under, per 2010 ADA § 306. Cite: 2010 ADA § 306.
+3. Relocate dish-pit spray-arm controls so the operable parts are
+   within the 48" max forward reach per 2010 ADA § 308.2.
+   Cite: 2010 ADA § 308.2.
+4. Widen walk-in pantry door to provide 32" minimum clear width per
+   2010 ADA § 404.2.3. Cite: 2010 ADA § 404.2.3.
+5. Re-mount hand-wash sink so lavatory rim is at 34" max above floor
+   per 2010 ADA § 606.3. Cite: 2010 ADA § 606.3.
+6. Re-mount tray-slide service line at 34" max above floor per 2010
+   ADA § 904.4.1. Cite: 2010 ADA § 904.4.1.
+
+All within 45 days of LOF receipt. All cites in the corrective column
+are 2010 ADA — that is the rule from Slide 53.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3460,11 +3567,11 @@ res_col(Inches(4.7), Inches(1.55), Inches(4.0), Inches(5.4), "Federal Guidance",
     ])
 res_col(Inches(8.85), Inches(1.55), Inches(4.0), Inches(5.4), "CDE / Internal",
     [("CRR Procedures Manual", "Reviewer SOPs, evidence checklist"),
-     ("Facilities Review Packet", "LEA self-assessment template"),
-     ("facilities_lof_tool.html", "In-browser LOF generator (this tool!)"),
-     ("Facilities_LOF_Session_Prompt.md", "Skill prompt for the tool"),
-     ("CRR 20 / CRR 21 templates", "Word LOF and VCP templates"),
-     ("CDE OEO lead",          "Your team lead — escalate ambiguity"),
+     ("Facilities Review Guide", "LEA self-assessment template (Word, with date pickers + era dropdowns)"),
+     ("CRR 20 / CRR 21 boilerplate", "Standard LOF cover + 18-row finding table"),
+     ("CDE OEO team lead",     "Your team lead — escalate ambiguity"),
+     ("CDE accessibility liaison", "Coordinates with DSA on construction-date evidence"),
+     ("Knowledge-check slides",   "Slides 18, 22, 30, 38, 54, 58 — rehearse before site visits"),
     ])
 footer(s, 62)
 add_notes(s, """

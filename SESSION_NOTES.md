@@ -23,15 +23,12 @@ automation:
 - **`templates/`** — VCP, LOF (Findings + No-Findings), Summary of
   Findings templates.
 - **`facilities_lof_tool.html`** — standalone in-browser tool for
-  generating the **Facilities LOF** (CRR 20 / CRR 21) from an LEA-
-  completed Facilities Review Guide. Calls Anthropic API directly from
-  the browser using the LEA reviewer's own API key.
-- **`Facilities_LOF_Session_Prompt.md`** — the master skill prompt that
-  encodes the standard-determination rules.
+  manually building the **Facilities LOF** (CRR 20 / CRR 21). API key
+  and Claude analyze step REMOVED — purely manual data entry now.
 
-## Brand / palette (use across all artifacts)
+## Brand / palette
 
-Mirrors the HTML tool exactly:
+Mirrors the existing LOF tool exactly:
 - **Navy** `#1A2744` · **Navy mid** `#243460`
 - **Gold** `#C8A84B` · **Gold light** `#E8D08A`
 - **Cream** `#F7F4EE` · **Sage** `#EDF0EB`
@@ -39,9 +36,59 @@ Mirrors the HTML tool exactly:
 - Fonts: **DM Serif Display** (headings), **DM Sans** (body),
   **DM Mono** (kickers / labels)
 
-## Reviewer rules already encoded everywhere
+---
 
-**Standard determination by date** (memorize):
+## The two reviewer rules — corrected
+
+These rules are baked into the PPT, the Word guide, and the LOF
+boilerplate. Do not re-litigate them.
+
+### Rule #1 — Element-by-element alteration analysis
+
+Per 2010 ADA § 202.3 (U.S. Access Board scoping guidance) and
+28 CFR § 35.151(b):
+
+> "Only those elements or spaces altered are required to comply… If
+> a room or space is completely altered (or built new as part of an
+> alteration), the entire room or space is fully subject to the
+> standards."
+
+What this means in practice:
+
+- **A 1968 restroom with grab bars replaced in 2018** → grab bars
+  evaluated under 2010 ADA. The WC, lavatory, mirror, stall geometry,
+  signage all remain Program Access (1968 construction). Reviewer can
+  cite only the grab bars.
+- **A 1985 building with re-roofing in 2020** → re-roofing is not an
+  accessibility-affecting alteration. The whole building stays ANSI.
+- **A 1962 cafeteria with a new tray-slide installed 2016** → only the
+  tray-slide is 2010 ADA. Fixed counters, doorways, signage that were
+  not altered remain Program Access.
+- **Whole-room exception**: if an entire room is gutted and rebuilt,
+  the entire rebuilt room is subject to the alteration-date standard.
+
+### Rule #2 — Corrective actions = always 2010 ADA
+
+Per CRR 20 boilerplate:
+
+> "The Office of Civil Rights requires all corrective actions to be
+> made in accordance with 2010 ADA standards; therefore, certain areas
+> will not require corrective action as the noted deficiency is within
+> the 2010 ADA standards."
+
+**Two columns, two rules, same row:**
+
+| Column | Cite |
+|---|---|
+| Violation | The standard in effect when the element was built/altered (ANSI / UFAS / 1991 ADA / 2010 ADA) |
+| Corrective | **Always 2010 ADA** — irrespective of construction or alteration date |
+
+A 1985 handrail at 30" produces:
+- VIOLATION: "...does not meet ANSI A117.1 § 4.8.5..." → **Cite: ANSI A117.1 § 4.8.5**
+- CORRECTIVE: "Reset handrail to 34–38" per 2010 ADA § 505.4..." → **Cite: 2010 ADA § 505.4**
+
+### Standard determination by date (unchanged)
+
 | Date built / last altered | Standard |
 |---|---|
 | ≤ Jun 3, 1977 | Program Access |
@@ -51,108 +98,102 @@ Mirrors the HTML tool exactly:
 | Sep 15, 2010 – Mar 14, 2012 | 1991 ADA OR 2010 ADA |
 | ≥ Mar 15, 2012 | 2010 ADA |
 
-**Hard rule:** Program Access = `None.` / `None.` in both finding
-columns of the LOF table. **Always.**
+### Program Access = None / None
 
-Other reviewer rules (see `Facilities_LOF_Session_Prompt.md` for full
-list):
-- 18 area rows in fixed order, every LOF.
-- All sub-locations of an area collapse to ONE row.
-- Cite the standard that matches the date — NOT always 2010 ADA.
-- Per CRR 2 guidance from Randi Solís Thompson (May 12, 2026): the APN
-  is a standalone annual requirement; do NOT issue a CRR 2 finding for
-  individual CTE flyers missing the APN.
+Program Access has no measurable dimensional standard. Both columns of
+the LOF table read `None.` for any element under Program Access. No
+exceptions.
 
 ---
 
-## What's been built in this conversation
+## What's been built
 
 ### 1. Full-day training deck — DONE ✓
+
 - **File**: `outputs/CRR_Accessibility_Training.pptx`
-- **Script**: `build_training_deck.py` (regenerates the deck)
-- **63 slides**, 16:9 widescreen, ~37,000 chars of speaker notes
+- **Script**: `build_training_deck.py`
+- **63 slides**, 16:9, ~37,000 chars of speaker notes
 - Covers ANSI A117.1 (1961), ADA 1991/ADAAG, ADA 2010, UFAS, Program
   Access, applied to K-12 and CTE facilities
-- Sections: orientation → legal foundations → 5 standards + decision
-  tree → Program Access doctrine → ANSI deep-dive → UFAS → 1991 ADA →
-  2010 ADA → measurements reference → CTE deep-dives (15 sectors,
-  detailed: Building Trades, Manufacturing/welding, Culinary, Ag,
-  Health Science) → LOF tool walkthrough → writing findings → 2 case
-  studies with answer keys → resources & wrap-up
-- **5 knowledge-check slides** with answers in speaker notes
-- **2 case studies** with answer-key slides / notes
+- **All tool references removed** (Slides 52, 53, 54 are now
+  pedagogical: element-by-element rule, corrective = 2010 ADA, and a
+  knowledge check on both rules)
+- Speaker notes corrected throughout to reflect the element-by-element
+  alteration rule and the corrective-action-at-2010-ADA rule
+- 6 knowledge checks, 2 case studies with answer-key slides
 
-### 2. Optimized BLANK Facilities Review Guide — DONE ✓
-- **File**: `BLANK_Facilities_Review_Guide_optimized.docx`
-  (also copy in `outputs/`)
+### 2. Optimized BLANK Facilities Review Guide — DONE ✓ (v2)
+
+- **File**: `outputs/BLANK_Facilities_Review_Guide_optimized.docx`
 - **Script**: `build_optimized_guide.py`
-- All 18 area sections now have a **"SECTION DETAILS"** block with:
-  - **Location / Building name** — plain text content control
-  - **Date constructed** — native Word calendar date picker
-  - **Era — Standard at construction** — dropdown with 6 options, each
-    labeled with the standard name (Program Access / ANSI A117.1 /
-    UFAS / 1991 ADA / 1991 ADA OR 2010 ADA / 2010 ADA)
-  - **Date of ADA modification** — calendar date picker
-  - **Era — Standard after modification** — same dropdown + "Not
-    modified" option
-  - **Describe modification** — plain text content control
-- Each SECTION DETAILS block is wrapped in a **Repeating Section
-  Content Control** — Word shows a small `+` button to add another
-  instance (Restroom #2, CTE Lab #3, etc.)
-- **No macros**, **no API key**, **no security warning**. Works in
-  Word 2013+, Word for Mac, Word for the Web.
-- Instructions block injected near the top explaining how to use
-  the new features.
+- **v1 froze Word** (Repeating Section CCs + missing docPart placeholder
+  + duplicate SDT IDs). v2 fixes all three.
+- All 18 area sections now have:
+  - **SECTION DETAILS** table (location, original construction date,
+    original construction era → standard dropdown, "altered?" Yes/No)
+  - **ALTERATIONS LOG** table — element-by-element capture (element
+    altered, date altered, era → standard at alteration, description)
+  - 4 blank alteration rows per area
+- **Section Templates page at the back** with copy-paste templates for
+  the 14 multi-instance area types — no Repeating Section CCs needed
+- Instructions block near the top explains the element-by-element rule
+  and the corrective = 2010 ADA rule explicitly
+- 661 SDTs, all with unique IDs, no docPart placeholder dependencies
 
-### 3. HTML tool updated — DONE ✓
-- **File**: `facilities_lof_tool.html`
-- Added **"📥 Download Blank Guide (.docx)"** button in Step 02.
-  When clicked, fetches `./BLANK_Facilities_Review_Guide_optimized.docx`
-  from the same directory and triggers download, optionally pre-named
-  with the school name from Step 02.
-- Updated `systemPrompt` in `runAnalysis()` to recognize both the
-  legacy format AND the new optimized format. Looks for
-  `SECTION DETAILS —` headers and era-dropdown values; collapses
-  multiple instances (Restroom #1, Restroom #2) into one LOF row.
+### 3. Facilities LOF tool (`facilities_lof_tool.html`) — UPDATED ✓
+
+- **API key step REMOVED**
+- **Claude analyze step REMOVED**
+- Three steps: School Info → Upload → Enter & Edit Findings
+- 18 area rows auto-populate blank when a packet is uploaded
+- All four LOF columns editable (location/dates inline, standard
+  dropdown, violation / corrective free-text)
+- Export to Word still works
+- No network call to Anthropic anywhere
 
 ### 4. Interactive training HTML — PENDING
-- Discussed in detail. The plan is to build
-  `CRR_Accessibility_Training.html` as a standalone self-paced course
-  mirroring the PPT, with inline multiple-choice knowledge checks,
-  scenario walkthroughs for the 2 case studies, progress bar in
-  `localStorage`, trainer/trainee mode toggle, and the same
-  navy/gold/DM-fonts palette.
-- This is Claude's equivalent of Gemini Canvas — same approach as
-  the existing `facilities_lof_tool.html` (single self-contained HTML).
+
+To be built. Will mirror the PPT as a standalone self-paced course
+with inline multiple-choice knowledge checks, scenario walkthroughs
+for the case studies, progress bar in `localStorage`, trainer/trainee
+mode toggle, same navy/gold/DM-fonts palette.
+
+This is Claude's equivalent of Gemini Canvas — same approach as
+`facilities_lof_tool.html` (single self-contained HTML).
+
+### 5. Correct self-evaluation HTML — STILL AWAITING UPLOAD
+
+The user mentioned there is a SEPARATE HTML for LEAs to self-evaluate
+their facilities. We have NOT yet seen it. Once uploaded, the
+optimized BLANK Word guide will be cross-checked against its question
+schema. If the schema differs, the guide will be regenerated to match.
 
 ---
 
-## Decisions already made (do not re-litigate)
+## Open design questions for #4 (training HTML)
 
-| Question | Decision |
-|---|---|
-| Date input mechanism | **Calendar date picker + era dropdown** (label includes standard) |
-| Duplicate-section mechanism | **Native Word Repeating Section Content Control** (+ button) |
-| Which sections duplicatable | **All 18 areas** |
-| Auto-applicable-standard mech | **Dropdown labels include the standard** (no macros, no formulas) |
-| HTML tool integration | **Parser update + Download Blank Guide button** |
-| HTML download mechanism | **Fetch from same directory** (no base64 bloat) |
-| PPT audience | **New CDE OEO reviewers**, full-day (~50–70 slides) |
-| PPT visual style | **Clean modern + navy/gold accents** matching tool |
-| PPT interactivity | **Knowledge-check slides + 2–3 case study scenarios** |
-| Training tool platform | **Standalone HTML** (Claude Artifacts-equivalent), not LMS |
+- One big HTML file covering all 63 slides, or modular (one file per
+  major section)?
+- Include a "test out" certification exam at the end?
+- Save progress in `localStorage` only, or also export a completion
+  PDF?
 
-## Open question
+---
 
-**Resume the build of `CRR_Accessibility_Training.html`** (item #4).
-Should it:
-- be one big HTML covering all 63 slides as interactive pages, or
-- be modular (one HTML per major section: legal foundations, the 5
-  standards, CTE deep-dives, LOF tool, finding-writing, case studies)?
-- include a "test out" exam at the end (20-30 questions) for
-  certification?
-- save progress in `localStorage` only, or also export a completion
-  certificate as a PDF?
+## Reference materials uploaded (USE THESE)
+
+The user uploaded U.S. Access Board technical guides as the knowledge
+base for the 2010 ADA. Path: `/root/.claude/uploads/e22f8a78-…`:
+
+- `71e301ba-alterations.pdf` — **THE** alteration / addition guide
+  (Chapter 2 of Access Board's "ADA Scoping" technical guide)
+- `a609c205-accessibleroutes.pdf` — Accessible routes guide (18 pp)
+- `c45859ba-Entrances_Doors_and_Gates.pdf` — Entrances/doors (23 pp)
+- `a190ea6d-drinkingfountains.pdf` — Drinking fountains (62 pp)
+- `daa66d70-lavssinks.pdf` — Lavatories & sinks (170 pp)
+
+These are 2010 ADA; the core principles (especially the
+element-by-element alteration rule) are authoritative.
 
 ---
 
@@ -160,22 +201,23 @@ Should it:
 
 - Branch: `claude/accessibility-training-powerpoint-JJTQJ`
 - Repo: `JaniCanCodeGo/JaniCanCodeGo`
-- Files committed: `build_training_deck.py`,
-  `outputs/CRR_Accessibility_Training.pptx`,
-  `build_optimized_guide.py`,
-  `BLANK_Facilities_Review_Guide_optimized.docx`,
-  `outputs/BLANK_Facilities_Review_Guide_optimized.docx`,
-  `facilities_lof_tool.html` (updated)
-- `.gitignore` excludes `outputs/` by default — generated docs are
-  force-added with `git add -f`.
+- `.gitignore` excludes `outputs/` — generated docs force-added with
+  `git add -f`.
 
 ---
 
 ## How to pick this up in a new chat
 
 Paste the entire contents of this file into a new conversation, then
-say:
-> "Resume from the SESSION NOTES. I want to build the interactive
-> training HTML (item #4 / pending)."
+say one of:
+
+> "Resume from SESSION NOTES. The user uploaded the correct self-eval
+> HTML — cross-check the optimized guide schema."
+
+> "Resume from SESSION NOTES. I want to build the interactive training
+> HTML (item #4)."
+
+> "Resume from SESSION NOTES. The Word guide still has [problem] —
+> please fix."
 
 …and Claude will continue from this state.
