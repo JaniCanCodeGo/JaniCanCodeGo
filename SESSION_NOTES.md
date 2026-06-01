@@ -108,21 +108,39 @@ exceptions.
 
 ## What's been built
 
-### 1. Full-day training deck — DONE ✓
+### 1. Full-day training deck — DONE ✓ (74 slides)
 
 - **File**: `outputs/CRR_Accessibility_Training.pptx`
 - **Script**: `build_training_deck.py`
-- **63 slides**, 16:9, ~37,000 chars of speaker notes
+- **74 slides**, 16:9 widescreen, ~80,000 chars of speaker notes
 - Covers ANSI A117.1 (1961), ADA 1991/ADAAG, ADA 2010, UFAS, Program
   Access, applied to K-12 and CTE facilities
-- **All tool references removed** (Slides 52, 53, 54 are now
-  pedagogical: element-by-element rule, corrective = 2010 ADA, and a
-  knowledge check on both rules)
-- Speaker notes corrected throughout to reflect the element-by-element
-  alteration rule and the corrective-action-at-2010-ADA rule
-- 6 knowledge checks, 2 case studies with answer-key slides
+- **All five U.S. Access Board guides** incorporated: Alterations,
+  Accessible Routes, Entrances/Doors/Gates, Drinking Fountains,
+  Lavatories & Sinks. Dimensions and rules added to slides 36, 39,
+  40, 42.
+- **All tool references removed** (Slides 52–54 are reviewer-rule
+  deep dives: element-by-element + corrective = 2010 ADA + KC #4½)
+- **Light lavender overlap color** (`#E9D5FF`) on Slides 13 + 14 for
+  the September 15, 2010 – March 14, 2012 overlap window
+- **6 knowledge checks** (Slides 18, 22, 30, 38, 54, 58)
+- **12 case studies** (Slides 59–71): 2 original + 10 new from the
+  Access Board guides
+- **Slide 60** is a dedicated answer-key slide for Case Study #1.
+  All other answers live in Speaker Notes and the answer-key doc.
+- **Slide 72** explicitly tells trainees where the answers live
 
-### 2. Optimized BLANK Facilities Review Guide — DONE ✓ (v2)
+### 2. Standalone Answer Key — DONE ✓
+
+- **File**: `outputs/CRR_Training_Answer_Key.docx` (~49 KB, ~4,560
+  words)
+- Cover page + Part 1 (all 6 knowledge checks) + Part 2 (all 12 case
+  studies)
+- Each entry: prompt + focus area + full answer
+- Designed for printing; distribute AFTER trainees attempt each
+  problem
+
+### 4. Optimized BLANK Facilities Review Guide — DONE ✓ (v2)
 
 - **File**: `outputs/BLANK_Facilities_Review_Guide_optimized.docx`
 - **Script**: `build_optimized_guide.py`
@@ -140,7 +158,7 @@ exceptions.
   and the corrective = 2010 ADA rule explicitly
 - 661 SDTs, all with unique IDs, no docPart placeholder dependencies
 
-### 3. Facilities LOF tool (`facilities_lof_tool.html`) — UPDATED ✓
+### 5. Facilities LOF tool (`facilities_lof_tool.html`) — UPDATED ✓
 
 - **API key step REMOVED**
 - **Claude analyze step REMOVED**
@@ -151,7 +169,7 @@ exceptions.
 - Export to Word still works
 - No network call to Anthropic anywhere
 
-### 4. Interactive training HTML — PENDING
+### 6. Interactive training HTML — PENDING
 
 To be built. Will mirror the PPT as a standalone self-paced course
 with inline multiple-choice knowledge checks, scenario walkthroughs
@@ -161,7 +179,7 @@ mode toggle, same navy/gold/DM-fonts palette.
 This is Claude's equivalent of Gemini Canvas — same approach as
 `facilities_lof_tool.html` (single self-contained HTML).
 
-### 5. Correct self-evaluation HTML — STILL AWAITING UPLOAD
+### 7. Correct self-evaluation HTML — STILL AWAITING UPLOAD
 
 The user mentioned there is a SEPARATE HTML for LEAs to self-evaluate
 their facilities. We have NOT yet seen it. Once uploaded, the
@@ -170,13 +188,15 @@ schema. If the schema differs, the guide will be regenerated to match.
 
 ---
 
-## Open design questions for #4 (training HTML)
+## Open design questions for #6 (interactive training HTML)
 
-- One big HTML file covering all 63 slides, or modular (one file per
+- One big HTML file covering all 74 slides, or modular (one file per
   major section)?
 - Include a "test out" certification exam at the end?
 - Save progress in `localStorage` only, or also export a completion
   PDF?
+- Pull case-study answers from `CRR_Training_Answer_Key.docx`, or
+  re-embed the content directly in the HTML?
 
 ---
 
