@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brains on Fire — Body Doubling Sessions</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f5f0eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    padding: 40px 0;
+  }
+
+  .card {
+    width: 800px;
+    background: #fdf8f3;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.15);
+  }
+
+  .header {
+    background: linear-gradient(135deg, #3d0c11, #6b1a1a);
+    padding: 50px 60px;
+    text-align: center;
+  }
+
+  .brand {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #d4a853;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .header p {
+    font-size: 17px;
+    color: rgba(255,255,255,0.65);
+    font-weight: 300;
+  }
+
+  .body {
+    padding: 60px;
+  }
+
+  .intro {
+    font-size: 17px;
+    color: #5a4a3a;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  .step {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px;
+    border-left: 6px solid;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    position: relative;
+  }
+
+  .step-1 { border-color: #8b0057; }
+  .step-2 { border-color: #1a5276; }
+  .step-3 { border-color: #7d6608; }
+  .step-4 { border-color: #1e8449; }
+
+  .step-time {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .step-1 .step-time { color: #8b0057; }
+  .step-2 .step-time { color: #1a5276; }
+  .step-3 .step-time { color: #7d6608; }
+  .step-4 .step-time { color: #1e8449; }
+
+  .step h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c1a0e;
+    margin-bottom: 10px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .step p {
+    font-size: 14px;
+    color: #7a6a5a;
+    line-height: 1.6;
+  }
+
+  .step-num {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    opacity: 0.6;
+  }
+
+  .step-1 .step-num { background: #8b0057; }
+  .step-2 .step-num { background: #1a5276; }
+  .step-3 .step-num { background: #7d6608; }
+  .step-4 .step-num { background: #1e8449; }
+
+  .claude-callout {
+    background: linear-gradient(135deg, #1c0a2e, #2d1b4e);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .claude-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #d4a853, #c4841a);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .claude-text h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #d4a853;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .claude-text p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+  }
+
+  .quote-bar {
+    background: linear-gradient(135deg, #6b1a5a15, #8b250015);
+    border: 2px solid #d4a853;
+    border-radius: 16px;
+    padding: 28px 36px;
+    text-align: center;
+  }
+
+  .quote-bar blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-style: italic;
+    color: #3d0c11;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .quote-bar cite {
+    font-size: 13px;
+    color: #9a7a5a;
+    font-style: normal;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .footer {
+    background: #3d0c11;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #d4a853;
+  }
+
+  .footer-note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="brand">Brains on Fire</div>
+    <h1>What Happens in<br>Body Doubling</h1>
+    <p>Virtual coworking for Gen X women with ADHD · No agenda · No pressure</p>
+  </div>
+
+  <div class="body">
+    <p class="intro">
+      Body doubling is an ADHD intervention where the presence of another person<br>
+      helps your brain stay regulated and on task. We work alongside each other.<br>
+      The Claude AI tip is a bonus.
+    </p>
+
+    <div class="steps">
+      <div class="step step-1">
+        <div class="step-num">1</div>
+        <div class="step-time">0–10 minutes</div>
+        <h3>Check In &amp; Set Intentions</h3>
+        <p>Your name, where you are, and what you're working on today. One sentence is enough. No need to explain it.</p>
+      </div>
+
+      <div class="step step-2">
+        <div class="step-num">2</div>
+        <div class="step-time">10–50 minutes</div>
+        <h3>Silent Cowork</h3>
+        <p>Everyone muted, cameras on. Soft music. Claude open in a tab. Work on whatever you brought. No performance required.</p>
+      </div>
+
+      <div class="step step-3">
+        <div class="step-num">3</div>
+        <div class="step-time">50–60 minutes</div>
+        <h3>Share Out</h3>
+        <p>What did you work on? Did you use Claude? Share one thing — even if it's just "I finally opened the doc."</p>
+      </div>
+
+      <div class="step step-4">
+        <div class="step-num">4</div>
+        <div class="step-time">After session</div>
+        <h3>Drop It in Circle</h3>
+        <p>Post what you got done in the community. Even one email counts. Especially one email. We celebrate all of it.</p>
+      </div>
+    </div>
+
+    <div class="claude-callout">
+      <div class="claude-icon">✦</div>
+      <div class="claude-text">
+        <h3>Claude AI Tip — Each Session</h3>
+        <p>Each session includes a 2-minute Claude tip in the share-out. Session 1: the brain dump. Type everything overwhelming you into Claude, then ask: <em>"Organize this into what needs action today, what can wait, and what's not actually my problem."</em></p>
+      </div>
+    </div>
+
+    <div class="quote-bar">
+      <blockquote>"Just people who understand."</blockquote>
+      <cite>Brains on Fire · Body Doubling Sessions · By referral only</cite>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">Brains on Fire</div>
+    <div class="footer-note">brainsonfirepodcast.com · Founding members only</div>
+  </div>
+</div>
+</body>
+</html>

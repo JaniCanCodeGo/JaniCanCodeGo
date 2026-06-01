@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brains on Fire — The Triple Overlap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f5f0eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    padding: 40px 0;
+  }
+
+  .card {
+    width: 900px;
+    background: #1c0a2e;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+  }
+
+  .header {
+    background: linear-gradient(135deg, #6b1a5a, #8b2500);
+    padding: 50px 60px 40px;
+    text-align: center;
+  }
+
+  .brand {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #d4a853;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .header p {
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 300;
+  }
+
+  .venn-section {
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .venn {
+    position: relative;
+    width: 600px;
+    height: 420px;
+    margin-bottom: 40px;
+  }
+
+  .circle {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    opacity: 0.82;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .circle-adhd {
+    background: radial-gradient(circle, #8b0057, #5c0038);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 3px solid rgba(255,255,255,0.15);
+  }
+
+  .circle-peri {
+    background: radial-gradient(circle, #1a5276, #0d2137);
+    bottom: 0;
+    left: 30px;
+    border: 3px solid rgba(255,255,255,0.15);
+  }
+
+  .circle-late {
+    background: radial-gradient(circle, #7d6608, #5d4e05);
+    bottom: 0;
+    right: 30px;
+    border: 3px solid rgba(255,255,255,0.15);
+  }
+
+  .circle-label {
+    position: absolute;
+    text-align: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.3;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+  }
+
+  .label-adhd { top: 30px; left: 50%; transform: translateX(-50%); }
+  .label-peri { bottom: 30px; left: 50px; }
+  .label-late { bottom: 30px; right: 50px; text-align: right; }
+
+  .center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -42%);
+    text-align: center;
+    z-index: 10;
+    width: 200px;
+  }
+
+  .center-text p {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #d4a853;
+    line-height: 1.4;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
+  }
+
+  .pillars {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .pillar {
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 24px 20px;
+    border-top: 4px solid;
+  }
+
+  .pillar-adhd { border-color: #8b0057; }
+  .pillar-peri { border-color: #1a5276; }
+  .pillar-late { border-color: #d4a853; }
+
+  .pillar h3 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .pillar ul {
+    list-style: none;
+  }
+
+  .pillar ul li {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    padding: 4px 0;
+    line-height: 1.4;
+  }
+
+  .pillar ul li::before {
+    content: "→ ";
+    opacity: 0.5;
+  }
+
+  .quote-block {
+    background: linear-gradient(135deg, #6b1a5a22, #8b250022);
+    border: 1px solid rgba(212,168,83,0.3);
+    border-radius: 16px;
+    padding: 32px 40px;
+    text-align: center;
+  }
+
+  .quote-block blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-style: italic;
+    color: #d4a853;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .quote-block cite {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    font-style: normal;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .footer {
+    background: rgba(0,0,0,0.3);
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #d4a853;
+  }
+
+  .footer-note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="brand">Brains on Fire</div>
+    <h1>The Triple Overlap<br>Nobody Talks About</h1>
+    <p>ADHD · Perimenopause · Late Diagnosis</p>
+  </div>
+
+  <div class="venn-section">
+    <div class="venn">
+      <div class="circle circle-adhd">
+        <div class="circle-label label-adhd">ADHD<br><span style="font-size:11px;opacity:.7">Dopamine · Masking<br>Executive Function</span></div>
+      </div>
+      <div class="circle circle-peri">
+        <div class="circle-label label-peri">PERI-<br>MENOPAUSE<br><span style="font-size:11px;opacity:.7">Estrogen Drop<br>Brain Fog</span></div>
+      </div>
+      <div class="circle circle-late">
+        <div class="circle-label label-late">LATE<br>DIAGNOSIS<br><span style="font-size:11px;opacity:.7">Grief · Relief<br>Lost Years</span></div>
+      </div>
+      <div class="center-text">
+        <p>"You were never broken."</p>
+      </div>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar pillar-adhd">
+        <h3>ADHD</h3>
+        <ul>
+          <li>Dopamine dysregulation</li>
+          <li>Decades of masking</li>
+          <li>Executive function gaps</li>
+          <li>Emotional dysregulation</li>
+        </ul>
+      </div>
+      <div class="pillar pillar-peri">
+        <h3>Perimenopause</h3>
+        <ul>
+          <li>Estrogen tanks dopamine</li>
+          <li>Symptoms spike at 40s</li>
+          <li>Brain fog intensifies</li>
+          <li>Nobody connects the dots</li>
+        </ul>
+      </div>
+      <div class="pillar pillar-late">
+        <h3>Late Diagnosis</h3>
+        <ul>
+          <li>Grief for lost years</li>
+          <li>Identity shift</li>
+          <li>Relief &amp; validation</li>
+          <li>BIPOC women wait longer</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      <blockquote>"For BIPOC women especially — the system failed to see us.<br>We found each other anyway."</blockquote>
+      <cite>Brains on Fire · Misdiagnosed, Overheated &amp; Overlooked</cite>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">Brains on Fire</div>
+    <div class="footer-note">brainsonfirepodcast.com · Founding members by referral</div>
+  </div>
+</div>
+</body>
+</html>
