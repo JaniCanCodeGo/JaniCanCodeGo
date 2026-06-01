@@ -139,19 +139,6 @@ td[contenteditable="true"]:focus{background:#fef9ec!important;box-shadow:inset 0
         </div>
         <div class="field-group"><label>Review Date / Period</label><input type="text" id="reviewDate" placeholder="e.g. December 2025"></div>
       </div>
-
-      <div style="margin-top:18px;padding-top:18px;border-top:1px dashed var(--border);">
-        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">
-          <button class="btn btn-gold btn-sm" onclick="downloadBlankGuide()">&#11015; Download Blank Guide (.docx)</button>
-          <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;flex:1;min-width:280px;line-height:1.55;">
-            Sends the LEA an optimized Facilities Review Guide with native Word date pickers,
-            era dropdowns (auto-tagged to ANSI / UFAS / 1991 ADA / 2010 ADA / Program Access),
-            and &ldquo;+ Add Another&rdquo; repeating sections on all 18 areas.
-            No macros. No security warning. Works in Word for Mac / Windows / Web.
-          </div>
-        </div>
-        <div class="error-box" id="dlError" style="margin-top:10px;"></div>
-      </div>
     </div>
   </div>
 
@@ -163,7 +150,7 @@ td[contenteditable="true"]:focus{background:#fef9ec!important;box-shadow:inset 0
         <input type="file" id="fileInput" accept=".pdf,.docx,.doc">
         <div class="upload-icon">📋</div>
         <div class="upload-label">Drop file here or click to browse</div>
-        <div class="upload-sub">Accepts PDF or Word (.docx) &mdash; the completed Facilities Self-Assessment packet.<br>Optimized guide (with era dropdowns) recommended &mdash; parser auto-detects format.</div>
+        <div class="upload-sub">Accepts PDF or Word (.docx) &mdash; the completed Facilities Self-Assessment packet</div>
         <div id="filePill" style="display:none;">
           <span class="file-pill">
             <span id="fileName">—</span>
@@ -288,9 +275,6 @@ async function runAnalysis() {
   const reviewDate = document.getElementById('reviewDate').value || '';
 
   const systemPrompt = `You are an expert CDE Civil Rights Reviewer. Analyze a completed Facilities Review Guide (self-assessment) and produce LOF findings JSON.
-
-INPUT FORMAT DETECTION:
-The packet may be either the LEGACY Facilities Review Guide (free-text "Year Built" / "ADA Modification Date(s)" fields) OR the OPTIMIZED guide (era dropdowns labeled with the standard, e.g., "June 4, 1977 – January 17, 1991 — ANSI A117.1 (1961 R1971)"). When you see "SECTION DETAILS —" headers and era-dropdown values, prefer those directly — they encode the applicable standard. Each "SECTION DETAILS —" header marks one location instance; the optimized guide may have multiple instances of the same area (Restroom #1, Restroom #2, CTE Lab #1, CTE Lab #2). Combine all instances of the same area into a single row, with each location listed as a sub-location.
 
 STANDARD DETERMINATION by construction/modification date:
 - June 3, 1977 or earlier → Program Access
@@ -576,40 +560,6 @@ async function exportToWord() {
 
   } catch(err) { alert('Export failed: ' + err.message); }
   finally { btn.disabled=false; btn.textContent='\u2B07 Export to Word (.docx)'; }
-}
-
-// ── Download blank optimized guide ────────────────────────────────────────────
-async function downloadBlankGuide() {
-  const dlErr = document.getElementById('dlError');
-  dlErr.classList.remove('show');
-  const school = (document.getElementById('schoolName').value || '').trim();
-  const fname  = (school ? school.replace(/[^a-zA-Z0-9]/g, '_') : 'BLANK')
-                + '_Facilities_Review_Guide.docx';
-
-  // Try to fetch the optimized guide from the same directory.
-  const candidates = [
-    './BLANK_Facilities_Review_Guide_optimized.docx',
-    './outputs/BLANK_Facilities_Review_Guide_optimized.docx',
-    'BLANK_Facilities_Review_Guide_optimized.docx',
-  ];
-  let blob = null;
-  for (const url of candidates) {
-    try {
-      const r = await fetch(url, { cache: 'no-store' });
-      if (r.ok) { blob = await r.blob(); break; }
-    } catch(e) { /* try next */ }
-  }
-  if (!blob) {
-    dlErr.textContent = 'Could not find BLANK_Facilities_Review_Guide_optimized.docx next to this HTML file. Place both files in the same folder, or download it from your CDE OEO share.';
-    dlErr.classList.add('show');
-    return;
-  }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = fname;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
