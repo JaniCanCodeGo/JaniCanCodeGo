@@ -95,6 +95,11 @@ td[contenteditable="true"]:focus{background:#fef9ec!important;box-shadow:inset 0
 .none-cell{color:var(--muted);font-style:italic;}
 .cite-tag{display:block;margin-top:6px;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--navy);}
 .viol-row td{border-left:3px solid var(--red);}
+.cell-edit{outline:none;cursor:text;border-bottom:1px dashed var(--border);min-width:120px;display:inline-block;padding:0 3px;}
+.cell-edit:focus{background:#fef9ec;box-shadow:inset 0 -2px 0 var(--gold);border-bottom-color:transparent;}
+.cell-edit:empty::before{content:attr(data-ph);color:var(--muted);font-style:italic;}
+.std-pick{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:3px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);}
+.std-pick:focus{outline:none;border-color:var(--navy);}
 .export-bar{display:flex;align-items:center;gap:10px;padding:14px 22px;background:var(--sage);border-top:1px solid var(--border);flex-wrap:wrap;}
 .export-note{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);flex:1;}
 </style>
@@ -111,21 +116,9 @@ td[contenteditable="true"]:focus{background:#fef9ec!important;box-shadow:inset 0
 
 <div class="container">
 
-  <!-- Step 1: API Key -->
+  <!-- Step 1: School Info -->
   <div class="card">
-    <div class="card-head"><span class="card-step">Step 01</span><span class="card-title">Anthropic API Key</span></div>
-    <div class="card-body">
-      <div class="field-group">
-        <label>API Key</label>
-        <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off">
-      </div>
-      <p class="field-hint">Your key is used only to call the Anthropic API directly from your browser — it is never stored or sent anywhere else. Get one at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.</p>
-    </div>
-  </div>
-
-  <!-- Step 2: School Info -->
-  <div class="card">
-    <div class="card-head"><span class="card-step">Step 02</span><span class="card-title">School &amp; Review Information</span></div>
+    <div class="card-head"><span class="card-step">Step 01</span><span class="card-title">School &amp; Review Information</span></div>
     <div class="card-body">
       <div class="grid-2">
         <div class="field-group"><label>School Name</label><input type="text" id="schoolName" placeholder="e.g. Pacific Career &amp; Technology High School"></div>
@@ -142,9 +135,9 @@ td[contenteditable="true"]:focus{background:#fef9ec!important;box-shadow:inset 0
     </div>
   </div>
 
-  <!-- Step 3: Upload -->
+  <!-- Step 2: Upload -->
   <div class="card">
-    <div class="card-head"><span class="card-step">Step 03</span><span class="card-title">Upload Completed Facilities Review Guide</span></div>
+    <div class="card-head"><span class="card-step">Step 02</span><span class="card-title">Upload Completed Facilities Review Guide</span></div>
     <div class="card-body">
       <div class="upload-zone" id="dropZone">
         <input type="file" id="fileInput" accept=".pdf,.docx,.doc">
@@ -160,23 +153,15 @@ td[contenteditable="true"]:focus{background:#fef9ec!important;box-shadow:inset 0
       </div>
       <div class="status-bar" id="extractStatus"><div class="spinner"></div><span id="extractMsg">Extracting text…</span></div>
       <div class="error-box" id="extractError"></div>
-
-      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <button class="btn btn-primary" id="analyzeBtn" onclick="runAnalysis()" disabled>Analyze &amp; Generate Findings</button>
-        <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;">Sends extracted text to Claude for analysis (~30 sec)</span>
-      </div>
-      <div class="status-bar" id="analyzeStatus"><div class="spinner"></div><span id="analyzeMsg">Analyzing…</span></div>
-      <div class="prog-wrap" id="progWrap"><div class="prog-track"><div class="prog-fill" id="progFill"></div></div></div>
-      <div class="error-box" id="analyzeError"></div>
     </div>
   </div>
 
-  <!-- Step 4: Results -->
+  <!-- Step 3: Results -->
   <div id="results">
     <div class="card">
-      <div class="card-head"><span class="card-step">Step 04</span><span class="card-title">Review &amp; Edit Findings</span></div>
+      <div class="card-head"><span class="card-step">Step 03</span><span class="card-title">Enter &amp; Edit Findings</span></div>
       <div class="card-body">
-        <p style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:16px;">Click any cell in the Accessibility Violation or Corrective Actions columns to edit before exporting.</p>
+        <p style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:16px;">All cells are editable. Click location / construction / modified to type the values. Pick the applicable standard from the dropdown. Type the violation and corrective action; leave as &ldquo;None.&rdquo; for compliant or Program Access rows.</p>
         <div class="sum-strip" id="sumStrip"></div>
         <div class="table-wrap">
           <table class="ftable" id="ftable">
@@ -218,11 +203,33 @@ dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.
 fileInput.addEventListener('change', () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); });
 document.getElementById('removeBtn').addEventListener('click', e => { e.stopPropagation(); clearFile(); });
 
+const AREA_ORDER = [
+  "Accessible Parking",
+  "Accessible Routes/Walkways from accessible parking",
+  "Stairways and Steps",
+  "Ramps",
+  "Curb Ramps",
+  "Entrances, Doors, and Gates",
+  "Rooms, Offices, and Administration",
+  "Elevators/Lifts",
+  "Accessible Drinking Fountains",
+  "Cafeteria",
+  "Library",
+  "CTE Classrooms",
+  "Labs/Shops",
+  "Gymnasium/Auditorium/Weight Room/Other",
+  "Stadium/Field",
+  "Dressing, Fitting, and Locker Rooms",
+  "Restrooms",
+  "Public Telephones",
+];
+
 function clearFile() {
   extractedText = ''; fileInput.value = '';
   document.getElementById('filePill').style.display = 'none';
-  document.getElementById('analyzeBtn').disabled = true;
   hide('extractStatus'); hide('extractError');
+  document.getElementById('results').classList.remove('show');
+  findingsData = [];
 }
 
 async function handleFile(file) {
@@ -232,12 +239,25 @@ async function handleFile(file) {
   document.getElementById('filePill').style.display = 'block';
   hide('extractError'); show('extractStatus');
   document.getElementById('extractMsg').textContent = ext === 'pdf' ? 'Extracting text from PDF…' : 'Extracting text from Word document…';
-  document.getElementById('analyzeBtn').disabled = true;
   try {
     extractedText = ext === 'pdf' ? await extractPDF(file) : await extractDOCX(file);
-    document.getElementById('extractMsg').textContent = '✓ Extracted ' + extractedText.length.toLocaleString() + ' characters. Ready to analyze.';
-    document.getElementById('analyzeBtn').disabled = false;
+    document.getElementById('extractMsg').textContent = '✓ Extracted ' + extractedText.length.toLocaleString() + ' characters. Findings table ready below.';
+    buildBlankFindings();
+    renderResults();
   } catch(err) { hide('extractStatus'); showErr('extractError','Could not read file: ' + err.message); }
+}
+
+function buildBlankFindings() {
+  findingsData = AREA_ORDER.map(area => ({
+    area,
+    locations: [{name:"", constructed:"", modified:""}],
+    standards: ["N/A"],
+    hasViolation: false,
+    violation: "None.",
+    violationCite: "",
+    corrective: "None.",
+    correctiveCite: ""
+  }));
 }
 
 async function extractPDF(file) {
@@ -258,204 +278,103 @@ async function extractDOCX(file) {
   return r.value;
 }
 
-// ── Analysis ──────────────────────────────────────────────────────────────────
-async function runAnalysis() {
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { showErr('analyzeError','Please enter your Anthropic API key.'); return; }
-  if (!extractedText) { showErr('analyzeError','Please upload a file first.'); return; }
-
-  hide('analyzeError'); show('analyzeStatus'); show('progWrap');
-  document.getElementById('analyzeBtn').disabled = true;
-  document.getElementById('analyzeMsg').textContent = 'Sending to Claude for analysis…';
-  setProgress(10);
-
-  const school = document.getElementById('schoolName').value || 'Unknown School';
-  const district = document.getElementById('districtName').value || 'Unknown District';
-  const cycle = document.getElementById('reviewCycle').value;
-  const reviewDate = document.getElementById('reviewDate').value || '';
-
-  const systemPrompt = `You are an expert CDE Civil Rights Reviewer. Analyze a completed Facilities Review Guide (self-assessment) and produce LOF findings JSON.
-
-STANDARD DETERMINATION by construction/modification date:
-- June 3, 1977 or earlier → Program Access
-- June 4, 1977 – January 17, 1991 → ANSI
-- January 18, 1991 – January 26, 1992 → UFAS
-- January 27, 1992 – September 14, 2010 → 1991 ADA
-- September 15, 2010 – March 14, 2012 → 1991 ADA or 2010 ADA
-- March 15, 2012 or later → 2010 ADA
-Use the ADA MODIFICATION DATE (not construction date) when modifications were recorded.
-
-CRITICAL FINDINGS RULES:
-1. Program Access → ALWAYS "None." / "None." for both columns. No exceptions. No findings.
-2. ANSI, UFAS, 1991 ADA, 2010 ADA → CAN have findings if measurements are out of compliance.
-3. Accessibility Violation column: cite the applicable standard (e.g. "Cite: ANSI A117.1 4.8.5 Handrails").
-4. Corrective Actions column: cite the same applicable standard (e.g. "Cite: ADA 1991 4.30.6" or "Cite: ADA 2010 505.4").
-5. All sub-locations for one area go in ONE row. List all standards that apply across sub-locations.
-6. Only issue findings for sub-locations under standards that allow findings.
-
-KEY THRESHOLDS:
-Handrails height: 34–38 inches (ANSI 4.8.5 / 1991 ADA 4.8.5 / 2010 ADA 505.4)
-Handrail extensions: 12 inches min both sides (ANSI 4.8.5 / 1991 ADA 4.8.5 / 2010 ADA 505.10)
-Ramp cross slope max: 2% / 1:50 (1991 ADA 4.8.6 / 2010 ADA 405.3)
-Ramp running slope max: 1:12 / 8.33% (ANSI 4.8.2 / 1991 ADA 4.8.2 / 2010 ADA 405.2)
-Door clear width min: 32 inches (1991 ADA 4.13.5 / 2010 ADA 404.2.3)
-ISA signage height: 48–60 inches floor to centerline of tactile characters (1991 ADA 4.30.6 / 2010 ADA 703.4.1)
-Grab bar height: 33–36 inches (1991 ADA 4.26.2 / 2010 ADA 609.4)
-Toilet seat height: 17–19 inches (1991 ADA 4.16.3 / 2010 ADA 604.4)
-Accessible stall min width: 60 inches (1991 ADA 4.17.3 / 2010 ADA 604.8.1.1)
-Toilet paper dispenser height: 15–48 inches from floor (2010 ADA 604.7)
-Coat hooks max: 48 inches forward reach (1991 ADA 4.25.3 / 2010 ADA 308.2.1)
-Knee clearance: 27H x 30W x 19D inches min (1991 ADA 4.32.3 / 2010 ADA 306.3)
-Counter height max: 34 inches (1991 ADA 7.2 / 2010 ADA 904.4)
-Drinking fountain spout max: 36 inches (1991 ADA 4.15.2 / 2010 ADA 602.4)
-Van accessible aisle: 96 inches min (2010 ADA 502.3.3)
-Standard accessible aisle: 60 inches min (2010 ADA 502.3.1)
-Curb ramp running slope max: 1:12 (2010 ADA 406.1)
-Curb ramp cross slope max: 2% (2010 ADA 406.1)
-
-Respond ONLY with valid JSON (no markdown, no explanation):
-{
-  "rows": [
-    {
-      "area": "Accessible Parking",
-      "locations": [{"name":"Front Parking Lot","constructed":"Circa 1959","modified":"2022"}],
-      "standards": ["Program Access","2010 ADA"],
-      "hasViolation": false,
-      "violation": "None.",
-      "violationCite": "",
-      "corrective": "None.",
-      "correctiveCite": ""
-    }
-  ]
-}
-
-Area rows in this exact order:
-1. Accessible Parking
-2. Accessible Routes/Walkways from accessible parking
-3. Stairways and Steps
-4. Ramps
-5. Curb Ramps
-6. Entrances, Doors, and Gates
-7. Rooms, Offices, and Administration
-8. Elevators/Lifts
-9. Accessible Drinking Fountains
-10. Cafeteria
-11. Library
-12. CTE Classrooms
-13. Labs/Shops
-14. Gymnasium/Auditorium/Weight Room/Other
-15. Stadium/Field
-16. Dressing, Fitting, and Locker Rooms
-17. Restrooms
-18. Public Telephones
-
-For N/A areas use standards:["N/A"], hasViolation:false, violation:"None.", corrective:"None."
-Write professional complete sentences for violation and corrective fields.`;
-
-  const userMsg = `School: ${school}\nDistrict: ${district}\nCycle: ${cycle}\nDate: ${reviewDate}\n\nFACILITIES REVIEW GUIDE TEXT:\n${extractedText.substring(0, 30000)}`;
-
-  try {
-    setProgress(25);
-    document.getElementById('analyzeMsg').textContent = 'Claude is analyzing measurements… (~30 seconds)';
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        system: systemPrompt,
-        messages: [{role:'user', content:userMsg}]
-      })
-    });
-
-    setProgress(80);
-    if (!resp.ok) { const e = await resp.json(); throw new Error(e.error?.message || 'API error ' + resp.status); }
-
-    const data = await resp.json();
-    const raw = data.content[0].text.trim().replace(/^```json\s*/i,'').replace(/```\s*$/i,'').trim();
-    const parsed = JSON.parse(raw);
-
-    setProgress(100);
-    findingsData = parsed.rows;
-    renderResults();
-
-  } catch(err) {
-    hide('analyzeStatus'); document.getElementById('progWrap').classList.remove('show');
-    document.getElementById('analyzeBtn').disabled = false;
-    showErr('analyzeError', 'Analysis failed: ' + err.message);
-  }
-}
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderResults() {
-  hide('analyzeStatus');
-  document.getElementById('progWrap').classList.remove('show');
-
   const tbody = document.getElementById('ftbody');
   tbody.innerHTML = '';
-  let viol=0, ok=0, pa=0;
 
   findingsData.forEach((row, i) => {
-    const isPAOnly = (row.standards||[]).every(s => s==='Program Access'||s==='N/A');
-    const hasV = row.hasViolation && !isPAOnly;
-    if(hasV) viol++; else if(isPAOnly) pa++; else ok++;
-
     const tr = document.createElement('tr');
-    if(hasV) tr.classList.add('viol-row');
 
-    // Col 1: area + locations (not editable)
+    // Col 1: area name (header) + editable location/dates
     const td1 = document.createElement('td');
-    let h1 = '<span class="area-name">' + esc(row.area) + ':</span>';
-    (row.locations||[]).forEach(loc => {
-      if(loc.name) h1 += '<div class="loc-line"><span class="loc-name">' + esc(loc.name) + '</span></div>';
-      if(loc.constructed) h1 += '<div class="loc-line">Constructed: ' + esc(loc.constructed) + '</div>';
-      if(loc.modified) h1 += '<div class="loc-line">Modified: ' + esc(loc.modified) + '</div>';
-    });
-    td1.innerHTML = h1;
+    const locHtml = '<div class="loc-line">Location: <span class="cell-edit" contenteditable="true" data-field="locName" data-row="'+i+'">click to enter location/building</span></div>'
+                  + '<div class="loc-line">Constructed: <span class="cell-edit" contenteditable="true" data-field="constructed" data-row="'+i+'">click to enter date</span></div>'
+                  + '<div class="loc-line">Modified: <span class="cell-edit" contenteditable="true" data-field="modified" data-row="'+i+'">click to enter date or N/A</span></div>';
+    td1.innerHTML = '<span class="area-name">' + esc(row.area) + ':</span>' + locHtml;
     tr.appendChild(td1);
 
-    // Col 2: standards (not editable)
+    // Col 2: standards (editable — click to pick)
     const td2 = document.createElement('td');
-    td2.innerHTML = (row.standards||[]).map(s => '<span class="std-badge ' + stdClass(s) + '">' + esc(s) + '</span><br>').join('');
+    td2.innerHTML = '<select class="std-pick" data-row="'+i+'">'
+      + '<option value="">— select —</option>'
+      + '<option value="Program Access">Program Access</option>'
+      + '<option value="ANSI A117.1">ANSI A117.1</option>'
+      + '<option value="UFAS">UFAS</option>'
+      + '<option value="1991 ADA">1991 ADA</option>'
+      + '<option value="2010 ADA">2010 ADA</option>'
+      + '<option value="N/A">N/A</option>'
+      + '</select>';
     tr.appendChild(td2);
 
     // Col 3: violation (editable)
     const td3 = document.createElement('td');
     td3.contentEditable = 'true';
-    if(!hasV) {
-      td3.innerHTML = '<span class="none-cell">None.</span>';
-    } else {
-      td3.innerHTML = esc(row.violation||'') + (row.violationCite ? '<span class="cite-tag">' + esc(row.violationCite) + '</span>' : '');
-    }
+    td3.dataset.field = 'violation'; td3.dataset.row = i;
+    td3.innerHTML = '<span class="none-cell">None.</span>';
     tr.appendChild(td3);
 
     // Col 4: corrective (editable)
     const td4 = document.createElement('td');
     td4.contentEditable = 'true';
-    if(!hasV) {
-      td4.innerHTML = '<span class="none-cell">None.</span>';
-    } else {
-      td4.innerHTML = esc(row.corrective||'') + (row.correctiveCite ? '<span class="cite-tag">' + esc(row.correctiveCite) + '</span>' : '');
-    }
+    td4.dataset.field = 'corrective'; td4.dataset.row = i;
+    td4.innerHTML = '<span class="none-cell">None.</span>';
     tr.appendChild(td4);
 
     tbody.appendChild(tr);
   });
 
+  // Wire up edits to keep findingsData in sync
+  tbody.querySelectorAll('.cell-edit').forEach(el => {
+    el.addEventListener('blur', () => {
+      const row = +el.dataset.row, field = el.dataset.field;
+      const v = el.innerText.trim();
+      if (field === 'locName')      findingsData[row].locations[0].name = v;
+      if (field === 'constructed')  findingsData[row].locations[0].constructed = v;
+      if (field === 'modified')     findingsData[row].locations[0].modified = v;
+    });
+  });
+  tbody.querySelectorAll('td[contenteditable="true"]').forEach(el => {
+    el.addEventListener('blur', () => {
+      const row = +el.dataset.row, field = el.dataset.field;
+      if (!field) return;
+      const v = el.innerText.trim();
+      findingsData[row][field] = (v === '' ? 'None.' : v);
+      findingsData[row].hasViolation = (v !== '' && v !== 'None.');
+      // Mark row visually
+      const tr = el.parentElement;
+      if (findingsData[row].hasViolation) tr.classList.add('viol-row');
+      else tr.classList.remove('viol-row');
+      updateSummary();
+    });
+  });
+  tbody.querySelectorAll('.std-pick').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const row = +sel.dataset.row;
+      findingsData[row].standards = sel.value ? [sel.value] : ["N/A"];
+      updateSummary();
+    });
+  });
+
+  updateSummary();
+  show('results');
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+function updateSummary() {
+  let viol=0, ok=0, pa=0;
+  findingsData.forEach(r => {
+    const isPA = (r.standards||[]).every(s => s==='Program Access'||s==='N/A');
+    if (r.hasViolation && !isPA) viol++;
+    else if (isPA) pa++;
+    else ok++;
+  });
   document.getElementById('sumStrip').innerHTML =
     '<span class="s-pill sp-total">' + findingsData.length + ' Areas</span>' +
     '<span class="s-pill sp-viol">' + viol + ' Violation' + (viol!==1?'s':'') + '</span>' +
     '<span class="s-pill sp-ok">' + ok + ' Compliant</span>' +
-    '<span class="s-pill sp-pa">' + pa + ' Program Access (no findings)</span>';
-
-  show('results');
-  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+    '<span class="s-pill sp-pa">' + pa + ' Program Access / N/A</span>';
 }
 
 // ── Word Export ───────────────────────────────────────────────────────────────
@@ -573,18 +492,14 @@ function stdClass(s) {
   return 'b-na';
 }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function show(id){ document.getElementById(id).classList.add('show'); }
-function hide(id){ document.getElementById(id).classList.remove('show'); }
-function showErr(id,msg){ const el=document.getElementById(id); el.textContent=msg; el.classList.add('show'); }
-function setProgress(pct){ document.getElementById('progFill').style.width=pct+'%'; }
+function show(id){ const el=document.getElementById(id); if(el) el.classList.add('show'); }
+function hide(id){ const el=document.getElementById(id); if(el) el.classList.remove('show'); }
+function showErr(id,msg){ const el=document.getElementById(id); if(el){ el.textContent=msg; el.classList.add('show'); } }
 function resetTool(){
   if(!confirm('Clear everything and start over?')) return;
   clearFile();
   document.getElementById('ftbody').innerHTML='';
   document.getElementById('sumStrip').innerHTML='';
-  document.getElementById('results').classList.remove('show');
-  hide('analyzeStatus'); hide('analyzeError');
-  document.getElementById('progWrap').classList.remove('show');
   findingsData=[]; extractedText='';
 }
 </script>
