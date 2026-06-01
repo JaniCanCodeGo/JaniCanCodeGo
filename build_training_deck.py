@@ -34,6 +34,7 @@ B_ANSI    = RGBColor(0xFE, 0xF9, 0xC3)
 B_UFAS    = RGBColor(0xDB, 0xEA, 0xFE)
 B_1991    = RGBColor(0xD1, 0xFA, 0xE5)
 B_2010    = RGBColor(0xFE, 0xE2, 0xE2)
+B_OVERLAP = RGBColor(0xE9, 0xD5, 0xFF)   # light lavender — the 9/15/2010 – 3/14/2012 window
 
 # 16:9 widescreen
 SLIDE_W = Inches(13.333)
@@ -138,7 +139,7 @@ def header_bar(slide, title, sub=None, kicker=None):
     # Bottom thin rule + footer page number filled per slide
     add_rect(slide, 0, Inches(7.30), SLIDE_W, Inches(0.02), BORDER)
 
-def footer(slide, page_num, total=63):
+def footer(slide, page_num, total=73):
     add_text(slide, Inches(0.5), Inches(7.18), Inches(8), Inches(0.25),
              "CDE OEO  •  Civil Rights Review  •  CRR 20 / CRR 21 — Accessible Facilities",
              size=9, color=MUTED, font="Consolas")
@@ -744,7 +745,7 @@ outcomes = [
     (Inches(2.7),  Inches(5.05), "Jun 4, 1977 – Jan 17, 1991", "ANSI A117.1",   B_ANSI),
     (Inches(5.0),  Inches(5.05), "Jan 18 – Jan 26, 1992", "UFAS",            B_UFAS),
     (Inches(7.3),  Inches(5.05), "Jan 27, 1992 – Sep 14, 2010", "1991 ADA",     B_1991),
-    (Inches(9.6),  Inches(5.05), "Sep 15, 2010 – Mar 14, 2012", "1991 or 2010 ADA", B_2010),
+    (Inches(9.6),  Inches(5.05), "Sep 15, 2010 – Mar 14, 2012", "1991 or 2010 ADA", B_OVERLAP),
     (Inches(11.9), Inches(5.05), "≥ Mar 15, 2012",      "2010 ADA",        B_2010),
 ]
 # Draw arrows from both middle diamonds down to a horizontal rail
@@ -801,7 +802,7 @@ bands = [
     ("ANSI A117.1",        "Jun 4, '77 – Jan 17, '91", B_ANSI, RGBColor(0x71,0x3F,0x12), 0.18),
     ("UFAS",               "Jan 18 – Jan 26, '92", B_UFAS, RGBColor(0x1E,0x3A,0x8A), 0.02),
     ("1991 ADA / ADAAG",   "Jan 27, '92 – Sep 14, 2010", B_1991, RGBColor(0x06,0x4E,0x3B), 0.20),
-    ("Overlap\n('91 or '10)", "Sep 15, '10 – Mar 14, '12", B_2010, RGBColor(0x7F,0x1D,0x1D), 0.05),
+    ("Overlap\n('91 or '10)", "Sep 15, '10 – Mar 14, '12", B_OVERLAP, RGBColor(0x55,0x2F,0x8C), 0.05),
     ("2010 ADA",           "≥ Mar 15, 2012",       B_2010, RGBColor(0x7F,0x1D,0x1D), 0.28),
 ]
 # Build a timeline rail
@@ -2038,11 +2039,11 @@ add_bullets(s, Inches(7.05), Inches(2.15), Inches(5.7), Inches(4.8), [
     ("Knee clearance under lav", "27\"H × 30\"W × 11\"D min  ·  606.2 / 306"),
     ("Lav faucet controls",      "Operable with closed fist; 5 lbf max  ·  309.4"),
     ("Hot water / drain pipes",  "Insulated / configured to prevent contact  ·  606.5"),
-    ("Mirror bottom edge",       "Max 40\" above floor  ·  603.3"),
-    ("Coat hook",                "Max 48\" forward reach  ·  308.2.1 / 604.8.3"),
-    ("Soap dispenser",           "Reach within 48\" max  ·  308"),
-    ("Paper towel dispenser",    "Operable parts within 48\" max  ·  308"),
-    ("Door swing into stall",    "Permitted only if 60\"×60\" maneuvering space remains  ·  604.8.1.2"),
+    ("Mirror bottom edge",       "Max 40\" above floor (full-length: 35\") · 603.3"),
+    ("Sink scoping (non-RR)",    "≥ 5% of each type, min 1, per accessible room · 212.3"),
+    ("Multi-bowl sink exception", "Only one bowl needs knee/toe clearance · 606.2 Ex. 7"),
+    ("Coat hook / dispensers",   "Within 48\" max forward reach · 308.2.1 / 604.8.3"),
+    ("Door swing into stall",    "OK only if 60\"×60\" maneuvering remains · 604.8.1.2"),
 ], size=11, spacing=4)
 footer(s, 36)
 add_notes(s, """
@@ -2223,18 +2224,18 @@ quickref(s, Inches(0.55), Inches(1.55), Inches(6.0), Inches(5.4), "Parking",
           ("Quantity (1–25 lot)",      "1 acc + 1 van",     "208.2"),
           ("Quantity (26–50 lot)",     "2 acc + 1 van",     "208.2"),
          ])
-quickref(s, Inches(6.85), Inches(1.55), Inches(6.0), Inches(5.4), "Accessible Routes",
+quickref(s, Inches(6.85), Inches(1.55), Inches(6.0), Inches(5.4), "Accessible Routes + Path of Travel",
          [("Minimum width",            "36\" (32\" at point)", "403.5"),
           ("Width at 90° turn",        "48\" if route < 48\"", "403.5.2"),
-          ("Running slope (route)",    "1:20 max",          "403.3"),
-          ("Cross slope",              "1:48 (2.1%) max",   "403.3"),
-          ("Passing spaces",           "60\"×60\" every 200'", "403.5.3"),
+          ("Running / cross slope",    "1:20 / 1:48 max",   "403.3"),
           ("Surface — firm, stable",   "No loose gravel",   "302.1"),
-          ("Surface openings",         "< ½\" any direction", "302.3"),
-          ("Vertical change ≤ ¼\"",    "OK unbeveled",      "303.2"),
-          ("Vertical change ¼\"–½\"",  "Beveled 1:2",       "303.3"),
           ("Vertical change > ½\"",    "Ramp required",     "303.4"),
           ("Protruding objects",       "≤ 4\" if 27\"–80\" AFF", "307.2"),
+          ("Employee work area route", "Required if work area ≥ 1,000 sf", "206.2.8"),
+          ("Site arrival → entrance",  "≥ 1 accessible route", "206.2.1"),
+          ("Vertical access (stories)", "Required in pub. sect. unless ≤2 stories + 5 occ.", "206.2.3"),
+          ("Path of travel (alterations)", "Required to altered primary function area", "202.4"),
+          ("Disproportionality cap",   "20% of project cost", "202.4 / 35.151(b)"),
           ("Headroom",                 "80\" min clear",    "307.4"),
          ])
 add_text(s, Inches(0.55), Inches(7.05), Inches(12.3), Inches(0.25),
@@ -2253,19 +2254,19 @@ but different organization).
 # ─────────────────────────────────────────────────────────────────────────────
 s = add_slide(); header_bar(s, "Quick reference — doors, ramps & stairs",
                             kicker="Slide 40 · Reference")
-quickref(s, Inches(0.55), Inches(1.55), Inches(6.0), Inches(5.4), "Doors",
-         [("Clear width",          "32\" min",          "404.2.3"),
+quickref(s, Inches(0.55), Inches(1.55), Inches(6.0), Inches(5.4), "Doors & Entrances",
+         [("Public entrance scoping", "≥ 60% accessible (new construction)", "206.4"),
+          ("Clear width",          "32\" min @ 90°",    "404.2.3"),
           ("Maneuvering — pull",   "18\" beyond latch", "404.2.4.1"),
           ("Maneuvering — push",   "12\" beyond latch w/ closer", "404.2.4.1"),
-          ("Threshold",            "½\" max, beveled",  "404.2.5"),
-          ("Hardware operation",   "Closed-fist usable; 5 lbf", "404.2.7"),
-          ("Hardware height",      "34\"–48\" above floor", "404.2.7"),
-          ("Opening force int.",   "5 lbf max",         "404.2.9"),
-          ("Closing speed",        "≥ 5 sec to 12° from latch", "404.2.8"),
-          ("Vision lite (if any)", "≤ 43\" to bottom",  "404.2.11"),
-          ("Manual revolving",     "Not permitted as sole", "404.1"),
-          ("Auto operators",       "5 lb max actuation", "404.3"),
-          ("Surface ≥ 10\" base",  "Smooth, kick plate", "404.2.10"),
+          ("Recessed door (>8\" deep)", "Forward-approach clearance required", "404.2.4.3"),
+          ("Threshold",            "½\" new / ¾\" altered, beveled 1:2", "404.2.5"),
+          ("Doors in series",      "48\" + door width separation", "404.2.6"),
+          ("Hardware operation",   "Closed-fist; 5 lbf; 34–48\" AFF", "404.2.7"),
+          ("Opening force (int.)", "5 lbf max — excl. ext. hinged & fire doors", "404.2.9"),
+          ("Closing speed",        "≥ 5 sec from 90° to 12°", "404.2.8"),
+          ("Vision lite (if any)", "Bottom ≤ 43\" — unless > 66\"", "404.2.11"),
+          ("Smooth surface",       "Bottom 10\" push side — kick plate", "404.2.10"),
          ])
 quickref(s, Inches(6.85), Inches(1.55), Inches(6.0), Inches(5.4), "Ramps & Stairs",
          [("Ramp running slope",   "1:12 max",          "405.2"),
@@ -2349,18 +2350,18 @@ each one. Critical:
 s = add_slide(); header_bar(s, "Quick reference — fountains, counters & signage",
                             kicker="Slide 42 · Reference")
 quickref(s, Inches(0.55), Inches(1.55), Inches(6.0), Inches(5.4), "Fountains & built-in counters",
-         [("Drinking fountain spout", "36\" max above floor", "602.4"),
-          ("Spout location",          "≤ 15\" from front",   "602.5"),
-          ("Spout angle",             "≤ 30° from vertical", "602.6"),
-          ("Knee clearance — DF",     "27\"H × 30\"W × 17\"D min", "306"),
-          ("Hi-Lo paired DF",         "One ≤36\" + one for standing", "602.7"),
-          ("Service counter (acc.)",  "34\" max height",    "904.4.1"),
-          ("Service counter length",  "36\" min long",      "904.4.1"),
-          ("Sales / service — POS",   "≤ 38\" if integral", "904.4"),
-          ("Library check-out",       "34\" max writing srf", "904.4"),
-          ("Cafeteria self-serve",    "≤ 34\" tray slide",  "226.2 / 904"),
+         [("DF DUAL ACCESS rule",     "WC-accessible AND standing — every floor / area", "211.2"),
+          ("Single fountain planned", "Need 2 (or combo hi-lo) for dual access", "211.2 Ex."),
+          ("Multiple planned",        "50% WC / 50% standing (round up both)", "211.2"),
+          ("WC-accessible spout",     "36\" max above floor", "602.4"),
+          ("Standing-height spout",   "38\"–43\" above floor", "602.7"),
+          ("Spout location",          "15\" min from wall, 5\" max from front edge", "602.5"),
+          ("Water flow height",       "4\" min vertical column", "602.6"),
+          ("Water cooler / bottle filler", "Cannot substitute for either fountain", "211.2"),
+          ("Service counter (acc.)",  "34\" max height, 36\" min long",    "904.4.1"),
+          ("Library check-out",       "34\" max writing surface", "904.4"),
+          ("Cafeteria tray slide",    "≤ 34\" tray slide",  "226.2 / 904"),
           ("Counter slope",           "Level",              "904.4"),
-          ("Forward reach over",      "Apply 308.2",        "308"),
          ])
 quickref(s, Inches(6.85), Inches(1.55), Inches(6.0), Inches(5.4), "Signage & wayfinding",
          [("ISA size — room entry",   "6\" min ISA",       "703.7.2.1"),
@@ -3530,11 +3531,463 @@ All within 45 days of LOF receipt. All cites in the corrective column
 are 2010 ADA — that is the rule from Slide 53.
 """)
 
+# ═════════════════════════════════════════════════════════════════════════════
+# SLIDES 62–71 — TEN ADDITIONAL CASE STUDIES (with separate answer key doc)
+# Grounded in the U.S. Access Board guides: Alterations, Accessible Routes,
+# Entrances/Doors/Gates, Drinking Fountains, Lavatories & Sinks.
+# Answer key is delivered as a separate Word document
+# (outputs/CRR_Training_Answer_Key.docx) — see also Slide 71 callout.
+# ═════════════════════════════════════════════════════════════════════════════
+
+CASE_STUDIES = [
+    # (title, scenario, focus area / Access Board guide source)
+    ("Case #3 — Two-story 1998 HS, no elevator",
+     "Northridge HS — built 1998, two stories. Upper floor: 4 small offices and a teacher break room (occupant load 5, no public use space). No elevator. LEA argues vertical access is not required because of the 2-story / 5-occupant exception. Reviewer finds no fully accessible alternate path. Field measurement: upstairs program area = teacher prep only.",
+     "Access Routes — § 206.2.3 public-sector 2-story exception"),
+    ("Case #4 — 2018 entrance addition to 1972 building",
+     "Coastline Charter — 1972 main building, originally Program Access. In 2018 LEA added a NEW front entrance with new walkway, ramp, ISA signage, and accessible parking. Original 1972 restrooms (pictures and tour confirm: unaltered) serve the primary function area (classrooms). LEA did NOT include restroom remediation in the 2018 entrance project.",
+     "Alterations — § 202.4 path-of-travel + 20% cap"),
+    ("Case #5 — Single fountain per floor, 2014 build",
+     "Bay Tech HS — built 2014. Each floor has exactly ONE wheelchair-accessible drinking fountain (spout 34\" AFF). No standing-height fountain on any floor. LEA argues \"we made it accessible — that's what the rule requires.\"",
+     "Drinking Fountains — § 211.2 dual access"),
+    ("Case #6 — 2015 ag biotech lab, single 36\" sink",
+     "Valley Ag HS — biotech classroom built 2015. The classroom has 1 lab sink, rim measured 36\" AFF. Cabinetry below is a fixed skirt (no knee/toe). LEA says \"only one sink, doesn't fall under the 5% rule.\"",
+     "Lavs/Sinks — § 212.3 \"5% but no less than one\" + § 606.3"),
+    ("Case #7 — 2003 classroom door recessed 12\" from corridor",
+     "Mt. Diablo HS — 2003 wing. Classroom door is recessed 12\" deep into a wall niche, latch side is 10\" from the deepest wall. Door measures 34\" clear. LEA reports door clear width compliant, no other issue.",
+     "Doors — § 404.2.4.3 recessed-door rule"),
+    ("Case #8 — 1985 ANSI building, 2019 new front entrance",
+     "Pacifica Career Academy — 1985 ANSI-era building. In 2019 the LEA added a brand-new accessible front entrance + ramp. Original 1985 entrance is still in use as the side entrance. Field: NEW (2019) entrance vision lite bottom edge measured 51\" AFF. NEW entrance closing speed measured 3 sec from 90° to 12°. Original 1985 entrance unaltered.",
+     "Doors — vision lite 43\" max (§ 404.2.11); closer 5 sec (§ 404.2.8)"),
+    ("Case #9 — Pre-1977 dental skills lab",
+     "Tri-County ROP — Health Sciences pathway. Dental skills lab is in a 1965 building, never altered. The dental lavatory rim is at 37\" AFF. Knee clearance is fully obstructed by cabinetry.",
+     "Program Access — None/None rule"),
+    ("Case #10 — 2016 culinary, multi-bowl sink with no knee/toe",
+     "Greenfield HS — culinary lab built 2016. Triple-bowl prep sink; ALL THREE bowls have cabinetry below with NO knee/toe clearance. Sink rim 34\". LEA says \"three bowls means three sinks, so 5% is satisfied by other classroom sinks.\"",
+     "Lavs/Sinks — § 606.2 Ex. 7 multi-bowl: one bowl must have knee/toe"),
+    ("Case #11 — Overlap window: 2011 STEM, no election documented",
+     "Sequoia HS — STEM building, construction-completion date October 14, 2011. LEA cannot produce documentation of an election between 1991 ADA and 2010 ADA for this project (this period is the September 15, 2010 – March 14, 2012 overlap window). Field finds an obstructed forward reach of 49\" at a fume-hood sash control over a 22\"-deep counter.",
+     "Standards determination — overlap window default"),
+    ("Case #12 — 1968 restroom, 2020 bottle filler added",
+     "Foothill Continuation School — 1968 main wing. In 2020 the LEA retrofitted ONE bottle filler attached to the corridor's wall-mounted drinking fountain on the second floor. No other alterations anywhere in the restroom or hallway. Bottle filler spout at 40\" AFF, controls 49\" AFF, 5 lbf push to dispense.",
+     "Drinking Fountains — bottle-filler operable-parts rule + element isolation"),
+]
+
+for i, (title, scenario, focus) in enumerate(CASE_STUDIES):
+    page_num = 62 + i
+    s = add_slide(); header_bar(s, title, kicker=f"Slide {page_num:02d} · Case study")
+
+    # Focus subtitle
+    add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.4),
+             f"Focus:  {focus}",
+             size=13, italic=True, color=MUTED)
+
+    # Scenario card
+    add_rect(s, Inches(0.55), Inches(2.05), Inches(8.0), Inches(4.8), CREAM, line=BORDER)
+    add_rect(s, Inches(0.55), Inches(2.05), Inches(8.0), Inches(0.45), NAVY)
+    add_text(s, Inches(0.55), Inches(2.05), Inches(8.0), Inches(0.45),
+             "SCENARIO", size=11, bold=True, color=GOLD,
+             align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+    add_text(s, Inches(0.75), Inches(2.6), Inches(7.6), Inches(4.2),
+             scenario, size=12, color=TEXT)
+
+    # Your task card
+    add_rect(s, Inches(8.85), Inches(2.05), Inches(4.0), Inches(4.8), CREAM, line=BORDER)
+    add_rect(s, Inches(8.85), Inches(2.05), Inches(4.0), Inches(0.45), NAVY)
+    add_text(s, Inches(8.85), Inches(2.05), Inches(4.0), Inches(0.45),
+             "YOUR TASKS", size=11, bold=True, color=GOLD,
+             align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Consolas")
+    add_bullets(s, Inches(9.05), Inches(2.6), Inches(3.7), Inches(4.2), [
+        "Which standard applies to which element?",
+        "Identify each violation (if any) with its cite.",
+        "Draft the corrective action(s).",
+        "Note any Program-Access narrative concern.",
+        "Note any path-of-travel obligation.",
+    ], size=11, spacing=10, bullet="?")
+
+    # Answer-key reference strip
+    add_rect(s, Inches(0.55), Inches(7.0), Inches(12.3), Inches(0.25), GOLD)
+    add_text(s, Inches(0.55), Inches(6.97), Inches(12.3), Inches(0.3),
+             f"Answer: see separate CRR Training Answer Key, Case #{i+3}.  Also in this slide's Speaker Notes.",
+             size=11, bold=True, color=NAVY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+
+    footer(s, page_num)
+    # Speaker notes will be appended after the loop with the full answer key
+
+# Now attach speaker notes for each case study with the full answers.
+# I keep these as a separate data structure so the same content drives the
+# standalone Word answer-key document.
+CASE_ANSWERS = [
+    # Case #3 — Two-story 1998 HS, no elevator
+    """Standard applies: 1991 ADA (constructed 1998).
+
+Public-sector vertical-access rule (§ 206.2.3): an accessible route
+between stories IS required in title II facilities EXCEPT where the
+inaccessible upper story has NO public-use space AND a maximum
+occupant load of 5. Here the upper floor has only teacher prep —
+no public use — and 5 occupants. The exception applies.
+
+Result:
+  - Standard at issue: 1991 ADA for the building.
+  - VIOLATION column: None. (Exception § 206.2.3 satisfied.)
+  - CORRECTIVE column: None.
+
+Narrative note: confirm in the LOF that the LEA has documented the
+5-occupant cap and no-public-use status — if either changes, vertical
+access becomes required.""",
+
+    # Case #4 — 2018 entrance addition + path-of-travel
+    """Standards application — element by element:
+  - Original 1972 main building: Program Access (unaltered).
+  - 1972 restrooms (unaltered): Program Access. No findings.
+  - 2018 entrance + walkway + ramp + ISA signage + parking: 2010 ADA.
+
+Path of travel obligation (§ 202.4 / 28 CFR § 35.151(b)):
+The 2018 entrance addition affects a primary function area
+(classrooms it serves). The LEA must provide an accessible path of
+travel from the new entrance to the restrooms, drinking fountains,
+and telephones serving the primary function area, TO THE EXTENT IT
+DOES NOT EXCEED 20% OF THE COST of the entrance project.
+
+VIOLATION column: "LEA's 2018 entrance addition affects a primary
+function area but does not include an accessible path of travel to
+the restrooms serving the affected area, in violation of 2010 ADA
+§ 202.4 and 28 CFR § 35.151(b). Cite: 2010 ADA § 202.4."
+
+CORRECTIVE column: "Identify the total cost of the 2018 entrance
+project; calculate 20% of that cost; apply that amount to restroom
+remediation prioritized per 28 CFR § 35.151(b)(4) (entrance →
+accessible route → restroom → telephone → drinking fountain).
+Provide documentation of restroom upgrades (door widening, accessible
+stall, lavatory, signage) under 2010 ADA. Complete within 45 days of
+LOF receipt. Cite: 2010 ADA § 202.4 and § 35.151(b)."
+
+Narrative note: this is the 20% disproportionality cap. Spending stops
+when 20% is reached; the prioritization order governs which fixes get
+done first.""",
+
+    # Case #5 — Single WC-accessible fountain per floor
+    """Standard applies: 2010 ADA (constructed 2014).
+
+DUAL ACCESS rule (§ 211.2): where drinking fountains are provided,
+on each floor / exterior site / secured area, fountains must be
+accessible to BOTH wheelchair users AND standing persons. If only
+one unit is planned, at least TWO separate units (or a combination
+high-low) are required.
+
+The LEA installed only one WC-accessible fountain per floor — no
+standing-height unit. This violates § 211.2 on each floor.
+
+VIOLATION column: "Each floor provides a wheelchair-accessible
+drinking fountain but no standing-height drinking fountain. 2010
+ADA § 211.2 requires dual access on each floor where fountains are
+provided. Cite: 2010 ADA § 211.2."
+
+CORRECTIVE column: "Provide a standing-height drinking fountain
+(spout 38–43 inches AFF per 2010 ADA § 602.7) on each floor in the
+vicinity of the existing WC-accessible unit — OR replace each
+single unit with a combination high-low fountain. Provide
+photographic documentation of installed fixture heights. Complete
+within 45 days of LOF receipt. Cite: 2010 ADA § 211.2 and § 602.7."
+
+Common LEA pushback: "but we have a water cooler in the staff
+lounge." That does not count — § 211.2 commentary states a water
+cooler / bottle filler cannot substitute for either required
+fountain.""",
+
+    # Case #6 — 2015 ag biotech lab, single 36" sink
+    """Standard applies: 2010 ADA (constructed 2015).
+
+Sink scoping (§ 212.3): "At least 5% but no less than one sink"
+must comply in each accessible room or space (including classroom
+labs). Even when there is ONE sink, it must comply — the "5% rule"
+floor is one.
+
+Lavatory/sink height (§ 606.3): rim measured to whichever is higher
+(rim or counter top); max 34" above the floor. Field measurement 36"
+exceeds the maximum.
+
+Knee clearance (§ 606.2 / § 306): 27"H × 30"W × 11"D min, with toe
+extension to 9"H × 30"W × 19"D. The fixed cabinet skirt eliminates
+both.
+
+VIOLATIONS:
+  1. Lab sink rim at 36" exceeds the 34" maximum specified in 2010
+     ADA § 606.3. Cite: 2010 ADA § 606.3.
+  2. Cabinetry beneath the lab sink eliminates the knee and toe
+     clearance specified in 2010 ADA § 606.2 / § 306. Cite: 2010 ADA
+     § 606.2.
+
+CORRECTIVE: "Lower the lab sink so the rim height is not more than
+34 inches above the finished floor per 2010 ADA § 606.3. Remove the
+cabinet skirt to provide knee clearance of 27"H × 30"W × 11"D
+minimum and toe extension of 9"H × 30"W × 19"D minimum per 2010
+ADA § 306. Insulate or otherwise protect exposed hot-water and
+drain piping per § 606.5. Provide photographic documentation.
+Complete within 45 days. Cite: 2010 ADA § 606.2, § 606.3, § 306,
+§ 606.5."
+
+Common LEA pushback: "Sinks are exempt because they're employee
+work areas / lab benches." § 212.3 explicitly includes classroom
+labs.""",
+
+    # Case #7 — 2003 recessed door
+    """Standard applies: 1991 ADA (constructed 2003).
+
+§ 1991 ADA 4.13.5 / 2010 ADA equivalent § 404.2.4.3: when a door or
+gate is recessed and any obstruction within 18" of the latch side
+projects more than 8" from the face of the door, FORWARD-approach
+maneuvering clearance is required (instead of a parallel approach).
+
+Field: door is recessed 12" deep (>8") and the latch side wall is
+10" from the deepest wall (within 18" trigger). Forward-approach
+maneuvering must be provided. The reviewer needs to confirm whether
+forward-approach geometry actually exists; in most recessed-door
+configurations on a 2003 build, it does not.
+
+VIOLATION (if measurement confirms): "The classroom door is
+recessed 12 inches with the latch side located 10 inches from the
+deeper wall, triggering the recessed-door rule. Required forward-
+approach maneuvering clearance not provided. Cite: 1991 ADA § 4.13.6
+(or 2010 ADA § 404.2.4.3 for any element altered after 3/15/2012)."
+
+CORRECTIVE: "Modify the recess to align the door face within 8
+inches of the latch-side wall, OR provide forward-approach
+maneuvering clearance (60 inches by 60 inches minimum) per 2010 ADA
+§ 404.2.4.3. Provide photographic documentation of corrected
+geometry. Complete within 45 days. Cite: 2010 ADA § 404.2.4.3."
+
+Note door clear width 34" is fine (32" min) — door width and
+maneuvering clearance are separate criteria.""",
+
+    # Case #8 — 1985 building with 2019 new entrance
+    """Standards application — element by element:
+  - Original 1985 side entrance (unaltered): ANSI A117.1.
+  - NEW (2019) front entrance, ramp, vision lite, closer: 2010 ADA.
+
+Vision lite (§ 404.2.11): vision lights provided in doors must have
+their bottom edge no higher than 43" above the floor — UNLESS the
+lowest portion of the light is above 66" AFF (meaning it's not
+intended for viewing). Field measurement 51" is between 43" and 66"
+— violates 2010 ADA § 404.2.11.
+
+Closing speed (§ 404.2.8): door closer must be adjusted so the door
+takes at least 5 seconds to swing from 90° to 12° from latch.
+Field measurement 3 seconds is below the 5-second minimum.
+
+VIOLATIONS (2019 element):
+  1. Vision lite bottom edge at 51 inches exceeds the 43-inch
+     maximum specified in 2010 ADA § 404.2.11. Cite: 2010 ADA
+     § 404.2.11.
+  2. Door closer adjusted so closing time is 3 seconds from 90° to
+     12°, below the 5-second minimum required in 2010 ADA § 404.2.8.
+     Cite: 2010 ADA § 404.2.8.
+
+CORRECTIVE:
+  1. "Replace the door slab or modify the vision lite so the bottom
+      edge is not more than 43 inches above the finished floor per
+      2010 ADA § 404.2.11. Cite: 2010 ADA § 404.2.11."
+  2. "Adjust the door closer to provide a sweep time of not less
+      than 5 seconds from 90° to 12° from the latch, per 2010 ADA
+      § 404.2.8. Cite: 2010 ADA § 404.2.8."
+
+Both within 45 days. Photo documentation required.
+
+ORIGINAL 1985 entrance: still ANSI. NO findings on it unless that
+entrance has been altered.""",
+
+    # Case #9 — Pre-1977 dental skills lab
+    """Standard applies: PROGRAM ACCESS (constructed 1965, never altered).
+
+This is the canonical None / None scenario. ANSI A117.1 does not
+apply (1965 is before June 4, 1977). 2010 ADA does not apply
+(building has not been altered). There is NO dimensional standard
+to cite.
+
+VIOLATION column: "None."
+CORRECTIVE column: "None."
+
+Narrative recommendation (LOF, NOT the table): "The LEA has not
+demonstrated program access for the dental skills lab under 34 CFR
+§ 104.22. Within 45 days, the LEA shall conduct and document a
+program-access analysis identifying which method — relocation of
+the dental skills section to an accessible lab, reassignment of
+students, auxiliary aids, or structural alteration — will provide
+access to students with mobility disabilities."
+
+Common mistake (new reviewers): citing 2010 ADA § 606.3 against the
+37" lavatory rim. DO NOT. The 2010 ADA does not retroactively apply
+to a 1965 building. Cite no standard; address via narrative.""",
+
+    # Case #10 — Multi-bowl sink, no knee/toe
+    """Standard applies: 2010 ADA (constructed 2016).
+
+Multi-bowl sink rule (§ 606.2 Ex. 7): "Where multi-bowl sinks are
+provided, only one bowl must comply with knee and toe space
+clearance." This means ONE bowl of the triple-bowl prep sink must
+have knee/toe clearance — not all three. But at least one must.
+
+Sink scoping (§ 212.3): the 5%-or-one rule applies separately to
+each TYPE of sink. A prep sink is a separate type from a hand-wash
+lavatory and from a kitchen sink, so other classroom sinks do NOT
+satisfy this requirement for prep sinks.
+
+VIOLATION: "The triple-bowl prep sink has cabinetry fully obstructing
+knee and toe clearance under all three bowls; no bowl complies with
+2010 ADA § 606.2 (Ex. 7) which requires at least one bowl to provide
+knee and toe clearance per § 306. Cite: 2010 ADA § 606.2 (Ex. 7)
+and § 306."
+
+CORRECTIVE: "Remove cabinetry below one bowl of the triple-bowl
+prep sink to provide knee clearance of 27"H × 30"W × 11"D minimum
+and toe clearance of 9"H × 30"W × 19"D minimum per 2010 ADA § 306.
+Insulate or protect any exposed hot-water and drain piping per
+§ 606.5. Provide photographic documentation. Complete within 45
+days. Cite: 2010 ADA § 606.2 (Ex. 7), § 306, § 606.5."
+
+Common LEA pushback: "We satisfy the 5% with the hand-wash
+lavatory." Wrong — different sink type, separate scoping.""",
+
+    # Case #11 — 2011 STEM in overlap window, no election
+    """Standard applies: 2010 ADA — overlap-window default.
+
+Construction-completion date October 14, 2011 falls within the
+September 15, 2010 – March 14, 2012 overlap window. In that
+window, the LEA may elect to use either the 1991 ADA Standards OR
+the 2010 ADA Standards. The election must be DOCUMENTED.
+
+Absent documented election, the reviewer defaults to the more
+stringent of the two standards — 2010 ADA — for the entire
+project. (This is CDE OEO practice; per the 2010 ADA Final Rule
+preamble, the default protects the LEA's compliance posture.)
+
+Obstructed forward reach analysis (§ 308.2.2):
+  - Obstruction depth 22" is in the 20–25" range.
+  - Max reach over an obstruction in that range = 44" above floor.
+  - Field 49" exceeds 44".
+
+VIOLATION: "Fume-hood sash control measured at 49 inches above
+floor over a 22-inch deep counter exceeds the 44-inch maximum
+specified in 2010 ADA § 308.2.2 for obstructed forward reach.
+Cite: 2010 ADA § 308.2.2."
+
+CORRECTIVE: "Relocate the fume-hood sash control to a position
+that allows operable parts to be reached within the 2010 ADA
+§ 308.2.2 obstructed forward-reach range (44 inches maximum for
+obstruction depth 20–25 inches). Provide photographic documentation
+of corrected dimensions. Complete within 45 days. Cite: 2010 ADA
+§ 308.2.2."
+
+Documenting the election: in the LOF narrative, note that the LEA
+did not produce documentation of the 1991-vs-2010 election; the
+reviewer defaulted to 2010 ADA per CDE OEO practice. Recommend that
+the LEA preserve such election records for future reviews.""",
+
+    # Case #12 — 1968 restroom + 2020 bottle filler
+    """Standards application — element by element:
+
+  - 1968 restroom (unaltered): Program Access. NO findings.
+  - 2020 bottle filler (RETROFIT, single element altered): 2010 ADA
+    operable-parts requirements apply to the bottle filler ONLY.
+    Per § 211.2: water coolers and bottle fillers must comply with
+    operable-parts requirements (§ 309) including:
+      - location on accessible route
+      - clear floor space (forward or side approach)
+      - hand-operated controls within reach range (15–48") and
+        usable with one hand, no tight grasping, ≤ 5 lbf
+
+Field on the 2020 bottle filler:
+  - Spout 40" AFF (no dimensional rule for the spout itself —
+    bottle filler is not a drinking fountain)
+  - Controls 49" AFF — exceeds 48" reach range in § 309
+  - 5 lbf push — at the maximum permitted; acceptable IF a single
+    hand without tight grasping operates it (verify)
+
+VIOLATION (bottle filler element only): "The 2020-installed bottle
+filler controls measured at 49 inches above floor exceed the 48-inch
+maximum forward reach specified in 2010 ADA § 308.2.1 (operable
+parts via § 309). Cite: 2010 ADA § 308.2.1 and § 309.4."
+
+CORRECTIVE: "Relocate or replace the bottle-filler control so the
+operable part is no more than 48 inches above the finished floor
+per 2010 ADA § 308.2.1 and operable per § 309.4 (closed-fist
+operation, 5 lbf maximum). Provide photographic documentation.
+Complete within 45 days. Cite: 2010 ADA § 308.2.1 and § 309.4."
+
+ORIGINAL 1968 restroom and the rest of the 1968 corridor stay
+Program Access. NO findings on toilet seat height, lavatory rim,
+grab bars, signage — none of those are altered elements.
+
+Common mistake: writing up the 1968 lavatory under 2010 ADA
+because a bottle filler was retrofitted nearby. The bottle filler
+is the only altered element. Everything else stays Program Access.
+
+Narrative: if the 1968 restroom presents a program-access barrier,
+recommend the LEA conduct a program-access analysis (relocation,
+reassignment, auxiliary aids, or structural alteration as last
+resort).""",
+]
+
+# Attach the answers to the case-study slides as speaker notes
+# (Slides 62-71 are the new case studies; index into prs.slides is 61-70)
+for i, ans in enumerate(CASE_ANSWERS):
+    slide_idx = 61 + i  # zero-indexed
+    add_notes(prs.slides[slide_idx], ans)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SLIDE 72 — Answer-key callout (one slide between case studies and resources)
+# ─────────────────────────────────────────────────────────────────────────────
+s = add_slide(); header_bar(s, "Where the answer keys live",
+                            kicker="Slide 72 · Wrap-up")
+add_text(s, Inches(0.55), Inches(1.55), Inches(12.3), Inches(0.45),
+         "Three places to find answers to every knowledge check and case study.",
+         size=14, italic=True, color=MUTED)
+
+key_cards = [
+    ("1.", "Speaker Notes",
+     "Every Knowledge Check slide (18, 22, 30, 38, 54, 58) and every Case Study slide (59–71) has the full answer in its Speaker Notes panel.",
+     "View ▸ Notes  •  or  Slide Show ▸ Use Presenter View",
+     NAVY),
+    ("2.", "Answer-Key Slide 60",
+     "Case Study #1 has a dedicated answer-key SLIDE (Slide 60). The other case studies do not — their answers live in Speaker Notes and the answer-key document.",
+     "Slide 60 only",
+     GOLD),
+    ("3.", "Separate Answer Key Document",
+     "CRR_Training_Answer_Key.docx — a standalone Word document with every knowledge check + every case study (12 total) and its full answer, formatted for printing.",
+     "outputs/CRR_Training_Answer_Key.docx",
+     RED),
+]
+for i, (num, head, body, where, color) in enumerate(key_cards):
+    y = Inches(2.2 + 1.5*i)
+    add_rect(s, Inches(0.55), y, Inches(0.85), Inches(1.35), color)
+    add_text(s, Inches(0.55), y, Inches(0.85), Inches(1.35), num,
+             size=32, bold=True, color=GOLD if color==NAVY else WHITE,
+             align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font="Georgia")
+    add_rect(s, Inches(1.45), y, Inches(11.4), Inches(1.35), CREAM, line=BORDER)
+    add_text(s, Inches(1.65), y+Inches(0.1), Inches(11), Inches(0.4), head,
+             size=15, bold=True, color=NAVY)
+    add_text(s, Inches(1.65), y+Inches(0.55), Inches(11), Inches(0.55), body,
+             size=12, color=TEXT)
+    add_text(s, Inches(1.65), y+Inches(1.0), Inches(11), Inches(0.3), where,
+             size=10, color=MUTED, italic=True, font="Consolas")
+footer(s, 72)
+add_notes(s, """
+Tell the class that the answer-key document is what they should carry
+into their first solo reviews. It's organized the same as the slides
+and grounded in the U.S. Access Board technical guides we referenced.
+
+Open the Speaker Notes panel during practice to see answers inline,
+or use Presenter View if running this as a live training.
+
+In a virtual delivery, share the answer-key doc only after the class
+attempts each knowledge check — don't pre-share it.
+""")
+
 # ─────────────────────────────────────────────────────────────────────────────
 # SLIDE 62 — Resources & references
 # ─────────────────────────────────────────────────────────────────────────────
 s = add_slide(); header_bar(s, "Resources & references",
-                            kicker="Slide 62 · Wrap-up")
+                            kicker="Slide 73 · Wrap-up")
 # Three columns: standards docs, agency guidance, internal tools
 def res_col(x, y, w, h, title, items):
     add_rect(s, x, y, w, h, CREAM, line=BORDER)
@@ -3573,7 +4026,7 @@ res_col(Inches(8.85), Inches(1.55), Inches(4.0), Inches(5.4), "CDE / Internal",
      ("CDE accessibility liaison", "Coordinates with DSA on construction-date evidence"),
      ("Knowledge-check slides",   "Slides 18, 22, 30, 38, 54, 58 — rehearse before site visits"),
     ])
-footer(s, 62)
+footer(s, 73)
 add_notes(s, """
 Hand out printed copies of: (1) the decision tree (Slide 13), (2) the
 six date windows (Slide 14), and (3) the three quick-reference slides
@@ -3581,10 +4034,17 @@ six date windows (Slide 14), and (3) the three quick-reference slides
 
 Direct reviewers to bookmark ADA.gov and the U.S. Access Board site —
 both are excellent for quick lookups in the field.
+
+Reference handouts from the Access Board (used in case studies #3-12):
+  • Alterations & Additions
+  • Accessible Routes
+  • Entrances, Doors, and Gates
+  • Drinking Fountains
+  • Lavatories & Sinks
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 63 — Course summary & next steps
+# SLIDE 74 — Course summary & next steps
 # ─────────────────────────────────────────────────────────────────────────────
 s = add_slide(); set_bg(s, CREAM)
 add_rect(s, 0, 0, SLIDE_W, SLIDE_H, NAVY)
@@ -3603,10 +4063,11 @@ add_text(s, Inches(0.7), Inches(2.7), Inches(12), Inches(0.4),
 takeaways = [
     "The five standards, the six date windows, and the decision tree.",
     "The Program-Access doctrine and the absolute None / None rule.",
-    "Key dimensions for parking, routes, doors, ramps, restrooms, and signage.",
+    "The element-by-element alteration rule and the path-of-travel obligation.",
+    "Corrective actions are written to 2010 ADA — always, every time.",
+    "Key dimensions for routes, doors, ramps, restrooms, fountains, lavs/sinks, signage.",
     "How to walk a CTE shop, kitchen, lab, or ag building.",
-    "How to drive the Facilities LOF Generator from packet to Word output.",
-    "How to write a defensible violation and corrective action — every time.",
+    "How to write a defensible violation and corrective action — and where to find the answer keys.",
 ]
 for i, t in enumerate(takeaways):
     y = Inches(3.2 + 0.42*i)
@@ -3626,31 +4087,234 @@ add_text(s, Inches(0.7), Inches(6.4), Inches(12), Inches(0.4),
 add_text(s, Inches(0.7), Inches(6.9), Inches(12), Inches(0.4),
          "Questions? Reach out to your CDE OEO team lead.",
          size=12, color=GOLD_LT, italic=True)
-footer(s, 63)
+footer(s, 74)
 add_notes(s, """
 Wrap-up. Three concrete next steps for every new reviewer:
 
 1. SHADOW two complete reviews with a senior reviewer before flying
-   solo. Watch how they walk a site, how they measure, how they handle
-   pushback from the LEA.
+   solo. Watch how they walk a site, how they measure, how they
+   handle pushback from the LEA.
 
-2. RUN one mock LOF using the Facilities LOF Generator with a prior
-   completed packet (from the archives). Have a senior reviewer check
-   your output before exporting to Word.
+2. WORK THROUGH all 12 case studies in CRR_Training_Answer_Key.docx
+   before your first solo review. The 10 new case studies (#3-12) are
+   grounded in the U.S. Access Board technical guides and cover the
+   alteration / path-of-travel scenarios you will face most.
 
 3. SIGN UP for the U.S. Access Board's monthly webinar series — free,
    excellent technical content, counts toward your CEU requirements.
 
 Open the floor for final questions. Distribute the printed handouts
-(decision tree, quick-reference cards). Thank everyone for their
-attention. End of training.
+(decision tree, quick-reference cards, answer-key doc). Thank everyone
+for their attention. End of training.
 """)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Save
+# Save the PPTX
 # ─────────────────────────────────────────────────────────────────────────────
 import os
 os.makedirs('outputs', exist_ok=True)
 out_path = 'outputs/CRR_Accessibility_Training.pptx'
 prs.save(out_path)
 print(f"Saved {len(prs.slides)} slides → {out_path}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Generate the standalone Answer-Key Word document
+# ─────────────────────────────────────────────────────────────────────────────
+print("\nBuilding CRR_Training_Answer_Key.docx…")
+from docx import Document as DocxDoc
+from docx.shared import Pt as DocxPt, Inches as DocxInches, RGBColor as DocxRGB
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+ak = DocxDoc()
+# Page setup
+for section in ak.sections:
+    section.top_margin = DocxInches(0.75)
+    section.bottom_margin = DocxInches(0.75)
+    section.left_margin = DocxInches(0.85)
+    section.right_margin = DocxInches(0.85)
+
+def ak_para(text, *, size=11, bold=False, color=(0x1A,0x1A,0x1A), italic=False,
+            after=4, align=None, indent_left=None):
+    p = ak.add_paragraph()
+    if align is not None:
+        p.alignment = align
+    if indent_left is not None:
+        p.paragraph_format.left_indent = DocxInches(indent_left)
+    p.paragraph_format.space_after = DocxPt(after)
+    r = p.add_run(text)
+    r.font.name = "Calibri"
+    r.font.size = DocxPt(size)
+    r.font.bold = bold
+    r.font.italic = italic
+    r.font.color.rgb = DocxRGB(*color)
+    return p
+
+NAVY_RGB = (0x1A, 0x27, 0x44)
+GOLD_RGB = (0xC8, 0xA8, 0x4B)
+MUTED_RGB = (0x6B, 0x66, 0x59)
+RED_RGB = (0xB9, 0x1C, 0x1C)
+
+# Cover
+ak_para("CALIFORNIA DEPARTMENT OF EDUCATION  ·  OFFICE OF EQUAL OPPORTUNITY",
+        size=9, bold=True, color=GOLD_RGB, after=2)
+ak_para("Civil Rights Review — Reviewer Onboarding Training",
+        size=11, italic=True, color=MUTED_RGB, after=18)
+ak_para("Accessible Facilities for K–12 and CTE",
+        size=22, bold=True, color=NAVY_RGB, after=4)
+ak_para("ANSWER KEY  —  Knowledge Checks & Case Studies",
+        size=14, bold=True, color=GOLD_RGB, after=14)
+ak_para("This document contains the full answer to every Knowledge Check and "
+        "every Case Study in the CRR Accessibility Training deck. Distribute "
+        "to trainees AFTER they attempt each problem — not before.",
+        size=11, italic=True, color=MUTED_RGB, after=24)
+
+ak.add_paragraph().add_run().add_break()
+
+# Knowledge checks
+ak_para("PART 1 — KNOWLEDGE CHECKS", size=16, bold=True, color=NAVY_RGB, after=12)
+
+KC_DATA = [
+    ("KC #1  ·  Slide 18  ·  Which standard applies?",
+     ["A. 1972 high school gym — locker rooms gutted and rebuilt in 2017.",
+      "B. 1995 culinary classroom — no documented alterations.",
+      "C. 1965 wood shop — restriped parking lot in 2024; building never altered.",
+      "D. 2011 STEM building — district records do not document an election between 1991 and 2010 ADA."],
+     ["A.  GYM BUILDING = Program Access (1972 is BEFORE June 4, 1977). LOCKER ROOMS (whole rooms rebuilt 2017) = 2010 ADA.",
+      "B.  1991 ADA (constructed 1998, no alterations).",
+      "C.  Wood shop building = Program Access. Parking-lot striping = 2010 ADA (striping is an accessibility element; restriping in 2024 is the alteration date).",
+      "D.  Overlap window (Sep 15, 2010 – Mar 14, 2012). LEA's election is required to be documented. Absent documentation, the reviewer defaults to 2010 ADA — the more stringent of the two."]),
+    ("KC #2  ·  Slide 22  ·  Program Access pitfall",
+     ["1969 ag building. Greenhouse ramp 1:8 (steeper than 1:12). Entrance door 28\" clear. No ISA signage at door. LEA has not altered this building since 1969.",
+      "What do you write in the Accessibility Violation column?"],
+     ["CORRECT ANSWER: C.  \"None.\"  Document the program-access concern in the narrative section instead.",
+      "Why: a 1969 building is BEFORE June 4, 1977 — it is Program Access. ANSI starts June 4, 1977. The 2010 ADA does NOT apply retroactively. There is no measurable dimensional standard to cite for any element on this building.",
+      "Common wrong answer: A (cite 2010 ADA). This is the classic mistake — the field conditions LOOK like 2010 ADA violations, but the standard does not apply.",
+      "Correct reviewer move: write \"None.\" in BOTH the violation and corrective columns. In the LOF narrative, recommend the LEA conduct and document a program-access analysis for the ag building (relocation, reassignment, auxiliary aids, or structural alteration as last resort)."]),
+    ("KC #3  ·  Slide 30  ·  Cite the right standard — 1991 ADA",
+     ["Madera HS culinary classroom built 1998, no accessibility-affecting alterations. Field: counter prep at 38\"; ISA signage at 44\"; door clear width 31\". Write the violation row."],
+     ["Standard applies: 1991 ADA.",
+      "Violation 1 (counter): \"Counter prep surface at 38 inches exceeds the 34-inch maximum specified in 1991 ADA § 7.2.\" Cite: 1991 ADA § 7.2.",
+      "Violation 2 (signage): \"ISA signage centerline at 44 inches is below the required 48–60 inch mounting range specified in 1991 ADA § 4.30.6.\" Cite: 1991 ADA § 4.30.6.",
+      "Violation 3 (door): \"Door clear width 31 inches is below the 32-inch minimum specified in 1991 ADA § 4.13.5.\" Cite: 1991 ADA § 4.13.5.",
+      "CORRECTIVE column (for each): cite 2010 ADA — the rule from Slide 53. § 904.4.1 (counter, 34\" max), § 703.4.1 (signage 48–60\"), § 404.2.3 (door 32\" min).",
+      "Common errors: citing 2010 ADA in the VIOLATION column. The building is 1998 unaltered; 2010 ADA does not retroactively apply. Always include the standard year in the cite."]),
+    ("KC #4  ·  Slide 38  ·  2010 ADA — six measurements (Compliant / Violation)",
+     ["Building constructed 2018.",
+      "1. Parking surface slope: 2.4% in one direction",
+      "2. Coat hook in accessible restroom: 47\" forward reach",
+      "3. Toilet seat height: 16\" above floor",
+      "4. Door clear width: 34\"",
+      "5. Ramp running slope: 1:14",
+      "6. ISA signage baseline of tactile characters: 62\" above floor"],
+     ["1. VIOLATION. 2010 ADA § 502.4 caps surface slope at 2% in any direction.",
+      "2. COMPLIANT. 2010 ADA § 308.2.1 allows up to 48\" forward reach.",
+      "3. VIOLATION. 2010 ADA § 604.4 requires 17–19\" seat height.",
+      "4. COMPLIANT. 2010 ADA § 404.2.3 requires minimum 32\".",
+      "5. COMPLIANT. 2010 ADA § 405.2 sets the MAX at 1:12 (i.e., slope cannot be STEEPER than 1:12). 1:14 is gentler than 1:12.",
+      "6. VIOLATION. 2010 ADA § 703.4.1 requires 48–60\" baseline.",
+      "Trick rows: #4 (minimums) and #5 (1:14 is gentler than 1:12) — both confuse new reviewers."]),
+    ("KC #4½  ·  Slide 54  ·  Both rules at once",
+     ["1972 high-school cafeteria. Original 1972 fixed counters + tray-slide. In 2018 the LEA installed a NEW tray-slide ONLY (work orders confirm). Field: 2018 tray-slide 36\"; original 1972 counter 37\".",
+      "PART A — 2018 tray-slide @ 36\".",
+      "PART B — 1972 counter @ 37\"."],
+     ["PART A. Standard at violation: 2010 ADA (newly installed 2018). Violation cite: 2010 ADA § 904.4.1 (34\" max tray-slide). Corrective cite: 2010 ADA § 904.4.1.",
+      "PART B. Standard at violation: Program Access (1972 unaltered counter). Violation cite: NONE — leave as \"None.\" Corrective cite: NONE — leave as \"None.\" Address via narrative only.",
+      "TRAP: students will want to cite the 1972 counter at 37\" as a 2010 ADA violation. WRONG on two counts: (1) the counter was not altered, so 2010 ADA does not apply; (2) Program Access has no dimensional standard, so no findings."]),
+    ("KC #5  ·  Slide 58  ·  Rewrite this violation entry",
+     ["Rookie reviewer wrote: \"The handrail on the ramp at the wood shop is too low. The shop was built in 1985. It violates the ADA. Fix it.\""],
+     ["Errors in rookie version: no measurement; \"violates the ADA\" is the wrong standard (1985 unaltered = ANSI); no section citation; no specific location (which ramp? which side?); no concrete corrective action with deadline.",
+      "Model VIOLATION: \"Handrail on the south-side ramp serving the wood shop measured at 30 inches above the ramp surface. The handrail does not meet the 34-inch minimum height specified in ANSI A117.1-1961 (R1971) § 4.8.5. The building was constructed in 1985 and the handrail has not been altered; ANSI A117.1 (1961 R1971) is the applicable standard under 34 CFR § 104.23. Cite: ANSI A117.1 § 4.8.5.\"",
+      "Model CORRECTIVE: \"Replace the south-side wood shop ramp handrail at a height not less than 34 inches and not more than 38 inches above the ramp surface, with 12-inch horizontal extensions at the top and bottom (parallel to the floor at the bottom), in conformance with 2010 ADA § 505.4 and § 505.10. Provide photographic documentation of completed installation including dimensional measurements. Complete within 45 days of receipt of this Letter of Findings. Cite: 2010 ADA § 505.4 and § 505.10.\"",
+      "Note: violation cites ANSI; corrective cites 2010 ADA."]),
+]
+
+for title, prompt, ans in KC_DATA:
+    ak_para(title, size=13, bold=True, color=NAVY_RGB, after=4)
+    ak_para("Prompt:", size=10, bold=True, color=GOLD_RGB, after=2)
+    for line in prompt:
+        ak_para("• " + line, size=10, after=2, indent_left=0.15)
+    ak_para("Answer:", size=10, bold=True, color=GOLD_RGB, after=2)
+    for line in ans:
+        ak_para(line, size=10, after=4, indent_left=0.15)
+    ak_para("", after=10)
+
+# Case studies
+ak.add_paragraph().add_run().add_break()
+ak_para("PART 2 — CASE STUDIES", size=16, bold=True, color=NAVY_RGB, after=12)
+
+# Case #1 & #2 first (already in deck), then 3-12 from CASE_STUDIES + CASE_ANSWERS
+CS_HEADERS = [
+    ("Case #1  ·  Slide 59–60  ·  Sierra Vista HS — Mixed-era welding shop", None),
+    ("Case #2  ·  Slide 61  ·  Bay Shore HS — 2014 culinary classroom", None),
+]
+# Pull the case #1 and #2 scenarios + answers from the deck speaker notes
+CS_DESCRIPTIONS = [
+    "Welding shop in a free-standing 1979 building. In 2018 the LEA installed: a new concrete pad outside the south door; a new south-side ramp from the pad to the door (rise 18\", run 16'-0\"); new handrails on the south ramp; ISA signage at the south door. Field: south ramp slope 1:11; south ramp handrail 32\"; ISA sign baseline 62\"; 8 welding booths with 30\" frame openings; workbenches 36\" with full skirts.",
+
+    "Culinary classroom built 2014 (single construction event, no alterations). 12 prep stations at 36\" with full-skirt cabinets, no knee clearance. 4 cooktops at 36\" with no knee clearance. 1 designated 'ADA prep cart' currently stored in a side closet. Dish-pit spray-arm controls at 50\" reach over a 14\" deep counter. Walk-in pantry door clear width 31\". Hand-wash sink lavatory rim 37\". Tray-slide service line at 36\". LEA's position: 'We have an accessible prep cart that we wheel out as needed.'",
+]
+CS_FULL_ANSWERS = [
+    """Element-by-element standards application:
+- Original shop building (1979, no alterations) → ANSI A117.1.
+- South ramp + handrails (built 2018) → 2010 ADA.
+- ISA signage at south door (installed 2018) → 2010 ADA.
+- Welding booths (original 1979 construction) → ANSI A117.1.
+- Workbenches (original 1979) → ANSI A117.1 (ANSI silent on workstation specs).
+
+Violations:
+1. Ramp slope 1:11 → VIOLATION 2010 ADA § 405.2 (built 2018). CORRECTIVE: 2010 ADA § 405.2.
+2. Ramp handrail 32\" → VIOLATION 2010 ADA § 505.4 (built 2018). CORRECTIVE: 2010 ADA § 505.4.
+3. ISA sign 62\" → VIOLATION 2010 ADA § 703.4.1 (installed 2018). CORRECTIVE: 2010 ADA § 703.4.1.
+4. Welding booth frame 30\" (1979 element) → No coded violation; ANSI 1961 silent on welding booths. Program-access narrative recommendation only.
+5. Workbenches no knee/toe (1979 element) → No coded violation. Program-access narrative.""",
+
+    """Standard: 2010 ADA (constructed 2014, no alterations).
+
+LEA position pushback: The mobile prep cart stored in a side closet is NOT an active part of the classroom configuration. The "alternate accessible workstation" approach is acceptable only if the alternate is in regular active use and is reachable via an accessible route. Stored-in-closet doesn't qualify.
+
+Violations + correctives (all cite 2010 ADA):
+1. No fixed accessible prep station with knee/toe clearance. CITE: § 306 and § 902.4.
+2. Cooktops at 36\" with no knee clearance / no accessible alternate in regular use. CITE: § 306.
+3. Dish-pit spray-arm 50\" reach over 14\" deep counter → 14\" obstruction <20\" so 48\" max applies. 50\" exceeds 48\" → VIOLATION § 308.2.
+4. Walk-in pantry door clear width 31\". CITE: § 404.2.3.
+5. Hand-wash lavatory rim 37\". CITE: § 606.3 (34\" max).
+6. Tray-slide at 36\". CITE: § 904.4.1 (34\" max).
+
+CORRECTIVES (all 2010 ADA): replace one prep station with knee/toe (§ 306 and § 902.4); install one cooktop alternate at 34\" max with knee clearance (§ 306); relocate spray-arm controls within 48\" reach (§ 308.2); widen pantry door to 32\" min (§ 404.2.3); lower hand-wash sink to 34\" max (§ 606.3); lower tray-slide to 34\" max (§ 904.4.1). All within 45 days."""
+]
+
+for (title, _), desc, ans in zip(CS_HEADERS, CS_DESCRIPTIONS, CS_FULL_ANSWERS):
+    ak_para(title, size=13, bold=True, color=NAVY_RGB, after=4)
+    ak_para("Scenario:", size=10, bold=True, color=GOLD_RGB, after=2)
+    ak_para(desc, size=10, after=6, indent_left=0.15)
+    ak_para("Answer:", size=10, bold=True, color=GOLD_RGB, after=2)
+    for line in ans.split("\n"):
+        if line.strip():
+            ak_para(line, size=10, after=2, indent_left=0.15)
+    ak_para("", after=10)
+
+# Cases #3-#12 (from CASE_STUDIES + CASE_ANSWERS arrays above)
+for i, ((title, scenario, focus), ans) in enumerate(zip(CASE_STUDIES, CASE_ANSWERS)):
+    page_num = 62 + i
+    ak_para(f"{title}  ·  Slide {page_num}", size=13, bold=True, color=NAVY_RGB, after=4)
+    ak_para(f"Focus:  {focus}", size=10, italic=True, color=MUTED_RGB, after=4)
+    ak_para("Scenario:", size=10, bold=True, color=GOLD_RGB, after=2)
+    ak_para(scenario, size=10, after=6, indent_left=0.15)
+    ak_para("Answer:", size=10, bold=True, color=GOLD_RGB, after=2)
+    for line in ans.split("\n"):
+        if line.strip():
+            ak_para(line, size=10, after=2, indent_left=0.15)
+        else:
+            ak_para("", after=2)
+    ak_para("", after=10)
+
+# Footer / closing
+ak.add_paragraph().add_run().add_break()
+ak_para("All citations: 28 CFR Part 35 App. B (2010 ADA Standards) and 34 CFR Part 104 (§ 504). "
+        "Source guides: U.S. Access Board technical guides on Alterations & Additions, "
+        "Accessible Routes, Entrances/Doors/Gates, Drinking Fountains, and Lavatories & Sinks.",
+        size=9, italic=True, color=MUTED_RGB, after=4)
+
+ak_path = "outputs/CRR_Training_Answer_Key.docx"
+ak.save(ak_path)
+print(f"Saved answer key → {ak_path}  ({os.path.getsize(ak_path)/1024:.1f} KB)")
