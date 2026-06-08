@@ -1,16 +1,19 @@
-"""Build the optimized BLANK Facilities Review Guide — v4.
+"""Build the optimized BLANK Facilities Review Guide — v5.
 
-v4 spec (per user feedback on v3):
-  * NO era dropdown. The Program Reviewer determines the applicable
-    standard — that is NOT the LEA's responsibility.
-  * NO "Instance" labels. Columns are just unlabeled.
-  * Wide multi-column tables (label column + 4 location columns going
-    ACROSS) matching the original guide's Curb Ramps / Rooms format.
-  * NO date pickers. Plain text fields so users type "1968" or
-    "Circa 1970" without clicking through ~700 months.
-  * 12pt Arial minimum body text.
-  * Black & white — no colored fills, no accent colors.
-  * Don't cram a section into one page; let content flow naturally.
+v5 changes from v4:
+  * Each multi-instance section's measurement table is wrapped in a
+    native Word Repeating Section Content Control (w15:repeatingSection).
+    Click anywhere in the table → Word shows a "+" button at the right
+    margin → click "+" to insert another blank copy of the entire
+    table for an additional set of locations.
+  * Works in Word 2013+ (Windows), Word for Mac 2016+, Word for the web.
+  * No macros, no security warning, no .docm.
+
+v4 fundamentals retained:
+  * NO era dropdown — reviewer determines the standard.
+  * Plain text fields throughout — no date pickers.
+  * 12pt Arial, black & white.
+  * Wide tables: label column + 4 location columns per copy.
 
 PRESERVED VERBATIM from source (non-negotiable):
   * Cover page
@@ -23,6 +26,17 @@ from docx import Document
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from docx.shared import Pt, Inches
+from lxml import etree
+
+# w15 namespace — Microsoft Word 2012 wordml extensions (for repeatingSection)
+W15_NS = "http://schemas.microsoft.com/office/word/2012/wordml"
+
+# Sequential SDT ID counter — guarantees no collisions
+_next_id = 1000
+def next_id():
+    global _next_id
+    _next_id += 1
+    return str(_next_id)
 
 SRC = "/root/.claude/uploads/f318c6f4-c9c8-4a12-bcd0-bfd812a66767/60dc1d22-BLANK_Facilities__Review_Guide.docx"
 OUT = "outputs/BLANK_Facilities_Review_Guide_optimized.docx"
@@ -1058,13 +1072,56 @@ for ch in to_remove:
     body.remove(ch)
 
 # ── Build new content ────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# REPEATING SECTION CONTENT CONTROL helper (v5)
+# Wrap an element (the table) in a w15:repeatingSection SDT.
+# When the cursor is inside the table in Word, a "+" button appears on the
+# right margin. Click "+" → Word duplicates the inner SDT's content.
+# Requires Word 2013+ / Mac 2016+ / Word for the web.
+# ─────────────────────────────────────────────────────────────────────────────
+def wrap_repeating_section(table_element, alias_name):
+    """Wrap a table in a Repeating Section Content Control."""
+    # Outer SDT — declares this is a repeating section
+    outer = OxmlElement("w:sdt")
+    outer_pr = OxmlElement("w:sdtPr")
+    rid = OxmlElement("w:id"); rid.set(qn("w:val"), next_id()); outer_pr.append(rid)
+    alias = OxmlElement("w:alias"); alias.set(qn("w:val"), alias_name); outer_pr.append(alias)
+    tag = OxmlElement("w:tag")
+    tag.set(qn("w:val"), "rs_" + re.sub(r"[^A-Za-z0-9]+", "_", alias_name).strip("_"))
+    outer_pr.append(tag)
+    # The w15 namespace element that marks this as a repeating section
+    etree.SubElement(outer_pr, f"{{{W15_NS}}}repeatingSection")
+    outer.append(outer_pr)
+    outer.append(OxmlElement("w:sdtEndPr"))
+    outer_content = OxmlElement("w:sdtContent")
+    outer.append(outer_content)
+
+    # Inner SDT — one repeating-section ITEM (the unit that gets cloned)
+    inner = OxmlElement("w:sdt")
+    inner_pr = OxmlElement("w:sdtPr")
+    rid2 = OxmlElement("w:id"); rid2.set(qn("w:val"), next_id()); inner_pr.append(rid2)
+    etree.SubElement(inner_pr, f"{{{W15_NS}}}repeatingSectionItem")
+    inner.append(inner_pr)
+    inner.append(OxmlElement("w:sdtEndPr"))
+    inner_content = OxmlElement("w:sdtContent")
+    # The actual table to duplicate
+    inner_content.append(table_element)
+    inner.append(inner_content)
+
+    outer_content.append(inner)
+    return outer
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build new content
+# ─────────────────────────────────────────────────────────────────────────────
 new = []
 
 # Render each section
 for name, schema, kind in SECTIONS:
     new.extend(render_section_heading(name, multi=(kind=='multi')))
     if kind == 'multi':
-        new.append(render_section_table(schema, num_locs=NUM_LOCATIONS))
+        section_table = render_section_table(schema, num_locs=NUM_LOCATIONS)
+        new.append(wrap_repeating_section(section_table, f"{name} — locations"))
     else:
         new.append(render_single_table(schema))
 
@@ -1098,8 +1155,36 @@ print(f"Inserting {len(new)} elements before Glossary at position {idx}…")
 for e in new:
     parent.insert(idx, e); idx += 1
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Ensure the document root declares the w15 namespace so Word recognizes the
+# repeating-section markers we just embedded.
+# ─────────────────────────────────────────────────────────────────────────────
+doc_root = body.getparent()  # <w:document>
+if doc_root.nsmap.get("w15") != W15_NS:
+    # lxml's nsmap is read-only; rebuild the element with the extra namespace
+    new_nsmap = dict(doc_root.nsmap)
+    new_nsmap["w15"] = W15_NS
+    new_root = etree.Element(doc_root.tag, attrib=dict(doc_root.attrib), nsmap=new_nsmap)
+    for child in list(doc_root):
+        new_root.append(child)
+    # Also copy any Ignorable attribute and add w15 to mc:Ignorable so older
+    # Word versions ignore the markers cleanly.
+    mc_ns = "http://schemas.openxmlformats.org/markup-compatibility/2006"
+    ign_attr = f"{{{mc_ns}}}Ignorable"
+    cur = new_root.get(ign_attr, "")
+    if "w15" not in cur.split():
+        new_root.set(ign_attr, (cur + " w15").strip())
+    # Swap the root
+    doc_root.getparent().replace(doc_root, new_root) if doc_root.getparent() is not None else None
+    # python-docx's document.xml is the root, so we replace directly
+    # by reassigning the body's parent reference (handled via the part)
+    part = doc.part
+    part._element = new_root
+    print("✓ Added w15 namespace declaration to document.xml root.")
+
 # ── Save ─────────────────────────────────────────────────────────────────────
 os.makedirs("outputs", exist_ok=True)
 doc.save(OUT)
 print(f"\n✓ Saved → {OUT}")
 print(f"  File size: {os.path.getsize(OUT)/1024:.1f} KB")
+print(f"  SDT ID counter: {_next_id}")
