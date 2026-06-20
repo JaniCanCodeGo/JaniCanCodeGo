@@ -1,6 +1,9 @@
 # Generated output documents
 outputs/
 
+# Build artifacts (downloadable vault zip)
+*.zip
+
 # Python
 __pycache__/
 *.py[cod]
