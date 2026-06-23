@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## About the user (read first)
+
+The user is multifaceted, not a monolith. The Civil Rights Review (CRR) / Education
+Equity (EE) work described below is their **day job** — it is NOT the sum of their
+goals. They are deliberately branching into independent ventures, including:
+
+- Grant research and grant writing
+- An ADHD-focused practice (teaching the ADHD community to use AI to work more efficiently)
+- A podcast
+- A website / web-scraping projects
+- Business ideas (finding and posting them)
+
+**Keep these worlds separate.** Skills, agents, and automations built for the personal
+ventures must be organized and kept distinct from the day-job CRR/EE tooling. Do not
+default to a CRR/EE framing when making suggestions. When a request could belong to
+either world and it is not obvious which, ask.
+
 ## What this project does
 
 CRR (Civil Rights Review) Document Processing Agent for California K-12 education compliance. It takes a completed **Summary of Findings** `.docx` and produces two output documents:
