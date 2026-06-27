@@ -1,0 +1,9 @@
+# Meeting OS output (generated dashboards)
+meetingos_output/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

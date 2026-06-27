@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!--
+  Meeting OS dashboard template.
+  This is a REFERENCE for the meetingos skill. When generating a dashboard,
+  copy this structure and replace every {{PLACEHOLDER}} with real content
+  extracted from the Granola transcript. Keep it a single self-contained file:
+  no external CDNs, fonts, or network calls. Adapt the #type-panel section to
+  match the detected meeting type.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{MEETING_TITLE}} — Meeting OS</title>
+<style>
+  :root {
+    --bg: #0f1115; --card: #181b22; --line: #262b35; --ink: #e8eaed;
+    --muted: #9aa3b2; --accent: #6ea8fe; --good: #4ade80; --warn: #fbbf24;
+    --bad: #f87171; --chip: #222732;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 28px 20px 80px; }
+  header.hero { border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 22px; }
+  h1 { font-size: 26px; margin: 0 0 6px; }
+  .meta { color: var(--muted); font-size: 14px; }
+  .chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--chip); border: 1px solid var(--line); color: var(--ink);
+    padding: 4px 10px; border-radius: 999px; font-size: 12.5px;
+  }
+  .chip.type { border-color: var(--accent); color: var(--accent); }
+  .summary {
+    background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    padding: 14px 16px; border-radius: 10px; margin: 18px 0 26px; color: var(--ink);
+  }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .tab {
+    background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px;
+  }
+  .tab.active { color: var(--ink); border-color: var(--accent); background: #1d2230; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 16px;
+  }
+  .card h2 { font-size: 16px; margin: 0 0 12px; }
+  ul.clean { list-style: none; margin: 0; padding: 0; }
+  ul.clean li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  ul.clean li:last-child { border-bottom: none; }
+  .owner { color: var(--accent); font-size: 12.5px; }
+  .due { color: var(--warn); font-size: 12.5px; }
+  blockquote {
+    margin: 0 0 12px; padding: 10px 14px; border-left: 3px solid var(--muted);
+    background: #14171d; border-radius: 6px; color: var(--ink); font-style: italic;
+  }
+  blockquote cite { display: block; margin-top: 6px; font-size: 12.5px; color: var(--muted); font-style: normal; }
+  .check { display: flex; gap: 10px; align-items: flex-start; }
+  .check input { margin-top: 4px; transform: scale(1.15); accent-color: var(--accent); }
+  .check.done label { text-decoration: line-through; color: var(--muted); }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+  button.btn {
+    background: #1d2230; border: 1px solid var(--line); color: var(--ink);
+    padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  }
+  button.btn:hover { border-color: var(--accent); }
+  .empty { color: var(--muted); font-style: italic; }
+  /* type-specific helpers */
+  .timeline li { position: relative; padding-left: 18px; }
+  .timeline li::before { content: "●"; color: var(--accent); position: absolute; left: 0; }
+  .idea { display: flex; justify-content: space-between; gap: 12px; }
+  .idea .rank { color: var(--accent); font-weight: 700; }
+  .winner { border-color: var(--good); border-left: 3px solid var(--good); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1>{{MEETING_TITLE}}</h1>
+    <div class="meta">{{MEETING_DATE}} &middot; {{ATTENDEES}}</div>
+    <div class="chips">
+      <span class="chip type">Type: {{MEETING_TYPE}}</span>
+      <span class="chip">{{TYPE_CONFIDENCE_NOTE}}</span>
+    </div>
+  </header>
+
+  <div class="summary">{{ONE_LINE_SUMMARY}}</div>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-panel="overview">Overview</div>
+    <div class="tab" data-panel="actions">Action Items</div>
+    <div class="tab" data-panel="focus">{{TYPE_PANEL_LABEL}}</div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="panel active" id="overview">
+    <div class="card">
+      <h2>Decisions</h2>
+      <ul class="clean">{{DECISIONS_LIST}}<!-- <li>Decision text <span class="owner">— who</span></li> --></ul>
+    </div>
+    <div class="card">
+      <h2>Open Questions</h2>
+      <ul class="clean">{{OPEN_QUESTIONS_LIST}}</ul>
+    </div>
+    <div class="card">
+      <h2>Key Quotes</h2>
+      {{QUOTES_BLOCK}}<!-- <blockquote>"..."<cite>— Speaker</cite></blockquote> -->
+    </div>
+  </section>
+
+  <!-- ACTION ITEMS (interactive) -->
+  <section class="panel" id="actions">
+    <div class="card">
+      <h2>Action Items</h2>
+      <div class="toolbar">
+        <button class="btn" id="copyActions">Copy as checklist</button>
+        <button class="btn" id="resetActions">Reset checks</button>
+      </div>
+      <ul class="clean" id="actionList">
+        {{ACTION_ITEMS_LIST}}
+        <!-- Each item:
+        <li class="check"><input type="checkbox" data-id="a1" />
+          <label>Task text <span class="owner">— Owner</span> <span class="due">Due: date</span></label></li>
+        -->
+      </ul>
+    </div>
+  </section>
+
+  <!-- TYPE-SPECIFIC PANEL — swap contents per detected type -->
+  <section class="panel" id="focus">
+    <div class="card">
+      <h2>{{TYPE_PANEL_LABEL}}</h2>
+      {{TYPE_PANEL_CONTENT}}
+      <!--
+        brainstorm: <ul class="clean"><li class="idea"><span>Idea</span><span class="rank">#1</span></li></ul>
+                    + a <div class="card winner"> winning idea callout
+        planning/sales-nextsteps: <ul class="clean timeline"><li>Milestone — owner — date</li></ul>
+        sales: needs / objections->responses / deal next steps cards
+        interview: per-competency strengths & concerns
+        decision: options + criteria + chosen path + rationale
+      -->
+    </div>
+  </section>
+</div>
+
+<script>
+  // Tabs
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.classList.remove('active'); });
+      document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+      t.classList.add('active');
+      document.getElementById(t.dataset.panel).classList.add('active');
+    });
+  });
+
+  // Action-item checklist with localStorage persistence (keyed per meeting)
+  var KEY = 'meetingos:' + {{STORAGE_KEY_JSON}}; // e.g. "2026-06-27-team-sync"
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+  var boxes = document.querySelectorAll('#actionList input[type=checkbox]');
+  boxes.forEach(function (b) {
+    var id = b.dataset.id;
+    if (saved[id]) { b.checked = true; b.closest('.check').classList.add('done'); }
+    b.addEventListener('change', function () {
+      saved[id] = b.checked;
+      b.closest('.check').classList.toggle('done', b.checked);
+      localStorage.setItem(KEY, JSON.stringify(saved));
+    });
+  });
+
+  // Copy action items as a markdown checklist
+  var copyBtn = document.getElementById('copyActions');
+  if (copyBtn) copyBtn.addEventListener('click', function () {
+    var lines = [];
+    document.querySelectorAll('#actionList .check').forEach(function (li) {
+      var done = li.querySelector('input').checked ? 'x' : ' ';
+      lines.push('- [' + done + '] ' + li.querySelector('label').innerText.trim());
+    });
+    navigator.clipboard.writeText(lines.join('\n')).then(function () {
+      copyBtn.innerText = 'Copied!';
+      setTimeout(function () { copyBtn.innerText = 'Copy as checklist'; }, 1500);
+    });
+  });
+
+  var resetBtn = document.getElementById('resetActions');
+  if (resetBtn) resetBtn.addEventListener('click', function () {
+    saved = {}; localStorage.removeItem(KEY);
+    boxes.forEach(function (b) { b.checked = false; b.closest('.check').classList.remove('done'); });
+  });
+</script>
+</body>
+</html>
