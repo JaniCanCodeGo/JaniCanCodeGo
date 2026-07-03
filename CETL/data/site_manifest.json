@@ -1,0 +1,25 @@
+{
+  "project": "CETL",
+  "full_name": "Clear Enough To Lead",
+  "description": "A workgroup teaching perimenopausal women with ADHD how to use Claude to build web projects and small agents, paired with a podcast on leadership, life, and stress management.",
+  "audience": "Perimenopausal women with ADHD who lead teams and want practical, judgment-free tech skills.",
+  "founder": "Jani",
+  "data_files": {
+    "curriculum": "data/curriculum.json",
+    "podcast_episodes": "data/podcast_episodes.json"
+  },
+  "content_directories": {
+    "curriculum_lessons": "content/curriculum/",
+    "podcast_scripts": "content/podcast/",
+    "audience_facing": "content/for_audience/",
+    "host_facing": "content/for_host/",
+    "promo_marketing": "content/promo/"
+  },
+  "notes_for_site_builders": [
+    "curriculum.json is the source of truth for module names, order, slugs, and summaries — build nav and module pages from this file, not from prose in content/curriculum/.",
+    "podcast_episodes.json is the source of truth for episode listing pages — status field is one of: planned, recorded, published.",
+    "Long-form written content (full lesson text, episode scripts) lives in content/ as markdown files named after each item's slug — e.g. content/curriculum/html-basics.md matches curriculum.json's 'html-basics' module.",
+    "content/for_audience/ and content/for_host/ are NOT meant for the public site — for_audience is direct messaging to workgroup members, for_host is Jani's private prep material. Do not surface for_host/ content publicly.",
+    "This manifest itself can be treated as a stable entry point — re-fetch it before assuming the data shape, since new tracks/fields may be added over time."
+  ]
+}
