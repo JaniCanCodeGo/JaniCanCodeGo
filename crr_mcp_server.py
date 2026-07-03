@@ -25,10 +25,10 @@ Setup:
 """
 
 import io
+import re
 import sys
-import os
 from contextlib import redirect_stdout
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 # MCP must use stdio transport – never write to stdout directly
@@ -87,7 +87,7 @@ def process_crr_document(
             findings = agent.get_findings(crr_sections)
             has_findings = bool(findings)
 
-            safe = __import__("re").sub(r"[^\w\s\-]", "", metadata.get("school_name", "School"))
+            safe = re.sub(r"[^\w\s\-]", "", metadata.get("school_name", "School"))
             safe = safe.strip().replace(" ", "_")
 
             vcp_out = Path(output_dir) / f"{safe}_VCP.docx"
@@ -125,7 +125,7 @@ def process_crr_document(
     lines.append(f"COE Lead:       {metadata.get('coe_lead', '—') or '(not found on CDE)'}")
     lines.append(f"Review Dates:   {metadata.get('review_dates', '—')}")
     lines.append(f"LOF Date:       {today.strftime('%B %d, %Y')}")
-    lines.append(f"VCP Deadline:   {(today + __import__('datetime').timedelta(days=45)).strftime('%B %d, %Y')} (45 days)")
+    lines.append(f"VCP Deadline:   {(today + timedelta(days=45)).strftime('%B %d, %Y')} (45 days)")
     lines.append("")
 
     if findings:
