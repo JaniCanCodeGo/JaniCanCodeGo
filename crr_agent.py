@@ -157,47 +157,301 @@ def _soup_all_label_values(html: str) -> dict:
 # CDE School Directory lookups
 # ---------------------------------------------------------------------------
 
-def lookup_school_cde(cds_code: str) -> dict:
+def _parse_cde_detail_page(html: str) -> dict:
     """
-    Look up school address, contact, and principal from the CDE School Directory.
-    Returns a dict with whatever fields were found; empty dict on failure.
-    """
-    cds_clean = normalize_cds(cds_code)
-    url = f"https://www.cde.ca.gov/schooldirectory/details?cdscode={cds_clean}"
-    html = _fetch_cde_html(url, "school directory")
-    if not html:
-        return {}
+    Extract school address, contact, and principal from a CDE school detail page.
 
+    CDE detail pages use these exact field labels:
+      School Address  => "123 Main St  City, CA 90000-1234  Google Map Link..."
+      Mailing Address => "123 Main St  City, CA 90000-1234"
+      Phone Number    => "(555) 123-4567"
+      Administrator   => "Jane Smith Principal (555) 123-4567 Ext. 1 jsmith@school.edu"
+      Email           => "jsmith@school.edu"  (sometimes "Information Not Available")
+      County          => "Sacramento"
+    """
     fields = _soup_all_label_values(html)
 
     def _pick(*keys):
         for k in keys:
             for fk, fv in fields.items():
-                if k in fk:
+                if k in fk.lower():
                     return fv
         return ""
 
-    info = {
-        "street":         _pick("street", "physical address"),
-        "city":           _pick("city"),
-        "state":          _pick("state") or "CA",
-        "zip":            _pick("zip"),
-        "phone":          _pick("phone"),
-        "email":          _pick("email"),
-        "principal_name": _pick("administrator 1", "administrator", "principal"),
-    }
+    info = {}
 
-    # Regex email fallback
-    if not info["email"]:
-        emails = re.findall(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}", html)
-        school_emails = [e for e in emails if "cde.ca.gov" not in e]
-        if school_emails:
-            info["email"] = school_emails[0]
+    # --- Address: CDE puts full address in one field ---
+    raw_addr = _pick("school address", "mailing address")
+    if raw_addr:
+        # Strip "Google Map Link..." trailer
+        raw_addr = re.sub(r"\s*Google Map.*", "", raw_addr, flags=re.IGNORECASE).strip()
 
-    info = {k: v for k, v in info.items() if v and v.strip()}
+        # CDE format is typically: "123 Main St. Cityname, CA 90000"
+        # or "123 Main St. City Name CA 90000" (no comma before CA)
+        # Strategy: anchor on ", CA XXXXX" or " CA XXXXX" at the end,
+        # then split street vs city at the last street-type suffix word.
+        zip_m = re.search(r',?\s*CA\s+(\d{5})(?:-\d{4})?', raw_addr, re.IGNORECASE)
+        if zip_m:
+            zip_code  = zip_m.group(1)
+            before_ca = raw_addr[:zip_m.start()].strip()
+
+            # Identify the last street suffix — city follows it
+            _SFX = (
+                r"(?:Street|St|Avenue|Ave|Boulevard|Blvd|Road|Rd|Drive|Dr|"
+                r"Way|Lane|Ln|Court|Ct|Circle|Cir|Place|Pl|Terrace|Ter|"
+                r"Highway|Hwy|Parkway|Pkwy|Trail|Trl|Loop|Run|Row|Walk)\.?"
+            )
+            sfx_m = re.search(rf"(?i)\b({_SFX})\s+(.+)$", before_ca)
+            if sfx_m:
+                info["street"] = before_ca[: sfx_m.end(1)].strip().rstrip(",")
+                info["city"]   = sfx_m.group(2).strip().rstrip(",")
+            else:
+                # Fallback: split on the last comma
+                comma_idx = before_ca.rfind(",")
+                if comma_idx > 0:
+                    info["street"] = before_ca[:comma_idx].strip()
+                    info["city"]   = before_ca[comma_idx + 1:].strip()
+                else:
+                    info["street"] = before_ca
+
+            info["state"] = "CA"
+            info["zip"]   = zip_code
+        else:
+            info["street"] = raw_addr  # store as-is if no CA zip found
+
+    # --- Phone ---
+    phone = _pick("phone number", "phone")
+    if phone and phone.lower() not in ("information not available",):
+        info["phone"] = phone
+
+    # --- Administrator: name is first two words, email may be embedded ---
+    admin = _pick("administrator")
+    if admin:
+        name_m = re.match(r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)", admin)
+        if name_m:
+            info["principal_name"] = name_m.group(1)
+        emails = re.findall(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}", admin)
+        if emails:
+            info["email"] = emails[0]
+
+    # --- Email field fallback ---
+    if not info.get("email"):
+        email_val = _pick("email")
+        if email_val and email_val.lower() not in ("information not available", "n/a", "none"):
+            info["email"] = email_val
+
+    # --- County (useful when looking up by name) ---
+    county_val = _pick("county")
+    if county_val:
+        info["county"] = county_val
+
+    # City/zip regex fallback if address field was missing
+    if not info.get("street"):
+        m = re.search(r"([A-Za-z ]{3,30}),\s*CA\s*(\d{5})", html)
+        if m:
+            info["city"]  = m.group(1).strip()
+            info["state"] = "CA"
+            info["zip"]   = m.group(2)
+
+    return {k: v for k, v in info.items() if v and str(v).strip()}
+
+
+def _cde_school_search_by_name(school_name: str, district: str = "") -> str:
+    """
+    Search CDE School Directory by school name (up to 100 results per page).
+    Returns the URL of the best-matching detail page, or ''.
+    """
+    import urllib.parse
+    query = urllib.parse.quote_plus(school_name)
+    # Request up to 100 items to avoid missing the school on page 2
+    url = (
+        f"https://www.cde.ca.gov/schooldirectory/results"
+        f"?searchtext={query}&searchtype=S&items=100"
+    )
+    html = _fetch_cde_html(url, "name search")
+    if not html:
+        return ""
+
+    school_words  = [w.lower() for w in school_name.split() if len(w) > 3]
+    district_word = district.lower().split()[0] if district else ""
+
+    try:
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
+        best_href   = ""
+        best_score  = 0
+
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if "details?cdscode" not in href.lower():
+                continue
+            link_text = a.get_text(strip=True).lower()
+            score = sum(1 for w in school_words if w in link_text)
+            if score == 0:
+                continue
+            # Bonus if district word also appears in the row
+            if district_word:
+                row = a.find_parent("tr")
+                if row and district_word in row.get_text().lower():
+                    score += 2
+            if score > best_score:
+                best_score = score
+                best_href  = href
+
+        if best_href:
+            if not best_href.startswith("http"):
+                best_href = "https://www.cde.ca.gov" + best_href
+            return best_href
+
+    except ImportError:
+        m = re.search(r'href="(/[Ss]chool[Dd]irectory/details\?cdscode=\d+)"', html)
+        if m:
+            return "https://www.cde.ca.gov" + m.group(1)
+
+    return ""
+
+
+def _lookup_address_web(school_name: str, district: str = "", county: str = "") -> dict:
+    """
+    Last-resort web search (DuckDuckGo) for a school's physical address.
+    """
+    import urllib.parse
+    context = " ".join(filter(None, [school_name, district, county, "California", "address"]))
+    query   = urllib.parse.quote_plus(context)
+    url     = f"https://html.duckduckgo.com/html/?q={query}"
+    html    = _fetch_cde_html(url, "web address search")
+    if not html:
+        return {}
+
+    m = re.search(
+        r"(\d+\s+[A-Za-z0-9 ]+?"
+        r"(?:Street|St|Avenue|Ave|Boulevard|Blvd|Road|Rd|Drive|Dr|Way|Lane|Ln|Court|Ct)\.?)"
+        r"[,\s]+([A-Za-z ]+?),?\s*CA\s*(\d{5})",
+        html, re.IGNORECASE,
+    )
+    if m:
+        return {
+            "street": m.group(1).strip(),
+            "city":   m.group(2).strip().rstrip(","),
+            "state":  "CA",
+            "zip":    m.group(3),
+        }
+    return {}
+
+
+def _lookup_email_web(school_name: str, district: str = "") -> str:
+    """
+    Search DuckDuckGo for the school's contact email address.
+    """
+    import urllib.parse
+    query = urllib.parse.quote_plus(f"{school_name} {district} California contact email")
+    html  = _fetch_cde_html(
+        f"https://html.duckduckgo.com/html/?q={query}", "school email web search"
+    )
+    if not html:
+        return ""
+    emails = re.findall(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}", html)
+    # Prefer school/district emails over generic ones
+    for e in emails:
+        if "cde.ca.gov" not in e and "duckduck" not in e:
+            return e
+    return ""
+
+
+def lookup_school_cde(cds_code: str, school_name: str = "", district: str = "") -> dict:
+    """
+    Look up school address and contact from the CDE School Directory.
+    Strategy:
+      1. CDS-code detail page
+      2. Name-based CDE search  (if address still missing)
+      3. DuckDuckGo web search  (final fallback for address)
+      4. DuckDuckGo email search (if email still missing after above)
+    """
+    info = {}
+
+    # 1. Try by CDS code
+    if cds_code:
+        cds_clean = normalize_cds(cds_code)
+        url  = f"https://www.cde.ca.gov/schooldirectory/details?cdscode={cds_clean}"
+        html = _fetch_cde_html(url, "CDS code lookup")
+        if html:
+            info = _parse_cde_detail_page(html)
+
+    # 2. Name-based CDE search if address still missing
+    if not info.get("street") and school_name:
+        print("  [CDE] Address not found by CDS code — trying name search...")
+        detail_url = _cde_school_search_by_name(school_name, district)
+        if detail_url:
+            html = _fetch_cde_html(detail_url, "name-search detail")
+            if html:
+                info = _parse_cde_detail_page(html)
+
+    # 3. Address web fallback
+    if not info.get("street") and school_name:
+        print("  [Web] Searching for school address online...")
+        web_info = _lookup_address_web(school_name, district)
+        if web_info:
+            info.update({k: v for k, v in web_info.items() if not info.get(k)})
+
+    # 4. Email web fallback
+    if not info.get("email") and school_name:
+        print("  [Web] Searching for school email online...")
+        email = _lookup_email_web(school_name, district)
+        if email:
+            info["email"] = email
+
     if info:
         print(f"  [CDE school] Retrieved: {', '.join(info.keys())}")
+    else:
+        print("  [CDE school] Address not found by any method.")
     return info
+
+
+def lookup_county_from_district(district_name: str) -> str:
+    """
+    Find the county for a district by searching CDE School Directory.
+    Falls back to a DuckDuckGo search if CDE is unreachable.
+    """
+    import urllib.parse
+
+    # 1. Try CDE district search
+    query = urllib.parse.quote_plus(district_name)
+    url   = f"https://www.cde.ca.gov/schooldirectory/results?searchtext={query}&searchtype=D"
+    html  = _fetch_cde_html(url, "district search")
+    if html:
+        dist_words = [w.lower() for w in district_name.split() if len(w) > 3]
+        try:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(html, "html.parser")
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                if "details?cdscode" not in href:
+                    continue
+                link_text = a.get_text(strip=True).lower()
+                if sum(1 for w in dist_words if w in link_text) >= max(1, len(dist_words) - 1):
+                    if not href.startswith("http"):
+                        href = "https://www.cde.ca.gov" + href
+                    detail_html = _fetch_cde_html(href, "district detail")
+                    if detail_html:
+                        fields = _soup_all_label_values(detail_html)
+                        for k, v in fields.items():
+                            if "county" in k.lower() and v:
+                                return v.strip()
+                    break
+        except ImportError:
+            pass
+
+    # 2. Web fallback
+    query2 = urllib.parse.quote_plus(f"{district_name} California county")
+    html2  = _fetch_cde_html(
+        f"https://html.duckduckgo.com/html/?q={query2}", "district county web search"
+    )
+    if html2:
+        for county in CA_COUNTY_CODES.values():
+            if county.lower() in html2.lower():
+                return county
+
+    return ""
 
 
 def lookup_superintendent(cds_code: str) -> str:
@@ -233,16 +487,16 @@ def lookup_superintendent(cds_code: str) -> str:
                     context += " " + pairs[i + 1][1].lower()
                 if "superintendent" in context:
                     name = re.split(r"\s*[-–]\s*", val)[0].strip()
+                    name = _extract_name_only(val)
                     if name:
                         return name
 
         # Fallback: any field labeled with "superintendent"
         for lbl, val in pairs:
             if "superintendent" in lbl.lower() and val:
-                return val.strip()
+                return _extract_name_only(val)
 
     except ImportError:
-        # Regex fallback
         m = re.search(r"Superintendent[^<\n]*[:\s]+([A-Z][a-z]+ [A-Z][a-z]+)", html)
         if m:
             return m.group(1).strip()
@@ -250,21 +504,119 @@ def lookup_superintendent(cds_code: str) -> str:
     return ""
 
 
+def _extract_name_only(text: str) -> str:
+    """
+    From a CDE administrator field like:
+      'Dr. Kelly May-Vollmar Superintendent (760) 771-8501 kelly@school.edu'
+    return just the person's name: 'Dr. Kelly May-Vollmar'
+    """
+    # Stop at job title keywords
+    m = re.match(
+        r"((?:Dr\.|Mr\.|Ms\.|Mrs\.|Prof\.)?\s*[A-Za-z][A-Za-z\-\.' ]+?)"
+        r"\s+(?:Superintendent|Principal|Director|Assistant|Associate|"
+        r"Administrator|Coordinator|Supervisor|Manager|Officer)",
+        text,
+        re.IGNORECASE,
+    )
+    if m:
+        return m.group(1).strip()
+
+    # Stop at phone number
+    name = re.split(r"\s+\(?\d{3}\)?[\s\-\.]\d{3}", text)[0].strip()
+    # Stop at email
+    name = re.split(r"\s+\S+@\S+", name)[0].strip()
+    return name
+
+
+
+# Hardcoded COE Monitoring Leads table — verified from CDE contact.asp, May 2026
+# Source: https://www.cde.ca.gov/ta/cr/contact.asp
+_COE_LEADS_TABLE = {
+    "alameda":       "Juwen Lam",
+    "amador":        "Sean Snider",
+    "butte":         "Susie Kruse",
+    "calaveras":     "Karen Vail",
+    "colusa":        "Maria Arvizu-Espinoza",
+    "contra costa":  "Debra Pettric",
+    "el dorado":     "Gabrielle Marchini",
+    "fresno":        "Marvin Baker",
+    "glenn":         "April Hine",
+    "humboldt":      "August Deshais",
+    "imperial":      "Claudia Montano",
+    "inyo":          "Ilissa Twomey",
+    "kern":          "Lily Rosenberger",
+    "kings":         "Gen Almanzar",
+    "lake":          "Stacie Ulatan",
+    "lassen":        "James Hall",
+    "los angeles":   "Adrienne Balcazar",
+    "madera":        "Kirk Delmas",
+    "marin":         "Laura Trahan",
+    "mariposa":      "Jeff Aranguena",
+    "mendocino":     "Dr. Nicole Odell",
+    "merced":        "Erika Davalos-Lemus",
+    "modoc":         "Mike Martin",
+    "mono":          "Tammy Bennett Nguyen",
+    "monterey":      "Michelle Archuleta",
+    "napa":          "Lucy Pearson-Edwards",
+    "nevada":        "Christine McCormick",
+    "orange":        "Diane Ehrle",
+    "placer":        "Leslie Wriston",
+    "plumas":        "Ed Thompson",
+    "riverside":     "Lisa Winberg",
+    "sacramento":    "Cathy Morrison",
+    "san benito":    "Mai Cruz",
+    "san bernardino":"Karen Strong",
+    "san diego":     "Patricia Karlin",
+    "san francisco": "Mary Elisalde",
+    "san joaquin":   "Sharon Oberman",
+    "san luis obispo":"Stacy Summer",
+    "san mateo":     "Jared Prolo",
+    "santa barbara": "Shannon Yorke",
+    "santa clara":   "Dawn River",
+    "santa cruz":    "Angela Meeker",
+    "shasta":        "Mike Freeman",
+    "sierra":        "Nona Griesert",
+    "siskiyou":      "Mark Lewin",
+    "solano":        "Andrea Lemos",
+    "sonoma":        "Amanda Welter",
+    "stanislaus":    "Jill Polhemus",
+    "sutter":        "Kristi Johnson",
+    "tehama":        "Cathy Henderson",
+    "trinity":       "Tim Nordstrom",
+    "tulare":        "Gabriela Guzman",
+    "tuolumne":      "Mark Pintor",
+    "ventura":       "Lisa Brown",
+    "yolo":          "Katrina Callaway",
+    "yuba":          "Bobbi Abold",
+}
+
+
 def lookup_coe_lead(county_name: str) -> str:
     """
-    Look up the COE Monitoring Lead for a given county from the CDE CAIS leads page.
-    URL: https://www.cde.ca.gov/ta/cr/caisleads.asp
+    Return the COE Monitoring Lead for a given county.
+
+    First checks the hardcoded table (verified from CDE contact.asp, May 2026).
+    Falls back to live CDE fetch if county is not in the table.
+    Source: https://www.cde.ca.gov/ta/cr/contact.asp  (Compliance Monitoring > Contact Info)
     """
-    url = "https://www.cde.ca.gov/ta/cr/caisleads.asp"
-    html = _fetch_cde_html(url, "COE leads")
-    if not html:
-        return ""
+    import urllib.parse
 
     county_lower = county_name.lower().strip()
 
-    try:
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(html, "html.parser")
+    # 1. Hardcoded table — fast, reliable, no network required
+    lead = _COE_LEADS_TABLE.get(county_lower, "")
+    if lead and lead != "TBD":
+        return lead
+
+    def _parse_contact_page(html: str) -> str:
+        try:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(html, "html.parser")
+            text  = soup.get_text("\n")
+        except ImportError:
+            text = html
+
+        lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
 
         for row in soup.find_all("tr"):
             cells = row.find_all(["th", "td"])
@@ -282,15 +634,23 @@ def lookup_coe_lead(county_name: str) -> str:
             if county_lower in line.lower():
                 for j in range(i + 1, min(i + 4, len(lines))):
                     candidate = lines[j].strip()
+        for i, line in enumerate(lines):
+            if (county_lower in line.lower()
+                    and "county office of education" in line.lower()):
+                for j in range(i + 1, min(i + 6, len(lines))):
+                    candidate = lines[j]
+                    if candidate.lower().startswith(("phone", "email", "fax", "tbd", "region")):
+                        continue
                     if re.match(r"[A-Z][a-z]+(?: [A-Z][a-z]+)+", candidate):
                         return candidate
+        return ""
 
-    except ImportError:
-        # Regex fallback
-        pattern = rf"{re.escape(county_name)}[^\n]{{0,60}}\n([A-Z][^\n]{{5,60}})"
-        m = re.search(pattern, html, re.IGNORECASE)
-        if m:
-            return m.group(1).strip()
+    # 2. Live CDE fetch fallback
+    html = _fetch_cde_html("https://www.cde.ca.gov/ta/cr/contact.asp", "COE leads contact")
+    if html:
+        lead = _parse_contact_page(html)
+        if lead:
+            return lead
 
     return ""
 
@@ -322,7 +682,7 @@ def parse_summary_of_findings(path: str):
         "coordinator": "",
         "reviewer": "",
     }
-    for para in doc.paragraphs[:15]:
+    for para in doc.paragraphs[:50]:
         text = para.text.strip()
         for key, prefix in [
             ("school_name",  "School Site:"),
@@ -333,6 +693,22 @@ def parse_summary_of_findings(path: str):
         ]:
             if text.startswith(prefix):
                 metadata[key] = text.split(":", 1)[1].strip()
+
+    # Fallback: scan table cells near the top of the document for header fields
+    if any(not metadata[k] for k in ("school_name", "cds_code", "review_dates")):
+        for table in doc.tables[:5]:
+            for row in table.rows:
+                for cell in row.cells:
+                    text = cell.text.strip()
+                    for key, prefix in [
+                        ("school_name",  "School Site:"),
+                        ("cds_code",     "CDS Code:"),
+                        ("review_dates", "Review Dates:"),
+                        ("coordinator",  "Site CRR Coordinator:"),
+                        ("reviewer",     "Program Reviewer:"),
+                    ]:
+                        if not metadata[key] and text.startswith(prefix):
+                            metadata[key] = text.split(":", 1)[1].strip()
 
     # --- District from page header paragraphs ---
     district = ""
@@ -373,9 +749,28 @@ def parse_summary_of_findings(path: str):
         metadata["cde_info"]      = fut_school.result()
         metadata["superintendent"] = fut_super.result()
         metadata["coe_lead"]       = fut_coe.result()
+    # --- CDE web lookups ---
+    cds      = metadata.get("cds_code", "")
+    school   = metadata.get("school_name", "")
+    district = metadata.get("district", "")
+    county   = metadata.get("county", "")
+
+    print("  Looking up school info from CDE School Directory...")
+    metadata["cde_info"] = lookup_school_cde(cds, school, district)
+
+    # --- County fallback: use district name if CDS code gave nothing ---
+    if not county and district:
+        print("  County not found from CDS code — looking up via district name...")
+        county = lookup_county_from_district(district)
+        if county:
+            metadata["county"] = county
+            print(f"  [County] Found via district: {county}")
 
     if metadata["superintendent"]:
         print(f"  [CDE district] Superintendent: {metadata['superintendent']}")
+
+    print("  Looking up COE Monitoring Lead from CDE Compliance Monitoring page...")
+    metadata["coe_lead"] = lookup_coe_lead(county)
     if metadata["coe_lead"]:
         print(f"  [CDE leads] COE Lead ({county}): {metadata['coe_lead']}")
 
@@ -430,14 +825,13 @@ def parse_summary_of_findings(path: str):
                 table = DocxTable(element, doc)
                 for row in table.rows[1:]:
                     cells = row.cells
-                    area       = cells[0].text.strip() if len(cells) > 0 else ""
-                    violation  = cells[2].text.strip() if len(cells) > 2 else ""
-                    correction = cells[3].text.strip() if len(cells) > 3 else ""
+                    if not cells:
+                        continue
+                    area       = cells[0].text.strip()
+                    correction = cells[-1].text.strip()
                     if correction and not is_none_action(correction):
                         current_crr["corrective_actions"].append(
-                            f"Area: {area}\n"
-                            f"Violation: {violation}\n"
-                            f"Required Correction: {correction}"
+                            f"{area}\nCorrective Action: {correction}"
                         )
 
     if current_crr is not None:
@@ -505,7 +899,8 @@ def _set_cell_content(cell, title: str, body_lines: list):
     run = cell.paragraphs[0].add_run(title)
     run.bold = True
     for line in body_lines:
-        cell.add_paragraph(line)
+        for subline in str(line).split("\n"):
+            cell.add_paragraph(subline)
 
 
 def fill_vcp(template_path: str, output_path: str, metadata: dict, findings: list, today: datetime):
@@ -513,6 +908,7 @@ def fill_vcp(template_path: str, output_path: str, metadata: dict, findings: lis
 
     school_name  = metadata.get("school_name") or "[School Name]"
     review_dates = metadata.get("review_dates") or "[Date]"
+    cds_code     = metadata.get("cds_code") or "[CDS Code]"
 
     # 45-day deadline is from the LOF cover letter date (today), not review end date
     deadline_str = (today + timedelta(days=45)).strftime("%B %d, %Y")
@@ -521,9 +917,11 @@ def fill_vcp(template_path: str, output_path: str, metadata: dict, findings: lis
         "[School Name]":        school_name,
         "[Date]":               review_dates,
         "[45 days after Date]": deadline_str,
+        "[CDS Code]":           cds_code,
         # Also handle split-run variants
         "School Name":          school_name,
         "45 days after Date":   deadline_str,
+        "CDS Code":             cds_code,
     })
 
     # Fill the table
@@ -599,28 +997,63 @@ def _fill_address_block(doc, metadata: dict, today: datetime):
                 run.text = street
                 break
 
-    # Para [7]: "City, State Zip Code" / email block / "[Last name]"
+    # Para [7]: "City, State Zip Code"
     p7 = paras[7]
     if city_state_zip:
         _replace_adjacent_runs(p7, "City, State Zip Code", city_state_zip)
 
-    if email:
-        # Replace the whole "Email Address < When finalizing..." instruction with the real email
-        email_placeholder = (
-            "Email Address < When finalizing letter, this should be a hyperlink (in blue) "
-        )
-        _replace_adjacent_runs(p7, email_placeholder, email, max_window=8)
-    else:
-        # Remove the editorial instruction, leave blank line
-        _replace_adjacent_runs(
-            p7,
-            "Email Address < When finalizing letter, this should be a hyperlink (in blue) ",
-            "",
-            max_window=8,
-        )
-
     if principal_last:
         _replace_adjacent_runs(p7, "[Last name]", principal_last)
+
+    # Email: search ALL paragraphs for the placeholder (template placement varies)
+    EMAIL_PLACEHOLDERS = [
+        "Email Address < When finalizing letter, this should be a hyperlink (in blue) ",
+        "Email Address",
+        "[Email]",
+        "[Email Address]",
+    ]
+    email_placed = False
+    for para in paras:
+        for placeholder in EMAIL_PLACEHOLDERS:
+            if email:
+                if _replace_adjacent_runs(para, placeholder, email, max_window=10):
+                    email_placed = True
+                    break
+            else:
+                # Remove placeholder so it doesn't appear in final letter
+                if _replace_adjacent_runs(para, placeholder, "", max_window=10):
+                    break
+        if email_placed:
+            break
+
+    # If no placeholder found but we have an email, insert it inside p7
+    # right after the first <w:br/> (which immediately follows the city/zip text)
+    # so it appears between the city/zip line and the "Dear Principal" salutation.
+    if email and not email_placed:
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
+        p7_runs = p7._p.findall(qn("w:r"))
+        first_br_run = next(
+            (r for r in p7_runs if r.find(qn("w:br")) is not None), None
+        )
+        if first_br_run is not None:
+            email_run = OxmlElement("w:r")
+            email_t   = OxmlElement("w:t")
+            email_t.text = email
+            email_run.append(email_t)
+            first_br_run.addnext(email_run)
+        else:
+            # Fallback: insert as a new paragraph after p7
+            from copy import deepcopy
+            new_para = deepcopy(p7._p)
+            for r in new_para.findall(qn("w:r")):
+                new_para.remove(r)
+            r_elem = OxmlElement("w:r")
+            t_elem = OxmlElement("w:t")
+            t_elem.text = email
+            r_elem.append(t_elem)
+            new_para.append(r_elem)
+            p7._p.addnext(new_para)
 
     # Para [25]: cc list
     p25 = paras[25]
@@ -650,6 +1083,7 @@ def fill_cover_letter(
     metadata: dict,
     has_findings: bool,
     today: datetime,
+    preparer_initials: str = "MM",
 ):
     doc = Document(template_path)
 
@@ -658,8 +1092,8 @@ def fill_cover_letter(
     deadline_str = (today + timedelta(days=45)).strftime("%B %d, %Y")
     today_str    = today.strftime("%B %d, %Y")
 
-    # Reviewer initials from the Program Reviewer field
-    reviewer_initials = get_initials(metadata.get("reviewer", ""))
+    # Signature: "RST:[preparer initials]" — RST = Randi Solís Thompson (Civil Rights Officer)
+    # preparer_initials = initials of the OEO staff member who prepared the letter (default MM)
 
     # Global text replacements
     replace_in_doc(doc, {
@@ -668,7 +1102,7 @@ def fill_cover_letter(
         "[School Site]":       school_name,
         "[dates]":             review_dates,
         "[45 calendar days]":  deadline_str,
-        "[initials]":          reviewer_initials,
+        "[initials]":          preparer_initials,
     })
 
     # Address block, salutation, cc list
@@ -698,6 +1132,9 @@ def main():
                         default=str(TEMPLATE_DIR / "LOF_Findings_template.docx"))
     parser.add_argument("--lof-no-findings-template",
                         default=str(TEMPLATE_DIR / "LOF_NoFindings_template.docx"))
+    parser.add_argument("--preparer", default="MM",
+                        help="Initials of the OEO staff member preparing the letter "
+                             "(used in 'RST:[initials]' signature line). Default: MM")
 
     args = parser.parse_args()
 
@@ -753,12 +1190,36 @@ def main():
     vcp_out = output_dir / f"{safe}_VCP.docx"
     lof_out = output_dir / f"{safe}_LOF_Cover_Letter.docx"
 
+    # Detect a naming conflict only when a file with this name was created very recently
+    # (within 10 minutes) — meaning another school in the same batch already used this name.
+    # Re-runs on a later day will simply overwrite the old file (same school, same name).
+    import time as _time
+    _now = _time.time()
+    _recent = 600  # seconds
+    _conflict = (
+        (vcp_out.exists() and (_now - vcp_out.stat().st_mtime) < _recent) or
+        (lof_out.exists() and (_now - lof_out.stat().st_mtime) < _recent)
+    )
+    if _conflict:
+        district_raw = metadata.get("district", "")
+        # Build a meaningful suffix from the first 1-2 distinctive district words
+        _skip = {"unified", "high", "school", "district", "county",
+                 "the", "of", "and", "valley", "union", "joint"}
+        dist_words = [w for w in district_raw.split() if w.lower() not in _skip]
+        # Use up to 2 words for a readable suffix (e.g. "San_Ramon" not just "San")
+        suffix = "_".join(dist_words[:2]) if dist_words else "Alt"
+        safe   = f"{safe}_{suffix}"
+        vcp_out = output_dir / f"{safe}_VCP.docx"
+        lof_out = output_dir / f"{safe}_LOF_Cover_Letter.docx"
+        print(f"  [Note] Name conflict — using '{safe}' as filename.")
+
     fill_vcp(args.vcp_template, str(vcp_out), metadata, findings, today)
 
     lof_template = (
         args.lof_findings_template if has_findings else args.lof_no_findings_template
     )
-    fill_cover_letter(lof_template, str(lof_out), metadata, has_findings, today)
+    fill_cover_letter(lof_template, str(lof_out), metadata, has_findings, today,
+                      preparer_initials=args.preparer)
 
     print()
     print("  Generated files:")

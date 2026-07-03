@@ -1,0 +1,69 @@
+{
+  "program_name": "Clear Enough To Lead",
+  "short_name": "CETL",
+  "tagline": "Leadership, life, and stress management for women who are managing everything anyway.",
+  "audience": "Perimenopausal women with ADHD who lead teams, run households, and are ready to build something for themselves.",
+  "founder": "Jani",
+  "tracks": [
+    {
+      "id": "build-with-claude",
+      "name": "Build With Claude",
+      "type": "teaching",
+      "description": "A hands-on workgroup teaching foundational tech skills using Claude as the guide — starting with static pages, moving to local projects, and ending with small working agents. No CS degree required, no gatekeeping, no pretending the fog doesn't happen.",
+      "modules": [
+        {
+          "id": "html-basics",
+          "order": 1,
+          "title": "HTML Basics",
+          "slug": "html-basics",
+          "summary": "Build your first web page from scratch. Learn what HTML actually is, why it's not scary, and how to see your own words become a real page in a browser.",
+          "outcomes": [
+            "Understand tags, structure, and how a browser reads a page",
+            "Build a personal one-page site with headings, text, links, and an image",
+            "Use Claude to explain, debug, and extend your own HTML"
+          ],
+          "status": "in_development"
+        },
+        {
+          "id": "localhost-projects",
+          "order": 2,
+          "title": "Localhost Projects",
+          "slug": "localhost-projects",
+          "summary": "Take your HTML off the page and onto your own machine. Learn what 'running something locally' actually means, and why it's the bridge between a static page and a real app.",
+          "outcomes": [
+            "Set up a local development environment without fear",
+            "Run and preview a project on localhost",
+            "Understand the difference between a file you open and a server you run"
+          ],
+          "status": "in_development"
+        },
+        {
+          "id": "before-apps",
+          "order": 3,
+          "title": "Before Apps",
+          "slug": "before-apps",
+          "summary": "The missing middle step between 'I made a webpage' and 'I built an app.' Small interactive projects that build real confidence before tackling something bigger.",
+          "outcomes": [
+            "Add basic interactivity to a page",
+            "Understand what separates a webpage from an application",
+            "Build one small interactive project end-to-end"
+          ],
+          "status": "in_development"
+        },
+        {
+          "id": "mini-claude-agents",
+          "order": 4,
+          "title": "Building Mini Claude Agents",
+          "slug": "mini-claude-agents",
+          "summary": "Use Claude's own tools to build a small personal agent — something that does one real task for you, on repeat, without you having to ask every time.",
+          "outcomes": [
+            "Understand what an 'agent' actually is versus a chatbot",
+            "Build one small working agent solving a real personal problem",
+            "Know enough to keep building after the workgroup ends"
+          ],
+          "status": "in_development"
+        }
+      ]
+    }
+  ]
+}

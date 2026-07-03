@@ -1,0 +1,11 @@
+# Generated output
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Env
+.env

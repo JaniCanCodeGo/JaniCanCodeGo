@@ -1,0 +1,35 @@
+{
+  "show_name": "Clear Enough To Lead",
+  "host": "Jani",
+  "description": "A podcast about leadership, life, and stress management — hosted by a manager who is doing all of it while managing ADHD and perimenopause, and isn't going to pretend otherwise.",
+  "themes": ["leadership", "life", "stress management"],
+  "episodes": [
+    {
+      "id": 1,
+      "order": 1,
+      "title": "The Bar Is Clear Enough",
+      "slug": "the-bar-is-clear-enough",
+      "topic": "leadership",
+      "status": "planned",
+      "summary": "What 'good enough leadership' actually looks like when you're managing a team, your own brain, and your own body all at the same time."
+    },
+    {
+      "id": 2,
+      "order": 2,
+      "title": "Nobody Told Me This Would Happen At Work",
+      "slug": "nobody-told-me-this-would-happen-at-work",
+      "topic": "life",
+      "status": "planned",
+      "summary": "Perimenopause symptoms don't check your calendar. A real conversation about showing up to lead through them anyway."
+    },
+    {
+      "id": 3,
+      "order": 3,
+      "title": "The Burnout Math",
+      "slug": "the-burnout-math",
+      "topic": "stress management",
+      "status": "planned",
+      "summary": "Why doing 40% today and 100% tomorrow beats doing 120% today and nothing for three days — and how to actually believe that."
+    }
+  ]
+}
