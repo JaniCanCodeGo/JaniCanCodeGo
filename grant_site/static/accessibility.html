@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accessibility Statement — Grant Writing Studio</title>
+  <meta name="description" content="Section 508 and WCAG 2.1 AA accessibility statement for Grant Writing Studio.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header role="banner">
+    <div class="wrap">
+      <h1>Grant Writing Studio</h1>
+      <nav aria-label="Primary">
+        <ul>
+          <li><a href="index.html">Grant Agent</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="childrens-privacy.html">Children’s Privacy &amp; CIPA</a></li>
+          <li><a href="accessibility.html" aria-current="page">Accessibility</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <h2>Accessibility Statement</h2>
+    <p>Grant Writing Studio is built to conform to <strong>Section 508 of the Rehabilitation Act (36 C.F.R. Part 1194, revised 2017)</strong>, which incorporates <strong>WCAG 2.0 Level AA</strong>; we target the stricter <strong>WCAG 2.1 Level AA</strong> throughout.</p>
+
+    <h3>Measures in place</h3>
+    <ul>
+      <li>Semantic HTML landmarks (<code>header</code>, <code>nav</code>, <code>main</code>, <code>footer</code>) and a logical heading hierarchy on every page (WCAG 1.3.1, 2.4.6).</li>
+      <li>“Skip to main content” link as the first focusable element (2.4.1).</li>
+      <li>Every form control has a programmatically associated <code>&lt;label&gt;</code>, with hints linked via <code>aria-describedby</code> (1.3.1, 3.3.2, 4.1.2).</li>
+      <li>All functionality is operable by keyboard alone; focus indicators are visible at 3px with high contrast (2.1.1, 2.4.7); focus is managed to the progress and results regions as the agent runs (2.4.3).</li>
+      <li>Live agent status is announced to screen readers via <code>role="status"</code>/<code>aria-live="polite"</code>; errors use <code>role="alert"</code> (4.1.3, 3.3.1).</li>
+      <li>Color contrast meets or exceeds 4.5:1 for text and 3:1 for large text and UI components in both light and dark themes (1.4.3, 1.4.11); color is never the only indicator (1.4.1).</li>
+      <li>Layout reflows to 320 px width without horizontal scrolling; text can be resized to 200% (1.4.4, 1.4.10); touch targets are at least 44×44 px (2.5.5 AAA, met as best practice).</li>
+      <li>Respects <code>prefers-reduced-motion</code>; no content flashes (2.3.1).</li>
+      <li>Data tables use <code>caption</code> and <code>scope</code>d headers (1.3.1); links that open new tabs say so to screen readers (3.2.5 best practice).</li>
+      <li>Page language declared (<code>lang="en"</code>) and descriptive page titles (3.1.1, 2.4.2).</li>
+      <li>Documents generated for download are produced in Markdown and Word (.docx) with true heading structure so they remain accessible (508 E205 electronic content).</li>
+    </ul>
+
+    <h3>Testing</h3>
+    <p>The interface is verified with keyboard-only navigation and automated heuristics; deployments should additionally run axe-core/ANDI and screen-reader passes (NVDA, JAWS, VoiceOver) as part of their 508 assessment. The agent also performs a heuristic 508 spot-check of <em>your organization’s</em> website as part of every run.</p>
+
+    <h3>Feedback</h3>
+    <p>If you encounter an accessibility barrier, contact the operator of your deployment. Please describe the page, the assistive technology and browser used, and the problem; we aim to respond within two business days and to remediate promptly.</p>
+  </main>
+  <footer>
+    <div class="wrap">
+      <ul>
+        <li><a href="privacy.html">Privacy Policy (CCPA/CalOPPA)</a></li>
+        <li><a href="childrens-privacy.html">Children’s Privacy, COPPA &amp; CIPA</a></li>
+        <li><a href="accessibility.html">Accessibility Statement (Section 508)</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

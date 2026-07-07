@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grant Writing Studio — Agent-Powered Grant Applications</title>
+  <meta name="description" content="Agent-driven grant writing: website review, EIN lookup and application prep, business plan and prospectus with documented pain points and forecasts, trademark search and TEAS preparation.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header role="banner">
+    <div class="wrap">
+      <h1>Grant Writing Studio</h1>
+      <p>One agent run: website review → EIN → business plan &amp; prospectus → trademark → grant narrative.</p>
+      <nav aria-label="Primary">
+        <ul>
+          <li><a href="index.html" aria-current="page">Grant Agent</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="childrens-privacy.html">Children’s Privacy &amp; CIPA</a></li>
+          <li><a href="accessibility.html">Accessibility</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <h2>Start a grant application run</h2>
+    <p>Fill in what you know — every field except the organization name is optional. The agent reviews your website, looks up (or prepares an application for) your EIN, researches documented pain points, builds a three-year forecast including merchandise, runs a trademark knockout search, prepares a USPTO TEAS filing packet, and writes the business plan, prospectus, and grant narrative.</p>
+
+    <div id="form-error" role="alert"></div>
+
+    <form id="grant-form" novalidate>
+      <fieldset>
+        <legend>Organization</legend>
+        <div class="grid-2">
+          <div>
+            <label for="org_name">Organization name <span aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
+            <input id="org_name" name="org_name" type="text" required autocomplete="organization" aria-describedby="org_name_hint">
+            <p class="hint" id="org_name_hint">Legal name as registered (used for EIN and trademark searches).</p>
+          </div>
+          <div>
+            <label for="website_url">Website URL</label>
+            <input id="website_url" name="website_url" type="url" autocomplete="url" placeholder="https://example.org" aria-describedby="website_hint">
+            <p class="hint" id="website_hint">The agent reviews this site for mission language, contacts, and accessibility.</p>
+          </div>
+          <div>
+            <label for="ein">EIN (if you have one)</label>
+            <input id="ein" name="ein" type="text" inputmode="numeric" placeholder="12-3456789" aria-describedby="ein_hint">
+            <p class="hint" id="ein_hint">Leave blank to search public records; if none is found the agent prepares an IRS SS-4 application worksheet.</p>
+          </div>
+          <div>
+            <label for="state">State (2-letter)</label>
+            <input id="state" name="state" type="text" maxlength="2" autocomplete="address-level1" placeholder="CA">
+          </div>
+          <div>
+            <label for="entity_type">Entity type</label>
+            <select id="entity_type" name="entity_type">
+              <option value="">Select…</option>
+              <option>Nonprofit corporation</option>
+              <option>For-profit corporation</option>
+              <option>LLC</option>
+              <option>Sole proprietorship</option>
+              <option>Public agency / LEA</option>
+            </select>
+          </div>
+          <div>
+            <label for="contact_email">Contact email</label>
+            <input id="contact_email" name="contact_email" type="email" autocomplete="email">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Programs, merchandise, and focus</legend>
+        <label for="mission">Mission (optional — pulled from your website if blank)</label>
+        <textarea id="mission" name="mission"></textarea>
+        <label for="programs">Programs and services</label>
+        <textarea id="programs" name="programs" placeholder="e.g. After-school coding and arts workshops for grades 6–12"></textarea>
+        <label for="merchandise">Merchandise line</label>
+        <textarea id="merchandise" name="merchandise" placeholder="e.g. T-shirts, hoodies, and workbook kits sold to support programs"></textarea>
+        <label for="focus_areas">Focus areas (comma-separated)</label>
+        <input id="focus_areas" name="focus_areas" type="text" placeholder="education, youth, technology, arts" aria-describedby="focus_hint">
+        <p class="hint" id="focus_hint">Drives the documented pain-point research in the needs statement.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Forecast assumptions (defaults used if blank)</legend>
+        <p class="hint">Every number in the forecast traces to these assumptions — they are printed with the plan.</p>
+        <div class="grid-2">
+          <div><label for="grant_target">Grant amount requested ($)</label>
+            <input id="grant_target" type="number" min="0" step="100" value="25000"></div>
+          <div><label for="base_revenue">Year-1 program revenue ($)</label>
+            <input id="base_revenue" type="number" min="0" step="100"></div>
+          <div><label for="base_expenses">Year-1 expenses ($)</label>
+            <input id="base_expenses" type="number" min="0" step="100"></div>
+          <div><label for="revenue_growth_pct">Revenue growth (%/yr)</label>
+            <input id="revenue_growth_pct" type="number" min="0" max="200" step="1"></div>
+          <div><label for="participants">Participants served, Year 1</label>
+            <input id="participants" type="number" min="0" step="1"></div>
+          <div><label for="merch_units">Merch units, Year 1</label>
+            <input id="merch_units" type="number" min="0" step="1"></div>
+          <div><label for="merch_price">Merch price ($/unit)</label>
+            <input id="merch_price" type="number" min="0" step="0.5"></div>
+          <div><label for="merch_unit_cost">Merch cost ($/unit)</label>
+            <input id="merch_unit_cost" type="number" min="0" step="0.5"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Trademark</legend>
+        <label for="trademark_name">Name to clear/register (defaults to organization name)</label>
+        <input id="trademark_name" name="trademark_name" type="text">
+        <p>
+          <input id="mark_in_use" name="mark_in_use" type="checkbox">
+          <label for="mark_in_use" style="display:inline; font-weight:400;">This name is already in use in commerce (sales across state lines)</label>
+        </p>
+        <p class="hint">The agent runs a knockout search for identical and sound-alike marks and prepares a complete TEAS Plus packet. Filing itself happens at teas.uspto.gov with your signature — the USPTO has no third-party filing API. This tool is not legal advice.</p>
+      </fieldset>
+
+      <button type="submit" id="run-btn">Run the grant agent</button>
+    </form>
+
+    <section aria-labelledby="progress-h" hidden id="progress-section">
+      <h2 id="progress-h">Agent progress</h2>
+      <div role="status" aria-live="polite" id="live-status"></div>
+      <ul class="status-list" id="steps"></ul>
+    </section>
+
+    <section aria-labelledby="results-h" hidden id="results-section">
+      <h2 id="results-h">Results</h2>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <ul>
+        <li><a href="privacy.html">Privacy Policy (CCPA/CalOPPA)</a></li>
+        <li><a href="childrens-privacy.html">Children’s Privacy, COPPA &amp; CIPA</a></li>
+        <li><a href="accessibility.html">Accessibility Statement (Section 508)</a></li>
+      </ul>
+      <p>Grant Writing Studio prepares documents; it does not provide legal, tax, or accounting advice, and it does not submit filings to the IRS or USPTO on your behalf.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
