@@ -136,6 +136,70 @@ def check_serial_status(serial):
         return {"error": str(exc)}
 
 
+def build_teas_document(app, search=None):
+    """Render the TEAS Plus packet as a standalone, ready-to-file document
+    (.docx/.md): every application field completed, plus a screen-by-screen
+    guide to filing at teas.uspto.gov."""
+    owner = app.get("owner") or {}
+    fields = "\n".join([
+        f"Mark (standard characters): {app['mark']['literal_element']}",
+        f"Mark type: {app['mark']['mark_type']}",
+        f"Owner name: {owner.get('name', '(complete before filing)')}",
+        f"Owner entity type: {owner.get('entity_type') or '(complete before filing)'}",
+        f"Owner email: {owner.get('email') or '(complete before filing)'}",
+        f"Filing basis: {app['filing_basis']}",
+        "International class(es): " +
+        ", ".join(str(c) for c in app["international_classes"]),
+        f"Goods/services description: {app['goods_and_services'] or '(complete before filing)'}",
+        f"ID Manual note: {app['identification_note']}",
+    ])
+    walkthrough = "\n".join([
+        "1. Go to the TEAS Plus initial application form (link below) and "
+        "sign in with a USPTO.gov account (free to create).",
+        "2. Applicant screen: enter the owner name, entity type, and "
+        "address exactly as shown in the fields section.",
+        "3. Mark screen: choose 'Standard Characters' and type the mark "
+        "exactly as shown.",
+        "4. Goods/Services screen: search the ID Manual for the "
+        "description(s) below and select the matching entries in the "
+        "listed class(es) — TEAS Plus requires ID Manual entries.",
+        "5. Basis screen: select the filing basis shown. For use in "
+        "commerce (1a), upload a specimen from the checklist and enter "
+        "dates of first use. For intent to use (1b), no specimen yet.",
+        "6. Correspondence screen: use the owner email; USPTO sends all "
+        "office actions there.",
+        "7. Signature screen: the owner (or attorney) signs electronically "
+        "— type /Full Name/ in the signature box.",
+        "8. Pay the fee shown below by card. Save the serial number from "
+        "the confirmation; track status at tsdr.uspto.gov.",
+    ])
+    sections = [
+        ("How to file (15–30 minutes)",
+         walkthrough + f"\n\nFile at: {app['file_at']}\n\n"
+         f"Fee: ${app['fees']['total_usd']} "
+         f"({app['fees']['classes']} class(es) × "
+         f"${app['fees']['per_class_usd']}). {app['fees']['note']}"),
+        ("Your completed application fields", fields),
+        ("Specimen checklist", "\n".join(f"• {s}" for s in
+                                         app["specimen_checklist"])),
+        ("What happens after filing",
+         "\n".join(f"• {t}" for t in app["timeline"]) +
+         f"\n\nSignature requirement: {app['signature']}"),
+    ]
+    if search:
+        hits = search.get("api_hits") or []
+        clearance = (f"{len(hits)} potentially similar live mark(s) were "
+                     "flagged — review them before filing."
+                     if hits else
+                     "No conflicting live marks surfaced in the automated "
+                     "knockout search.")
+        sections.insert(0, ("Clearance summary",
+                            clearance + "\n\n" + search["disclaimer"]))
+    return {"title": f"“{app['mark']['literal_element']}” — USPTO TEAS Plus "
+                     "Trademark Application, Completed & Ready to File",
+            "sections": sections}
+
+
 def build_teas_application(mark, owner, goods_description,
                            classes=None, use_in_commerce=False):
     """Prepare a complete TEAS Plus application packet.

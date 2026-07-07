@@ -54,6 +54,9 @@
       state: val("state"),
       entity_type: val("entity_type"),
       contact_email: val("contact_email"),
+      mailing_address: val("mailing_address"),
+      responsible_party: val("responsible_party"),
+      start_date: val("start_date"),
       mission: val("mission"),
       programs: val("programs"),
       merchandise: val("merchandise"),
@@ -157,9 +160,10 @@
     if (ein.found) {
       p.textContent = "EIN found: " + ein.ein + " (source: " + ein.source + ")";
     } else {
-      p.textContent = "No EIN found. An IRS Form SS-4 worksheet was " +
-        "prepared (see the Agent Reports download). Apply free at the IRS " +
-        "online EIN Assistant — the responsible party must submit it.";
+      p.textContent = "No EIN found. A completed IRS Form SS-4 application " +
+        "document with a step-by-step filing guide is in your downloads " +
+        "above. Filing at the IRS online EIN Assistant is free and takes " +
+        "about 10 minutes.";
     }
     einCard.appendChild(p);
     if ((ein.matches || []).length) {

@@ -42,10 +42,25 @@ def run_pipeline(payload, out_dir, progress=None):
     report("ein", "running")
     ein_result = ein.lookup_ein(org["name"], payload.get("state"),
                                 payload.get("ein"))
+    if not ein_result["found"]:
+        # Rebuild the SS-4 with everything the form gave us and emit it as
+        # its own ready-to-file document.
+        ein_result["application"] = ein.build_ss4_worksheet({
+            "legal_name": org["name"],
+            "state": payload.get("state", ""),
+            "mailing_address": payload.get("mailing_address", ""),
+            "responsible_party": payload.get("responsible_party", ""),
+            "entity_type": payload.get("entity_type", ""),
+            "start_date": payload.get("start_date", ""),
+            "activity": payload.get("programs", ""),
+        })
+        results["files"] += documents.write_document(
+            ein.build_ss4_document(ein_result["application"], org["name"]),
+            out_dir, f"{base}_IRS_SS4_EIN_Application")
     results["ein"] = ein_result
     report("ein", "done",
            f"EIN {ein_result['ein']}" if ein_result["found"]
-           else "No EIN found — SS-4 application worksheet prepared")
+           else "No EIN found — completed SS-4 application document prepared")
 
     # 3. Research, forecast, business plan
     report("business_plan", "running")
@@ -71,6 +86,10 @@ def run_pipeline(payload, out_dir, progress=None):
             goods_description=payload.get("merchandise") or
             payload.get("programs") or "",
             use_in_commerce=bool(payload.get("mark_in_use")))
+        results["files"] += documents.write_document(
+            trademark.build_teas_document(tm_result["teas_application"],
+                                          tm_result),
+            out_dir, f"{base}_USPTO_TEAS_Trademark_Application")
         results["trademark"] = tm_result
         report("trademark", "done",
                f"{len(tm_result['api_hits'])} potential conflicts flagged"

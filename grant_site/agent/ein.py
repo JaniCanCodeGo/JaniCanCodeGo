@@ -103,6 +103,58 @@ def _match_from_org(org):
     }
 
 
+def build_ss4_document(worksheet, org_name=""):
+    """Render the SS-4 worksheet as a standalone, ready-to-file document
+    (.docx/.md) with line-by-line values and a screen-by-screen guide to
+    the IRS online EIN Assistant."""
+    lines = worksheet["lines"]
+    line_labels = {
+        "1_legal_name": "Line 1 — Legal name of entity",
+        "2_trade_name_dba": "Line 2 — Trade name / DBA (if different)",
+        "3_care_of": "Line 3 — Executor / care-of name",
+        "4a_4b_mailing_address": "Lines 4a–4b — Mailing address",
+        "5a_5b_street_address": "Lines 5a–5b — Street address (if different)",
+        "6_county_state": "Line 6 — County and state of principal business",
+        "7a_responsible_party": "Line 7a — Responsible party (name)",
+        "7b_responsible_party_ssn_itin": "Line 7b — Responsible party SSN/ITIN",
+        "9a_type_of_entity": "Line 9a — Type of entity",
+        "10_reason_for_applying": "Line 10 — Reason for applying",
+        "11_date_business_started": "Line 11 — Date business started/acquired",
+        "12_closing_month": "Line 12 — Closing month of accounting year",
+        "16_principal_activity": "Line 16 — Principal activity",
+    }
+    filled = "\n".join(
+        f"{line_labels.get(k, k)}:\n    {v or '(complete before filing)'}"
+        for k, v in lines.items())
+    walkthrough = "\n".join([
+        "1. Go to the IRS online EIN Assistant (link below). It is open "
+        "Mon–Fri, 7am–10pm Eastern, and is completely free.",
+        "2. Choose your legal structure when asked (matches Line 9a below).",
+        "3. Choose why you are requesting an EIN (matches Line 10).",
+        "4. Enter the responsible party's name and SSN/ITIN (Lines 7a–7b). "
+        "Enter this directly on the IRS screen only — this document "
+        "deliberately does not contain it.",
+        "5. Enter the addresses from Lines 4a–5b and the business name "
+        "from Line 1 exactly as shown (the IRS matches punctuation).",
+        "6. Answer the activity questions using Line 16.",
+        "7. Choose 'Receive letter online' — the EIN is issued immediately; "
+        "save the CP 575 confirmation letter PDF the moment it appears "
+        "(it cannot be re-downloaded).",
+        "8. Nonprofits: after receiving the EIN, apply for tax-exempt "
+        "status separately (Form 1023 or 1023-EZ).",
+    ])
+    return {
+        "title": f"{org_name or lines.get('1_legal_name') or 'Organization'}"
+                 " — IRS Form SS-4 (EIN Application), Completed Worksheet",
+        "sections": [
+            ("How to file (about 10 minutes)",
+             walkthrough + f"\n\nFile at: {worksheet['apply_online']}"),
+            ("Your completed SS-4, line by line", filled),
+            ("Important notes", "\n".join(f"• {n}" for n in worksheet["notes"])),
+        ],
+    }
+
+
 def build_ss4_worksheet(info):
     """Prefilled IRS Form SS-4 worksheet for an EIN application.
 

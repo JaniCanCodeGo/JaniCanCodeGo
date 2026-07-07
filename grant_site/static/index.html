@@ -72,6 +72,25 @@
       </fieldset>
 
       <fieldset>
+        <legend>EIN application details (only used if no EIN is found)</legend>
+        <p class="hint">If the agent finds no EIN, it produces a completed IRS Form SS-4 document with a step-by-step filing guide. These fields let it fill in every line. Never enter a Social Security number anywhere in this app — the IRS collects that directly when you file.</p>
+        <div class="grid-2">
+          <div>
+            <label for="responsible_party">Responsible party (person's name)</label>
+            <input id="responsible_party" name="responsible_party" type="text" autocomplete="name">
+          </div>
+          <div>
+            <label for="mailing_address">Mailing address</label>
+            <input id="mailing_address" name="mailing_address" type="text" autocomplete="street-address">
+          </div>
+          <div>
+            <label for="start_date">Date business started</label>
+            <input id="start_date" name="start_date" type="text" placeholder="e.g. 01/2024">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>Programs, merchandise, and focus</legend>
         <label for="mission">Mission (optional — pulled from your website if blank)</label>
         <textarea id="mission" name="mission"></textarea>

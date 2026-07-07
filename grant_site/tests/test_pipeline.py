@@ -74,6 +74,35 @@ def test_accessibility_audit_flags_missing_alt():
     assert by_id["html-lang"]["status"] == "review"
 
 
+def test_ss4_document_is_filled_and_has_filing_guide():
+    ws = ein.build_ss4_worksheet({
+        "legal_name": "Test Org", "state": "CA",
+        "responsible_party": "Jane Doe",
+        "mailing_address": "1 Main St, Sacramento, CA 95814",
+    })
+    doc = ein.build_ss4_document(ws, "Test Org")
+    text = "\n".join(body for _, body in doc["sections"])
+    assert "Jane Doe" in text
+    assert "1 Main St" in text
+    assert "EIN Assistant" in text          # filing walkthrough present
+    assert "irs.gov" in text
+    assert "Line 7a" in text                # line-by-line mapping
+
+
+def test_teas_document_is_filled_and_has_filing_guide():
+    search = trademark.search_trademark("Kids Kode Klub", "apparel education")
+    app = trademark.build_teas_application(
+        "Kids Kode Klub", {"name": "Test Org", "email": "a@b.org",
+                           "entity_type": "Nonprofit corporation"},
+        "education services and apparel")
+    doc = trademark.build_teas_document(app, search)
+    text = "\n".join(body for _, body in doc["sections"])
+    assert "Kids Kode Klub" in text
+    assert "teas.uspto.gov" in text
+    assert "Signature screen" in text       # filing walkthrough present
+    assert "Clearance summary" in doc["sections"][0][0]
+
+
 def test_document_writer(tmp_path):
     doc = {"title": "T", "sections": [("A", "body")]}
     files = documents.write_document(doc, str(tmp_path), "test")
