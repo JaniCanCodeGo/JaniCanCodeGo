@@ -26,7 +26,11 @@ CRR 20/21 Letter of Findings (.docx).
 ### STEP 0: Intake
 
 Collect: school name, district, cycle (CRR 20 = 2025-26, CRR 21 =
-2024-25), review date, path to the completed packet.
+2024-25), review date, path to the completed packet. The packet is the
+completed "Civil Rights Review - Building Accessibility" document (or
+the JSON export from its HTML form), optionally accompanied by the
+completed "Program Access, Facilities and Maintenance & Operations Staff
+Interview" document, which is issued and collected separately.
 
 Read the packet:
 - PDF: `pdftotext` first; if the output is empty or garbled the document
@@ -57,12 +61,29 @@ not a finding. No em-dashes.
 
 ### STEP 2: Determine the applicable standard per area
 
+THE AGENT OWNS THIS STEP ENTIRELY. The site-facing documents (the
+"Civil Rights Review - Building Accessibility" guide and its HTML form)
+intentionally contain NO standards content: no era dropdowns, no
+date-to-standard tables, no reviewer rules. The LEA records only raw
+data (Year Built, ADA Modification Dates, the two-column Alterations Log
+of Element Altered / Date Altered, and measurements). Determining the
+standard is internal work this agent performs for the Program Reviewer.
+
 Use the matrix in `../references/standards-matrix.md`, applied element by
-element: an area's base standard comes from Year Built; each documented
-alteration moves ONLY the altered elements to the alteration-date
+element: an area's base standard comes from Year Built; each entry in the
+Alterations Log moves ONLY that altered element to the alteration-date
 standard (whole-room exception: a fully rebuilt space takes the
 alteration-date standard entirely). If dates are ambiguous, STOP AND ASK;
 never guess a standard.
+
+Output `Standard_Determination_[School].md` for the Program Reviewer:
+one entry per area and per altered element, showing the date used, the
+standard selected, the matrix row that selected it, and a one-sentence
+plain-language explanation (for example: "Building 100 Boys Restroom,
+built 1968: Program Access, observational review only. Grab bars replaced
+2018: evaluated under 2010 ADA per the element-by-element rule; only the
+grab bars take the newer standard."). The Program Reviewer verifies this
+document; the agent explains, the reviewer decides.
 
 ### STEP 3: Determine whether findings can be issued
 
@@ -99,9 +120,9 @@ with python-docx or confirm Word/LibreOffice can load it).
 
 ### STEP 5: Deliverables summary
 
-Present: the Missing Information Report, the Feedback docx, the LOF docx,
-and a console summary: areas reviewed, findings issued, Program Access
-areas, missing items count.
+Present: the Missing Information Report, the Feedback docx, the Standard
+Determination report, the LOF docx, and a console summary: areas
+reviewed, findings issued, Program Access areas, missing items count.
 
 ## Findings JSON schema
 

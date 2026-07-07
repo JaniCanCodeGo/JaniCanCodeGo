@@ -31,6 +31,13 @@
 9. The Standard column cites the standard applicable at construction or
    alteration (element by element). Corrective actions are ALWAYS cited to
    2010 ADA. Program Access rows read None. / None.
-10. Filename conventions: guide `Accessibility_Facilities_Checklist_v2.docx`
-    (or `Facilities_Review_Guide_vN.docx`); letter
+10. Filename conventions: site guide
+    `Civil_Rights_Review_Building_Accessibility.docx` (titled "Civil
+    Rights Review - Building Accessibility"); staff interview
+    `Program_Access_Staff_Interview.docx`; letter
     `[SchoolName]_Facilities_LOF.docx`.
+11. Site-facing documents carry NO internal reviewer content: no
+    standard determination or era prompts, no reviewer rules, no
+    Corrective Action Summary (LOF only), no "Instance N" labels. The
+    LOF agent performs standard determination and explains it to the
+    Program Reviewer in Standard_Determination_[School].md.
