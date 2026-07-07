@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CDE Facilities Review Guide: Intake Form</title>
+<title>Civil Rights Review - Building Accessibility</title>
 <style>
 /* CDE OEO palette. DM fonts referenced by family name only; system fallbacks, no CDN. */
 :root {
@@ -67,23 +67,6 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
 .ident-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
 @media(max-width:640px){.ident-grid{grid-template-columns:1fr;}}
 .ident-grid .wide{grid-column:1 / -1;}
-/* Standard panel */
-.std-panel{border:1px solid var(--border);border-radius:3px;background:var(--cream);padding:10px 12px;margin-bottom:14px;}
-.std-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
-.std-cell{display:flex;flex-direction:column;gap:3px;}
-.std-cell .k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
-.std-badge{display:inline-block;padding:3px 9px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:500;white-space:nowrap;}
-.b-pa{background:#e5e7eb;color:#374151;}
-.b-ansi{background:#fef9c3;color:#713f12;}
-.b-ufas{background:#dbeafe;color:#1e3a8a;}
-.b-1991{background:#d1fae5;color:#064e3b;}
-.b-2010{background:#fee2e2;color:#7f1d1d;}
-.b-choice{background:#ede9fe;color:#4c1d95;}
-.b-na{background:#f3f4f6;color:#9ca3af;}
-.std-flag{display:flex;gap:9px;align-items:flex-start;margin-top:9px;padding:9px 11px;border-radius:3px;font-size:12px;line-height:1.5;border:1px solid var(--gold);background:#fdf6e3;color:#6b5313;}
-.std-flag .icon{font-size:15px;line-height:1;flex-shrink:0;}
-.std-flag.pa-flag{border-color:#9ca3af;background:#f3f4f6;color:#374151;}
-.std-flag b{color:var(--navy);}
 /* Buttons */
 .btn{padding:8px 18px;border:none;border-radius:3px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
 .btn-primary{background:var(--navy);color:var(--white);}
@@ -96,21 +79,6 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
 .btn-danger:hover{background:var(--red);color:var(--white);}
 .btn-sm{padding:5px 12px;font-size:12px;}
 .add-bar{padding:4px 0 2px;}
-/* Summary */
-#summaryBody .sum-strip{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-.s-pill{padding:6px 14px;border-radius:20px;font-family:var(--mono);font-size:11px;font-weight:500;}
-.sp-total{background:var(--navy);color:var(--white);}
-.sp-viol{background:var(--red);color:var(--white);}
-.sp-ok{background:var(--green);color:var(--white);}
-.sp-pa{background:#e5e7eb;color:#374151;}
-.sp-miss{background:var(--gold);color:var(--navy);}
-.sum-disclaimer{border:1.5px solid var(--gold);background:#fdf6e3;border-radius:3px;padding:11px 14px;font-size:12px;line-height:1.55;color:#6b5313;margin-bottom:16px;}
-.sum-group{margin-bottom:14px;}
-.sum-group h3{font-family:var(--serif);font-size:14px;color:var(--navy);font-weight:400;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;}
-.sum-item{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-left:3px solid var(--red);background:#fef7f7;margin-bottom:5px;font-size:12px;line-height:1.5;border-radius:0 3px 3px 0;}
-.sum-item.obs{border-left-color:#9ca3af;background:#f6f6f6;}
-.sum-item.miss{border-left-color:var(--gold);background:#fdf6e3;}
-.sum-empty{font-size:13px;color:var(--muted);font-style:italic;padding:6px 0;}
 /* Toolbar / status */
 .toolbar-note{font-size:10px;font-family:var(--mono);color:var(--gold-light);}
 .savemsg{font-size:10px;font-family:var(--mono);color:var(--gold-light);min-width:110px;text-align:right;}
@@ -130,7 +98,6 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
   .card-step,.card-sub{color:var(--muted);}
   .instance{break-inside:avoid-page;}
   table.fields input,table.fields select,table.fields textarea,.fg input,.fg select,.fg textarea{border:none;border-bottom:1px solid #999;border-radius:0;background:var(--white);}
-  .std-badge{border:1px solid #999;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   #printHeaderRepeat{display:block !important;}
 }
 #printHeaderRepeat{display:none;font-family:var(--serif);font-size:15px;color:var(--navy);margin-bottom:12px;}
@@ -141,7 +108,7 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
 <header>
   <div class="seal">CDE</div>
   <div class="header-text">
-    <h1>Facilities Review Guide: Site Intake Form</h1>
+    <h1>Civil Rights Review - Building Accessibility</h1>
     <p>Civil Rights Review &middot; CRR 20 / CRR 21 &middot; Building Accessibility &middot; Office of Equal Opportunity</p>
   </div>
   <div class="header-actions">
@@ -157,13 +124,13 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
 <div class="layout">
   <nav class="toc" id="toc" aria-label="Section navigation"></nav>
   <main>
-    <div id="printHeaderRepeat">California Department of Education, Office of Equal Opportunity: Facilities Review Guide</div>
+    <div id="printHeaderRepeat">California Department of Education, Office of Equal Opportunity: Civil Rights Review - Building Accessibility</div>
 
     <!-- Header block -->
     <div class="card" id="sec-header">
       <div class="card-head"><span class="card-step">Intake</span><span class="card-title">School &amp; Review Information</span></div>
       <div class="card-body">
-        <p class="section-note">This form is completed by the school site. It captures data only. The Program Reviewer determines the applicable accessibility standard for each location and makes the final compliance determination. Do not leave measurements blank if they can be taken: a missing value is reported as missing information, never estimated.</p>
+        <p class="section-note">This form is completed by the school site. It collects facility data only. Record what you observe and measure; do not leave measurements blank if they can be taken. If a value cannot be measured, note why in the Additional Information field for that area. Never estimate a measurement.</p>
         <div class="grid-2">
           <div class="fg"><label>School Name</label><input type="text" data-h="schoolName" placeholder="e.g. Pacific Career and Technology High School"></div>
           <div class="fg"><label>District Name</label><input type="text" data-h="districtName" placeholder="e.g. Twin Rivers Unified School District"></div>
@@ -182,241 +149,43 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
         </div>
         <div class="sig-grid">
           <div><div class="sig-line">Preparer Signature</div><div class="sig-line">Date</div></div>
-          <div><div class="sig-line">Program Reviewer Signature</div><div class="sig-line">Date</div></div>
+          <div><div class="sig-line">Site Administrator Signature</div><div class="sig-line">Date</div></div>
         </div>
       </div>
     </div>
 
     <div id="sections"></div>
-
-    <!-- Program Access Interview -->
-    <div class="card area" id="sec-pa" >
-      <div class="card-head">
-        <span class="card-step">Interview</span>
-        <span class="card-title">Program Access: Facilities &amp; M&amp;O Staff Interview (14 Questions)</span>
-        <span class="card-sub">Program Access compliance is determined observationally and through staff responses, not through physical measurement.</span>
-      </div>
-      <div class="card-body">
-        <div class="grid-2">
-          <div class="fg"><label>Staff Member Name</label><input type="text" data-pa="staffName"></div>
-          <div class="fg"><label>Title</label><input type="text" data-pa="staffTitle"></div>
-          <div class="fg"><label>Date of Interview</label><input type="text" data-pa="intDate"></div>
-          <div class="fg"><label>Interviewer</label><input type="text" data-pa="interviewer"></div>
-        </div>
-        <div id="paQuestions"></div>
-      </div>
-    </div>
-
-    <!-- Compliance summary -->
-    <div class="card area" id="sec-summary">
-      <div class="card-head">
-        <span class="card-step">Summary</span>
-        <span class="card-title">Auto-Generated Compliance Summary</span>
-      </div>
-      <div class="card-body" id="summaryBody"></div>
-    </div>
   </main>
 </div>
 
 <script>
 'use strict';
 /* ==========================================================================
-   CDE OEO Facilities Review Guide: interactive intake form.
+   CDE OEO Civil Rights Review - Building Accessibility: site data form.
+   Completed by the LEA / school site. Data collection only.
    Data-driven: CONFIG describes every section; one engine renders all.
-   Source of truth for dates: references/standards-matrix.md
-   Source of truth for thresholds: references/thresholds.md
+   Hint text next to measurement fields mirrors the Word guide.
    No network calls. Autosaves to localStorage. No em-dash characters.
    ========================================================================== */
 
-/* ---------------- Standards engine (standards-matrix.md) ----------------- */
-var STD = {
-  PA:      {id:'PA',      label:'Program Access',        cls:'b-pa'},
-  ANSI:    {id:'ANSI',    label:'ANSI A117.1',           cls:'b-ansi'},
-  UFAS:    {id:'UFAS',    label:'UFAS',                  cls:'b-ufas'},
-  ADA1991: {id:'ADA1991', label:'1991 ADA',              cls:'b-1991'},
-  CHOICE:  {id:'CHOICE',  label:'1991 / 2010 ADA or UFAS (choice)', cls:'b-choice'},
-  ADA2010: {id:'ADA2010', label:'2010 ADA',              cls:'b-2010'},
-  UNKNOWN: {id:'UNKNOWN', label:'Undetermined',          cls:'b-na'},
-  AMBIG:   {id:'AMBIG',   label:'Ambiguous: full date needed', cls:'b-na'}
-};
-/* Exact boundaries per standards-matrix.md (inclusive end dates):
-   PA        on or before 1977-06-03
-   ANSI      1977-06-04 to 1991-01-17
-   UFAS      1991-01-18 to 1992-01-26
-   1991 ADA  1992-01-27 to 2010-09-14
-   CHOICE    2010-09-15 to 2012-03-14 (UFAS, 1991 ADA, or 2010 ADA)
-   2010 ADA  on or after 2012-03-15 */
-function stdForDate(d){
-  var t = d.getTime();
-  if (t <= Date.UTC(1977,5,3))  return STD.PA;
-  if (t <= Date.UTC(1991,0,17)) return STD.ANSI;
-  if (t <= Date.UTC(1992,0,26)) return STD.UFAS;
-  if (t <= Date.UTC(2010,8,14)) return STD.ADA1991;
-  if (t <= Date.UTC(2012,2,14)) return STD.CHOICE;
-  return STD.ADA2010;
-}
-var MONTHS = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
-/* Extract candidate dates from free text. Returns array of {d:Date, yearOnly:bool}. */
-function extractDates(text){
-  if(!text) return [];
-  var out = [], m;
-  var s = String(text);
-  // ISO yyyy-mm-dd
-  var reISO = /\b(19|20)(\d{2})-(\d{1,2})-(\d{1,2})\b/g;
-  while((m = reISO.exec(s))) out.push({d:new Date(Date.UTC(+((m[1]+m[2])), +m[3]-1, +m[4])), yearOnly:false});
-  // mm/dd/yyyy or mm-dd-yyyy
-  var reUS = /\b(\d{1,2})[\/\-](\d{1,2})[\/\-]((?:19|20)\d{2})\b/g;
-  while((m = reUS.exec(s))) out.push({d:new Date(Date.UTC(+m[3], +m[1]-1, +m[2])), yearOnly:false});
-  // Month dd, yyyy  or  Month yyyy
-  var reMon = /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(?:(\d{1,2})(?:st|nd|rd|th)?,?\s+)?((?:19|20)\d{2})\b/gi;
-  while((m = reMon.exec(s))){
-    out.push({d:new Date(Date.UTC(+m[3], MONTHS[m[1].slice(0,3).toLowerCase()], m[2]? +m[2] : 15)), yearOnly:false});
-  }
-  // Bare 4-digit years not already consumed as part of the above
-  var stripped = s.replace(reISO,' ').replace(reUS,' ').replace(reMon,' ');
-  var reY = /\b((?:19|20)\d{2})\b/g;
-  while((m = reY.exec(stripped))) out.push({d:new Date(Date.UTC(+m[1],6,1)), yearOnly:true, year:+m[1]});
-  return out;
-}
-/* Standard for a possibly year-only value. Boundary years are ambiguous. */
-function stdForToken(tok){
-  if(tok.yearOnly){
-    var a = stdForDate(new Date(Date.UTC(tok.year,0,1)));
-    var b = stdForDate(new Date(Date.UTC(tok.year,11,31)));
-    return (a.id === b.id) ? a : STD.AMBIG;
-  }
-  return stdForDate(tok.d);
-}
-function latestToken(tokens){
-  var best = null;
-  tokens.forEach(function(t){ if(!best || t.d.getTime() > best.d.getTime()) best = t; });
-  return best;
-}
-/* Per-instance standard determination for the identifier block. */
-function computeStandards(inst){
-  var built = latestToken(extractDates(inst.meta.yb || ''));
-  var mods  = extractDates(inst.meta.mod || '').filter(function(t){
-    return !/^\s*n\/?a\s*$/i.test(inst.meta.mod||'');
-  });
-  var modLatest = /n\/?a/i.test((inst.meta.mod||'').trim()) && !mods.length ? null : latestToken(mods);
-  var builtStd = built ? stdForToken(built) : STD.UNKNOWN;
-  var modStd = modLatest ? stdForToken(modLatest) : null;
-  var controlling;
-  if (modStd && modStd.id !== 'AMBIG') controlling = modStd;
-  else if (builtStd.id !== 'UNKNOWN' && builtStd.id !== 'AMBIG') controlling = builtStd;
-  else controlling = (builtStd.id === 'AMBIG' || (modStd && modStd.id === 'AMBIG')) ? STD.AMBIG : STD.UNKNOWN;
-  return {builtStd:builtStd, modStd:modStd, controlling:controlling,
-          changed: !!(modStd && builtStd.id !== 'UNKNOWN' && builtStd.id !== 'AMBIG' && modStd.id !== 'AMBIG' && modStd.id !== builtStd.id)};
-}
-
-/* ---------------- Threshold engine (thresholds.md) ------------------------
-   Check spec on a field (4th tuple slot):
-     {max:v} {min:v} {range:[lo,hi]} {pairMin:[a,b]} {triMin:[a,b,c]} {minDenom:v}
-   Any numeric slot may instead be a per-standard object keyed by
-   ANSI / UFAS / ADA1991 / ADA2010. CHOICE resolves permissively across
-   UFAS + 1991 ADA + 2010 ADA (subrecipient's choice).
-   Values exactly at a boundary are COMPLIANT.
---------------------------------------------------------------------------- */
-var CHOICE_SET = ['UFAS','ADA1991','ADA2010'];
-function resolveNum(v, stdId, mode){ // mode: 'loose-min' | 'loose-max'
-  if (v == null) return null;
-  if (typeof v === 'number') return v;
-  if (stdId === 'CHOICE'){
-    var vals = CHOICE_SET.map(function(k){return v[k];}).filter(function(x){return x != null;});
-    if (!vals.length) return null;
-    return mode === 'loose-min' ? Math.min.apply(null, vals) : Math.max.apply(null, vals);
-  }
-  return (v[stdId] != null) ? v[stdId] : null;
-}
-function resolveRange(r, stdId){
-  if (!r) return null;
-  if (Array.isArray(r)) return r;
-  if (stdId === 'CHOICE'){
-    var los=[], his=[];
-    CHOICE_SET.forEach(function(k){ if(r[k]){ los.push(r[k][0]); his.push(r[k][1]); } });
-    if(!los.length) return null;
-    return [Math.min.apply(null,los), Math.max.apply(null,his)];
-  }
-  return r[stdId] || null;
-}
-function parseNums(raw){
-  if (raw == null) return [];
-  var s = String(raw).toLowerCase();
-  if (/^\s*(n\/?a|none|-)\s*$/.test(s)) return [];
-  s = s.replace(/(\d+)\s+(\d)\/(\d+)/g, function(_,w,n,d){ return (+w + (+n)/(+d)); }); // 1 1/2
-  s = s.replace(/(\d)\/(\d+)/g, function(_,n,d){ return ((+n)/(+d)); });               // 1/2
-  var out = [], m, re = /\d+(?:\.\d+)?|\.\d+/g;
-  while((m = re.exec(s))) out.push(parseFloat(m[0]));
-  return out;
-}
-/* Evaluate one field value against its check under stdId.
-   Returns null (no determination) or {ok:bool, msg:string}. */
-function evalCheck(check, raw, stdId){
-  if (!check || stdId === 'PA' || stdId === 'UNKNOWN' || stdId === 'AMBIG') return null;
-  var nums = parseNums(raw);
-  if (!nums.length) return null;
-  if (check.minDenom != null){
-    var d = nums.length >= 2 ? nums[nums.length-1] : nums[0]; // "1:12" -> 12
-    var req = resolveNum(check.minDenom, stdId, 'loose-min');
-    if (req == null) return null;
-    return {ok: d >= req, msg: 'recorded 1:' + d + '; max slope 1:' + req + ' (larger denominator is shallower)'};
-  }
-  if (check.range || (check.rangeStd)){
-    var r = resolveRange(check.range || check.rangeStd, stdId);
-    if (!r) return null;
-    var v = nums[0];
-    return {ok: v >= r[0] && v <= r[1], msg: 'recorded ' + v + '; required ' + r[0] + ' to ' + r[1]};
-  }
-  if (check.pairMin){
-    if (nums.length < 2) return null;
-    var a = resolveNum(check.pairMin[0], stdId, 'loose-min'), b = resolveNum(check.pairMin[1], stdId, 'loose-min');
-    if (a == null || b == null) return null;
-    var lo = Math.min(nums[0],nums[1]), hi = Math.max(nums[0],nums[1]);
-    var rlo = Math.min(a,b), rhi = Math.max(a,b);
-    return {ok: lo >= rlo && hi >= rhi, msg: 'recorded ' + nums[0] + ' x ' + nums[1] + '; minimum ' + a + ' x ' + b};
-  }
-  if (check.triMin){
-    if (nums.length < 3) return null;
-    var req3 = check.triMin.map(function(x){ return resolveNum(x, stdId, 'loose-min'); });
-    if (req3.some(function(x){return x==null;})) return null;
-    var ok3 = nums[0] >= req3[0] && nums[1] >= req3[1] && nums[2] >= req3[2];
-    return {ok: ok3, msg: 'recorded ' + nums.slice(0,3).join(' / ') + '; minimum ' + req3.join(' / ')};
-  }
-  var v0 = nums[0];
-  if (check.min != null){
-    var mn = resolveNum(check.min, stdId, 'loose-min');
-    if (mn == null) return null;
-    return {ok: v0 >= mn, msg: 'recorded ' + v0 + '; minimum ' + mn};
-  }
-  if (check.max != null){
-    var mx = resolveNum(check.max, stdId, 'loose-max');
-    if (mx == null) return null;
-    return {ok: v0 <= mx, msg: 'recorded ' + v0 + '; maximum ' + mx};
-  }
-  return null;
-}
-
 /* ---------------- Field shorthand ----------------------------------------
-   Each field: [kind, label, hint, check]
+   Each field: [kind, label, hint]
    kind: 'q' text | 'ta' textarea | 'yn' Yes/No | 'yna' Yes/No/NA
          'hdr' subsection header | 'note' italic note
 --------------------------------------------------------------------------- */
-var FORCE = {ANSI:8.5, UFAS:5, ADA1991:5, ADA2010:5};
-var COUNTER = {ANSI:34, UFAS:34, ADA1991:36, ADA2010:36};
-var HANDRAIL = {ANSI:[30,34], UFAS:[30,34], ADA1991:[34,38], ADA2010:[34,38]};
 var SIGN_HINT = '60 in centerline; 57 to 63 in band, verify per cycle';
 
 function doorBlock(){
   return [
-    ['q','Width of doorway(s) (inches)','Min 32 in',{min:32}],
-    ['q','Height of door handle (inches)','Max 48 in',{max:48}],
+    ['q','Width of doorway(s) (inches)','Min 32 in'],
+    ['q','Height of door handle (inches)','Max 48 in'],
     ['yn','Door openable without grasping or twisting wrist?',''],
     ['q','If not, type of hardware on door',''],
     ['yna','Automatic door opener provided?',''],
     ['yna','Door closer takes at least 3 seconds to close?',''],
-    ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI',{max:FORCE}],
-    ['q','Threshold height, exterior (inches)','Max 1/2 in',{max:0.5}],
-    ['q','Threshold height, interior (inches)','Max 1/2 in',{max:0.5}],
+    ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
+    ['q','Threshold height, exterior (inches)','Max 1/2 in'],
+    ['q','Threshold height, interior (inches)','Max 1/2 in'],
     ['yna','Carpeting or mats 1/2 in or less?','']
   ];
 }
@@ -424,7 +193,7 @@ function signageBlock(){
   return [
     ['hdr','Signage',''],
     ['yn','Identification signage provided?',''],
-    ['q','Height of signage, floor to centerline (inches)',SIGN_HINT,{range:[57,63]}],
+    ['q','Height of signage, floor to centerline (inches)',SIGN_HINT],
     ['q','Height of characters on signage (inches)',''],
     ['yn','Signs mounted adjacent to latch side of door?',''],
     ['yna','At double doors, signs on nearest adjacent wall?',''],
@@ -454,13 +223,17 @@ var CONFIG = [
   ['yn','At least 1 of every 6 accessible spaces is van accessible?',''],
   ['yn','Accessible spaces located closest to nearest accessible route?',''],
   ['hdr','Dimensions (inches)',''],
-  ['q','Width of accessible parking space','Min 96 in',{min:96}],
-  ['q','Width of access aisle','Min 60 in standard; van min 96 in (ANSI/UFAS/1991); min 60 in under 2010 if space is 132 in',{min:60}],
-  ['q','Width of van accessible space','Min 132 in OR 96 in with 60 in aisle (2010); min 96 in plus 96 in aisle (earlier)',{min:96}],
-  ['q','Width of van access aisle','Min 60 in (2010 with 132 in space); min 96 in (earlier)',{min:60}],
-  ['q','Vertical clearance, van parking / access aisles (inches)','Min 98 in',{min:98}],
+  ['q','Width of accessible parking space','Min 96 in'],
+  ['q','Width of access aisle','Min 60 in standard; van min 96 in (ANSI/UFAS/1991); min 60 in under 2010 if space is 132 in'],
+  ['q','Width of van accessible space','Min 132 in OR 96 in with 60 in aisle (2010); min 96 in plus 96 in aisle (earlier)'],
+  ['q','Width of van access aisle','Min 60 in (2010 with 132 in space); min 96 in (earlier)'],
+  ['q','Vertical clearance, van parking / access aisles (inches)','Min 98 in'],
   ['yn','Ground surface slope less than 1:48?',''],
   ['yn','Access aisle slope less than 1:48?',''],
+  ['hdr','Surface Condition',''],
+  ['yn','Parking surface stable, firm, and slip resistant?',''],
+  ['yn','Surface free of potholes, heaving, or broken pavement at accessible spaces and along the accessible route?',''],
+  ['q','Describe any surface deficiencies and locations',''],
   ['hdr','Markings and Signage',''],
   ['yn','Accessible spaces marked with lines?',''],
   ['yn','Access aisle marked to discourage parking in it?',''],
@@ -474,32 +247,22 @@ var CONFIG = [
   ['yna','Detectable warnings at curb ramps in transit facilities?',''],
   ADDL
 ]},
-{ key:'lotcond', title:'Parking Lot Lighting and Surface Condition', repeat:false, observationalNote:true, fields:[
-  ['note','Observational review: record conditions; no dimensional thresholds apply to this section.',''],
-  ['yn','Parking lot lighting operational and adequate at accessible spaces and along the accessible route?',''],
-  ['q','Describe any lighting deficiencies (locations, fixtures out)',''],
-  ['yn','Parking surface stable, firm, and slip resistant?',''],
-  ['yn','Surface free of potholes, heaving, or broken pavement on the accessible route and at accessible spaces?',''],
-  ['q','Describe any surface deficiencies and locations',''],
-  ['yn','Accessible space and aisle markings legible (not faded)?',''],
-  ADDL
-]},
 { key:'loading', title:'Passenger Loading Zones', repeat:false, fields:[
   ['yn','Passenger loading zone provided?','If No, mark N/A and skip remaining fields'],
   ['yn','Loading zone on an accessible route?',''],
-  ['q','Access aisle width (inches)','Min 60 in',{min:60}],
-  ['q','Access aisle length (feet)','Min 20 ft',{min:20}],
+  ['q','Access aisle width (inches)','Min 60 in'],
+  ['q','Access aisle length (feet)','Min 20 ft'],
   ['yn','Access aisle at the same level as the vehicle pull-up space?',''],
   ['yn','Access aisle marked to discourage parking in it?',''],
-  ['q','Vertical clearance at the zone and along the vehicle route (inches)','Min 114 in',{min:114}],
+  ['q','Vertical clearance at the zone and along the vehicle route (inches)','Min 114 in'],
   ['yn','Curb ramp provided between the loading zone and the walkway?','If yes, complete Curb Ramps section'],
   ADDL
 ]},
 { key:'routes', title:'Accessible Routes / Walkways', repeat:false, fields:[
   ['yn','At least one accessible route from arrival points to entrance?',''],
   ['yna','Inaccessible entrances marked with directional signage?',''],
-  ['q','Width of public walkways (inches)','Min 36 in',{min:36}],
-  ['q','Overhead clearance (inches)','Min 80 in',{min:80}],
+  ['q','Width of public walkways (inches)','Min 36 in'],
+  ['q','Overhead clearance (inches)','Min 80 in'],
   ['yna','60 in passing space at intervals along route?','2010 ADA, if route is under 60 in wide; max 200 ft intervals'],
   ['yn','Path stable, firm, slip-resistant, accessible?',''],
   ['q','Surface material (concrete / asphalt / pavers / other)',''],
@@ -512,16 +275,16 @@ var CONFIG = [
   ADDL
 ]},
 { key:'curbramps', title:'Curb Ramps', repeat:true, unit:'Curb Ramp', fields:[
-  ['q','Width of ramp run, not counting flared sides (inches)','Min 36 in',{min:36}],
+  ['q','Width of ramp run, not counting flared sides (inches)','Min 36 in'],
   ['q','Rise measurement (inches)',''],
   ['q','Length measurement (inches)',''],
-  ['q','Running slope, denominator (e.g. 12 = 1:12)','Max 1:12',{minDenom:12}],
-  ['q','Cross slope, denominator','Max 1:48 (2 percent)',{minDenom:48}],
+  ['q','Running slope, denominator (e.g. 12 = 1:12)','Max 1:12'],
+  ['q','Cross slope, denominator','Max 1:48 (2 percent)'],
   ['q','Gutter slope measurement',''],
   ['yn','Curb ramp has flared sides?',''],
-  ['q','Flared sides ratio, denominator','Max 1:10',{minDenom:10}],
+  ['q','Flared sides ratio, denominator','Max 1:10'],
   ['yn','Landing provided at top of curb ramp?',''],
-  ['q','Top landing, length x width (inches)','Min 36 in x 36 in',{pairMin:[36,36]}],
+  ['q','Top landing, length x width (inches)','Min 36 in x 36 in'],
   ['yn','Curb ramp placed diagonally at intersection?',''],
   ['q','If yes, clear space measurement (inches)',''],
   ['yn','Raised islands in crossings?',''],
@@ -555,13 +318,13 @@ var CONFIG = [
 { key:'stairs', title:'Stairways and Steps', repeat:true, unit:'Stairway', fields:[
   ['q','Stair location (interior / exterior)',''],
   ['yn','Steps avoid abrupt nosing?',''],
-  ['q','Stair width (inches)','Min 44 in for public stairs',{min:44}],
+  ['q','Stair width (inches)','Min 44 in for public stairs'],
   ['yn','Handrails provided on both sides?',''],
-  ['q','Height of handrails (inches)','30 to 34 in: ANSI/UFAS; 34 to 38 in: 1991/2010 ADA',{range:HANDRAIL}],
+  ['q','Height of handrails (inches)','30 to 34 in: ANSI/UFAS; 34 to 38 in: 1991/2010 ADA'],
   ['q','Length of handrails (inches)',''],
   ['yn','Do steps have risers?',''],
-  ['q','Height of risers (inches)','Max 7 in',{max:7}],
-  ['q','Tread depth (inches)','Min 11 in',{min:11}],
+  ['q','Height of risers (inches)','Max 7 in'],
+  ['q','Tread depth (inches)','Min 11 in'],
   ['yn','Color/tonal contrast on stair nosings?','Contrast strip recommended; verify instrument wording'],
   ADDL
 ]},
@@ -569,21 +332,21 @@ var CONFIG = [
   ['q','Ramp serves which area?',''],
   ['q','Rise measurement (inches)',''],
   ['q','Length measurement (inches)',''],
-  ['q','Max rise per run (inches)','Max 30 in before an intermediate landing',{max:30}],
-  ['q','Running slope, denominator','Max 1:12',{minDenom:12}],
-  ['q','Cross slope, denominator','Max 1:48',{minDenom:48}],
+  ['q','Max rise per run (inches)','Max 30 in before an intermediate landing'],
+  ['q','Running slope, denominator','Max 1:12'],
+  ['q','Cross slope, denominator','Max 1:48'],
   ['yn','Surface stable, firm, slip-resistant?',''],
   ['yn','Accessible landing at top and bottom?',''],
-  ['q','Top landing, L x W (inches)','Min 60 in x 60 in',{pairMin:[60,60]}],
-  ['q','Bottom landing, L x W (inches)','Min 60 in x 60 in',{pairMin:[60,60]}],
+  ['q','Top landing, L x W (inches)','Min 60 in x 60 in'],
+  ['q','Bottom landing, L x W (inches)','Min 60 in x 60 in'],
   ['yn','Intermediate landing between runs?',''],
   ['yn','Ramp changes direction?',''],
-  ['q','Intermediate / direction-change landing, L x W (inches)','Min 60 in x 60 in',{pairMin:[60,60]}],
+  ['q','Intermediate / direction-change landing, L x W (inches)','Min 60 in x 60 in'],
   ['yn','Landing subject to wet conditions?',''],
   ['q','If yes, landing drainage slope (ratio)',''],
-  ['q','Clear width of ramp between handrails (inches)','Min 36 in',{min:36}],
+  ['q','Clear width of ramp between handrails (inches)','Min 36 in'],
   ['yn','Handrails on both sides?','Required both sides when rise exceeds 6 in'],
-  ['q','Height of handrails (inches)','30 to 34 in: ANSI/UFAS; 34 to 38 in: 1991/2010 ADA',{range:HANDRAIL}],
+  ['q','Height of handrails (inches)','30 to 34 in: ANSI/UFAS; 34 to 38 in: 1991/2010 ADA'],
   ['yn','Handrails smooth, extend beyond top and bottom?',''],
   ['yn','Handrails continuous?',''],
   ['q','If not continuous, length of horizontal extensions (inches)',''],
@@ -596,8 +359,8 @@ var CONFIG = [
   ['yn','Elevator available and usable by individuals with physical disabilities?',''],
   ['yn','Unassisted access to elevator?',''],
   ['hdr','Call Controls',''],
-  ['q','Height of call button, floor to panel center (inches)','15 to 48 in',{range:[15,48]}],
-  ['q','Car call button size, diameter (inches)','Min 3/4 in (2010 ADA)',{min:{ADA2010:0.75}}],
+  ['q','Height of call button, floor to panel center (inches)','15 to 48 in'],
+  ['q','Car call button size, diameter (inches)','Min 3/4 in (2010 ADA)'],
   ['yn','Buttons easy to push or touch-sensitive?',''],
   ['yn','Visible and audible signals at each hoistway entrance?',''],
   ['yn','Hall lantern provided?',''],
@@ -605,15 +368,15 @@ var CONFIG = [
   ['yn','Audible signals: once for up, twice for down (or verbal annunciator)?',''],
   ['hdr','Hoistway and Car',''],
   ['yn','Floor designations: raised characters plus Braille on both door jambs?',''],
-  ['q','Floor designation character height (inches)','Min 2 in',{min:2}],
+  ['q','Floor designation character height (inches)','Min 2 in'],
   ['q','Type of entrance door (center / side / other)',''],
-  ['q','Width of elevator entrance door (inches)','Min 32 in',{min:32}],
+  ['q','Width of elevator entrance door (inches)','Min 32 in'],
   ['yn','Door reopens if obstructed, remains open min 20 seconds?',''],
   ['yn','Door reopening device sensitive to light touch or contact?','No physical contact required; verify sensitivity rule per cycle'],
   ['q','Car interior, W x D (inches)','Min 51 W x 51 D center door; 68 W x 51 D side door (2010 ADA)'],
-  ['q','Width of car door (inches)','Min 32 in',{min:32}],
+  ['q','Width of car door (inches)','Min 32 in'],
   ['yn','Emergency alarm/stop at bottom of panel?',''],
-  ['q','Height of emergency communications, floor to bottom of panel (inches)','Max 48 in',{max:48}],
+  ['q','Height of emergency communications, floor to bottom of panel (inches)','Max 48 in'],
   ['yna','If not accessible, accessible elevator clearly identified with ISA?',''],
   ADDL
 ]},
@@ -621,12 +384,12 @@ var CONFIG = [
   ['yn','Platform lift provides unassisted entry and exit?',''],
   ['yn','Walkways have leveled platform-to-runway clearance?',''],
   ['q','Clear space for approach, L x W (inches)',''],
-  ['q','Height of controls, floor to panel center (inches)','15 to 48 in',{range:[15,48]}],
+  ['q','Height of controls, floor to panel center (inches)','15 to 48 in'],
   ['yn','Low-energy, power-operated doors or gates?',''],
   ['yn','Doors remain open minimum 20 seconds?',''],
-  ['q','Width of end doors and gates (inches)','Min 32 in',{min:32}],
-  ['q','Width of side doors and gates (inches)','Min 32 in',{min:32}],
-  ['q','Lift interior, W x D (inches)','Min 32 in W x 48 in D',{pairMin:[32,48]}],
+  ['q','Width of end doors and gates (inches)','Min 32 in'],
+  ['q','Width of side doors and gates (inches)','Min 32 in'],
+  ['q','Lift interior, W x D (inches)','Min 32 in W x 48 in D'],
   ADDL
 ]},
 { key:'rooms', title:'Rooms and Offices', repeat:true, unit:'Room / Office', roomName:true, fields:[].concat(
@@ -639,12 +402,12 @@ var CONFIG = [
   doorBlock(),
   [['hdr','Counters and Workstations',''],
    ['yn','Accessible sales/services reception countertop?',''],
-   ['q','Forward reach approach (inches)','Max 48 in',{max:48}],
+   ['q','Forward reach approach (inches)','Max 48 in'],
    ['q','Parallel approach (inches)',''],
    ['yn','Accessible reception countertop?',''],
-   ['q','Height of reception countertop (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010 (with min 36 in wide lowered section)',{max:COUNTER}],
+   ['q','Height of reception countertop (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010 (with min 36 in wide lowered section)'],
    ['q','Countertop length x width (inches)',''],
-   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
+   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D'],
    ['yn','Supplies accessible by persons with disabilities?','']],
   alarmBlock(),
   [ADDL]
@@ -661,48 +424,48 @@ var CONFIG = [
    ['q','Total number of fixed accessible seats indoors',''],
    ['yn','Seats and tables on accessible route?',''],
    ['yn','Wheelchair seating space at fixed tables/counters?',''],
-   ['q','Height of fixed tables/countertops (inches)','28 to 34 in',{range:[28,34]}],
-   ['q','Wheelchair space, W x D (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
-   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Wheelchair space, W x D (inches)','Min 30 in x 48 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
    ['yn','Accessible route between food line, seating, and exit?',''],
    ['hdr','Outdoor Fixed Seating',''],
    ['q','Total number of fixed accessible seats outdoors',''],
    ['yn','Outdoor seats and tables on accessible route?',''],
-   ['q','Height of outdoor fixed tables/countertops (inches)','28 to 34 in',{range:[28,34]}],
+   ['q','Height of outdoor fixed tables/countertops (inches)','28 to 34 in'],
    ['q','Outdoor surface material',''],
    ['hdr','Food Service Line(s)',''],
    ['note','Measure all food service lines including main line, a la carte, and student store lines.',''],
    ['q','Total number of food lines',''],
-   ['q','Food service line aisle width (inches)','Min 36 in clear',{min:36}],
-   ['q','Height of food line counter / tray slide (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010',{max:COUNTER}],
-   ['q','Height of sneeze guard / food display, lowest accessible item (inches)','Max 48 in forward reach',{max:48}],
+   ['q','Food service line aisle width (inches)','Min 36 in clear'],
+   ['q','Height of food line counter / tray slide (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010'],
+   ['q','Height of sneeze guard / food display, lowest accessible item (inches)','Max 48 in forward reach'],
    ['yn','Self-service items within reach range?',''],
-   ['q','Height of highest self-service item (inches)','Max 48 in',{max:48}],
+   ['q','Height of highest self-service item (inches)','Max 48 in'],
    ['yn','Staff-assisted alternative available if self-service not accessible?',''],
    ['hdr','Checkout Counter(s)',''],
    ['q','Total number of checkout aisles',''],
-   ['q','Number of accessible checkout aisles','Min 1 required',{min:1}],
-   ['q','Checkout aisle width (inches)','Min 36 in',{min:36}],
-   ['q','Height of accessible checkout counter (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010',{max:COUNTER}],
-   ['q','Width of lowered counter section (inches)','Min 36 in',{min:36}],
-   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
+   ['q','Number of accessible checkout aisles','Min 1 required'],
+   ['q','Checkout aisle width (inches)','Min 36 in'],
+   ['q','Height of accessible checkout counter (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010'],
+   ['q','Width of lowered counter section (inches)','Min 36 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
    ['q','Approach type at checkout (Forward / Parallel)',''],
-   ['q','Height of tableware and condiment areas (inches)','Max 48 in forward reach',{max:48}],
+   ['q','Height of tableware and condiment areas (inches)','Max 48 in forward reach'],
    ['hdr','Tray Return / Beverage / Vending',''],
    ['yn','Tray return station provided?',''],
    ['yna','Tray return on accessible route?',''],
-   ['q','Height of tray return slot (inches)','Max 48 in',{max:48}],
-   ['q','Tray return clear floor space, W x D (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
+   ['q','Height of tray return slot (inches)','Max 48 in'],
+   ['q','Tray return clear floor space, W x D (inches)','Min 30 in x 48 in'],
    ['yn','Self-service beverage station provided?',''],
    ['yna','Beverage station on accessible route?',''],
-   ['q','Height of highest operable part, beverage (inches)','Max 48 in',{max:48}],
-   ['q','Beverage clear floor space, W x D (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
+   ['q','Height of highest operable part, beverage (inches)','Max 48 in'],
+   ['q','Beverage clear floor space, W x D (inches)','Min 30 in x 48 in'],
    ['yn','Beverage operable parts require tight grasping/pinching/twisting?',''],
    ['yn','Beverage force to activate exceeds 5 lbs?',''],
    ['yn','Vending machines provided?',''],
    ['yna','Vending machines on accessible route?',''],
-   ['q','Height of vending highest operable part (inches)','Max 48 in forward reach',{max:48}],
-   ['q','Vending clear floor space, W x D (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
+   ['q','Height of vending highest operable part (inches)','Max 48 in forward reach'],
+   ['q','Vending clear floor space, W x D (inches)','Min 30 in x 48 in'],
    ['yn','Vending force to activate exceeds 5 lbs?',''],
    ADDL]
 )},
@@ -712,48 +475,48 @@ var CONFIG = [
    ['q','Number of entrances and exits',''],
    ['yn','Library on accessible route?',''],
    ['yna','Ramps leading to library?','If yes, complete Ramps section'],
-   ['q','Overhead clearance of accessible route (inches)','Min 80 in',{min:80}]],
+   ['q','Overhead clearance of accessible route (inches)','Min 80 in']],
   doorBlock(),
   alarmBlock(),
   [['hdr','Seating and Workstations',''],
    ['yn','Wheelchair seating at fixed tables/counters?',''],
    ['yn','Seats and tables on accessible route?',''],
    ['q','Number of accessible seats',''],
-   ['q','Height of fixed tables/countertops (inches)','28 to 34 in',{range:[28,34]}],
-   ['q','Aisle space width (inches)','Min 36 in; 60 in passing per 2010 ADA where required',{min:36}],
-   ['q','Turning space in reading areas, diameter (inches)','Min 60 in',{min:60}],
-   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Aisle space width (inches)','Min 36 in; 60 in passing per 2010 ADA where required'],
+   ['q','Turning space in reading areas, diameter (inches)','Min 60 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
    ['yn','Accessible desk/workstations have sufficient clearance?',''],
    ['yna','If insufficient, alternative option available?',''],
    ['hdr','Computer Workstations and Adaptive Technology',''],
    ['yn','Computer workstations available?',''],
    ['yn','Accessible computer workstation(s) provided?',''],
-   ['q','Height of accessible workstation surface (inches)','28 to 34 in',{range:[28,34]}],
+   ['q','Height of accessible workstation surface (inches)','28 to 34 in'],
    ['yn','Adaptive technology available?',''],
    ['q','If yes, describe adaptive technology',''],
    ['hdr','Checkout Counter',''],
    ['q','Number of accessible checkout areas',''],
-   ['q','Height of checkout counter top (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010',{max:COUNTER}],
-   ['q','Width of lowered counter section (inches)','Min 36 in',{min:36}],
+   ['q','Height of checkout counter top (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010'],
+   ['q','Width of lowered counter section (inches)','Min 36 in'],
    ['q','Counter top depth (inches)',''],
-   ['q','Checkout knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
-   ['q','Forward reach approach (inches)','Max 48 in',{max:48}],
+   ['q','Checkout knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['q','Forward reach approach (inches)','Max 48 in'],
    ['yn','Parallel approach available?',''],
    ['hdr','Book Drop',''],
    ['note','Measuring the book drop: measure from finished floor to bottom edge of drop slot, in inches. Measure clear floor space in front (W x D). Test activation force. Note approach plus location.',''],
    ['yn','Book drop provided?',''],
    ['yna','Book drop on accessible route?',''],
-   ['q','Height of drop slot, floor to bottom edge (inches)','Max 48 in forward reach; side reach max 54 in pre-2010, max 48 in under 2010 ADA',{max:48}],
-   ['q','Book drop clear floor space, W x D (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
-   ['q','Force required to activate book drop (pounds)','Max 5 lbs',{max:5}],
+   ['q','Height of drop slot, floor to bottom edge (inches)','Max 48 in forward reach; side reach max 54 in pre-2010, max 48 in under 2010 ADA'],
+   ['q','Book drop clear floor space, W x D (inches)','Min 30 in x 48 in'],
+   ['q','Force required to activate book drop (pounds)','Max 5 lbs'],
    ['yn','Operable parts require tight grasping/pinching/twisting?',''],
    ['q','Approach type (Forward / Side)',''],
    ['q','Book drop location (Exterior / Interior)',''],
    ['hdr','Card Catalog and Stack Aisles',''],
-   ['q','Card catalog aisle width (inches)','Min 36 in',{min:36}],
-   ['q','Card catalog operable part height (inches)','Max 48 in forward reach',{max:48}],
-   ['q','Stack aisle width (inches)','Min 36 in',{min:36}],
-   ['q','Overhead clearance in stack aisles (inches)','Min 80 in',{min:80}],
+   ['q','Card catalog aisle width (inches)','Min 36 in'],
+   ['q','Card catalog operable part height (inches)','Max 48 in forward reach'],
+   ['q','Stack aisle width (inches)','Min 36 in'],
+   ['q','Overhead clearance in stack aisles (inches)','Min 80 in'],
    ADDL]
 )},
 { key:'cte', title:'CTE Classrooms', repeat:true, unit:'CTE Classroom', fields:[].concat(
@@ -767,9 +530,9 @@ var CONFIG = [
   [['hdr','Seating and Workstations',''],
    ['yn','Wheelchair seating at fixed tables/counters?',''],
    ['q','Number of accessible seats',''],
-   ['q','Height of fixed tables/countertops (inches)','28 to 34 in',{range:[28,34]}],
-   ['q','Aisle space width (inches)','Min 36 in',{min:36}],
-   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Aisle space width (inches)','Min 36 in'],
+   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D'],
    ['yn','Accessible desk/workstations have sufficient clearance?',''],
    ['yna','If insufficient, alternative option available?',''],
    ['yn','Supplies accessible by persons with disabilities?','']],
@@ -786,13 +549,13 @@ var CONFIG = [
   doorBlock(),
   [['hdr','Workstations',''],
    ['yn','Wheelchair seating at fixed tables/counters?',''],
-   ['q','Height of fixed tables/countertops (inches)','28 to 34 in',{range:[28,34]}],
-   ['q','Aisle space width (inches)','Min 36 in',{min:36}],
-   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Aisle space width (inches)','Min 36 in'],
+   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D'],
    ['yn','Accessible desk/workstations have sufficient clearance?',''],
    ['yn','Supplies accessible by persons with disabilities?',''],
-   ['q','Height of soap dispenser at classroom sink (inches)','Max 48 in',{max:48}],
-   ['q','Height of paper towel dispenser at classroom sink (inches)','Max 48 in',{max:48}]],
+   ['q','Height of soap dispenser at classroom sink (inches)','Max 48 in'],
+   ['q','Height of paper towel dispenser at classroom sink (inches)','Max 48 in']],
   alarmBlock(),
   [ADDL]
 )},
@@ -814,7 +577,7 @@ var CONFIG = [
    ['yn','Accessible route to wheelchair designated seats?',''],
    ['yna','Ramp to seating area?','If yes, complete Ramps section'],
    ['yn','Line of sight for wheelchair spaces comparable to ambulatory seating?',''],
-   ['q','Wheelchair space dimensions, W x D (inches)','Min 36 in W x 48 in D (60 in deep for side entry; verify per cycle)',{pairMin:[36,48]}],
+   ['q','Wheelchair space dimensions, W x D (inches)','Min 36 in W x 48 in D (60 in deep for side entry; verify per cycle)'],
    ['yn','Can supplies be accessed by persons with disabilities?',''],
    ['hdr','Assistive Listening Systems',''],
    ['yn','Audio amplification system provided?',''],
@@ -826,9 +589,9 @@ var CONFIG = [
    ['hdr','Fixed Seating / Tables (Weight Room / Other)',''],
    ['yna','Wheelchair seating at fixed tables/counters?',''],
    ['q','Number of accessible seats',''],
-   ['q','Height of fixed tables/countertops (inches)','28 to 34 in',{range:[28,34]}],
-   ['q','Wheelchair space, W x D (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
-   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Wheelchair space, W x D (inches)','Min 30 in x 48 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
    ['yna','Accessible desk/workstations have sufficient clearance?',''],
    ADDL]
 )},
@@ -840,7 +603,7 @@ var CONFIG = [
   ['yn','Accessible route to wheelchair designated seats?',''],
   ['yn','Companion seats provided with wheelchair spaces?',''],
   ['yn','Ramp to wheelchair seating area?','If yes, complete Ramps section'],
-  ['q','Accessible route clear width (inches)','Min 36 in',{min:36}],
+  ['q','Accessible route clear width (inches)','Min 36 in'],
   ['yn','Accessible route to the field and team/player seating?',''],
   ['yn','Accessible toilet facilities serving the venue?',''],
   ADDL
@@ -849,28 +612,28 @@ var CONFIG = [
   ['yn','Locker room on accessible route?',''],
   ['hdr','Signage and Entry Door',''],
   ['yn','Identification signage provided?',''],
-  ['q','Height of signage, floor to centerline (inches)',SIGN_HINT,{range:[57,63]}],
+  ['q','Height of signage, floor to centerline (inches)',SIGN_HINT],
   ['q','Height of characters on signage (inches)',''],
   ['yn','Signs mounted adjacent to latch side of door?',''],
   ['yn','Characters raised plus Grade II Braille?',''],
-  ['q','Width of entrance doorway (inches)','Min 32 in',{min:32}],
-  ['q','Height of door handle (inches)','Max 48 in',{max:48}],
-  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI',{max:FORCE}],
+  ['q','Width of entrance doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
   ['hdr','Interior Maneuvering',''],
   ['yn','Locker room has foyer?',''],
   ['q','Measurement between doors in foyer (inches)',''],
-  ['q','Turning space, diameter (inches)','Min 60 in',{min:60}],
+  ['q','Turning space, diameter (inches)','Min 60 in'],
   ['yn','Doors swing into turning spaces?',''],
   ['hdr','Lockers and Amenities',''],
   ['q','Number of accessible lockers','Min 5 percent of each type (2010 ADA 225)'],
-  ['q','Height of accessible locker operable parts (inches)','Max 48 in forward reach',{max:48}],
+  ['q','Height of accessible locker operable parts (inches)','Max 48 in forward reach'],
   ['yn','Mirror provided?',''],
-  ['q','Height of mirror, floor to reflecting edge (inches)','Max 40 in',{max:40}],
+  ['q','Height of mirror, floor to reflecting edge (inches)','Max 40 in'],
   ['yn','Accessible benches provided?',''],
-  ['q','Height of benches, floor to top (inches)','17 to 19 in',{range:[17,19]}],
-  ['q','Depth of benches (inches)','20 to 24 in',{range:[20,24]}],
+  ['q','Height of benches, floor to top (inches)','17 to 19 in'],
+  ['q','Depth of benches (inches)','20 to 24 in'],
   ['yn','Back support on benches (or bench against wall)?',''],
-  ['q','Clear floor space adjacent to bench, W x D (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
+  ['q','Clear floor space adjacent to bench, W x D (inches)','Min 30 in x 48 in'],
   ['hdr','Shower Rooms',''],
   ['yn','Showers in use?',''],
   ['q','Number of showers',''],
@@ -878,41 +641,41 @@ var CONFIG = [
   ['q','Shower type (Transfer 36 x 36 / Roll-in 60 x 30 min)',''],
   ['q','Accessible shower, W x D (inches)',''],
   ['yn','Shower has curb?',''],
-  ['q','Height of curb in shower (inches)','Max 1/2 in at transfer shower',{max:0.5}],
+  ['q','Height of curb in shower (inches)','Max 1/2 in at transfer shower'],
   ['yn','Shower grab bars provided?',''],
   ['q','Location of shower grab bars',''],
-  ['q','Height of shower grab bars, floor to centerline (inches)','33 to 36 in',{range:[33,36]}],
+  ['q','Height of shower grab bars, floor to centerline (inches)','33 to 36 in'],
   ['q','Length of shower grab bars (inches)',''],
   ['yn','Accessible shower seat provided?',''],
-  ['q','Height of shower seat, floor to top (inches)','17 to 19 in',{range:[17,19]}],
+  ['q','Height of shower seat, floor to top (inches)','17 to 19 in'],
   ['yn','Handheld shower/spray unit provided?',''],
-  ['q','Handheld shower hose length (inches)','Min 59 in (2010 ADA)',{min:{ADA2010:59}}],
+  ['q','Handheld shower hose length (inches)','Min 59 in (2010 ADA)'],
   ['hdr','Restroom Amenities (within Locker Room)',''],
   ['yn','Separate restroom entrance?',''],
-  ['q','Width of restroom entrance (inches)','Min 32 in',{min:32}],
-  ['q','Restroom turning space, diameter (inches)','Min 60 in',{min:60}],
+  ['q','Width of restroom entrance (inches)','Min 32 in'],
+  ['q','Restroom turning space, diameter (inches)','Min 60 in'],
   ['yn','Hot water available?',''],
   ['yna','Hot water pipes under sink covered?','Pipes insulated or shielded'],
-  ['q','Height of sink, floor to rim (inches)','Max 34 in',{max:34}],
-  ['q','Lavatory knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
-  ['q','Height of soap dispenser (inches)','Max 48 in',{max:48}],
-  ['q','Height of restroom mirror, floor to reflecting edge (inches)','Max 40 in',{max:40}],
-  ['q','Height of paper towel dispenser (inches)','Max 48 in',{max:48}],
+  ['q','Height of sink, floor to rim (inches)','Max 34 in'],
+  ['q','Lavatory knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+  ['q','Height of soap dispenser (inches)','Max 48 in'],
+  ['q','Height of restroom mirror, floor to reflecting edge (inches)','Max 40 in'],
+  ['q','Height of paper towel dispenser (inches)','Max 48 in'],
   ['hdr','Accessible Stall (within Locker Room)',''],
   ['yn','Designated accessible stall?',''],
-  ['q','Width of accessible stall (inches)','Min 60 in',{min:60}],
-  ['q','Depth of accessible stall (inches)','Min 56 in',{min:56}],
+  ['q','Width of accessible stall (inches)','Min 60 in'],
+  ['q','Depth of accessible stall (inches)','Min 56 in'],
   ['yn','Stall door swings out?',''],
-  ['q','Width of stall door (inches)','Min 32 in',{min:32}],
+  ['q','Width of stall door (inches)','Min 32 in'],
   ['yn','Grab bars in accessible stall?',''],
   ['q','Location of grab bars (side / rear / both)',''],
-  ['q','Height of grab bars, floor to centerline (inches)','33 to 36 in',{range:[33,36]}],
-  ['q','Height of toilet seat, floor to seat edge (inches)','17 to 19 in',{range:[17,19]}],
-  ['q','Height of flush controls (inches)','Max 44 in, on the open side',{max:44}],
+  ['q','Height of grab bars, floor to centerline (inches)','33 to 36 in'],
+  ['q','Height of toilet seat, floor to seat edge (inches)','17 to 19 in'],
+  ['q','Height of flush controls (inches)','Max 44 in, on the open side'],
   ['yn','Flush valve on transfer/open side of toilet?',''],
   ['q','Height of toilet paper dispenser (inches)',''],
-  ['q','Urinal height, floor to rim (inches)','Max 17 in',{max:17}],
-  ['q','Width of space around urinal (inches)','Min 30 in',{min:30}],
+  ['q','Urinal height, floor to rim (inches)','Max 17 in'],
+  ['q','Width of space around urinal (inches)','Min 30 in'],
   ADDL
 ]},
 { key:'restrooms', title:'Restrooms', repeat:true, unit:'Restroom', designation:true, fields:[
@@ -921,46 +684,46 @@ var CONFIG = [
   ['yna','If no accessible restroom in building, directional signage to nearest?',''],
   ['hdr','Entry Door and Signage',''],
   ['yn','Accessible door signage (ISA)?',''],
-  ['q','Height of accessible signage, floor to centerline (inches)',SIGN_HINT,{range:[57,63]}],
+  ['q','Height of accessible signage, floor to centerline (inches)',SIGN_HINT],
   ['yn','ISA contrasts light-on-dark or dark-on-light?',''],
   ['yn','Characters raised plus Grade II Braille?',''],
   ['yn','Signage mounted adjacent to latch side of door?',''],
   ['yn','Entrance doors swing out?',''],
-  ['q','Width of entrance doorway (inches)','Min 32 in',{min:32}],
-  ['q','Height of door handle (inches)','Max 48 in',{max:48}],
-  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI',{max:FORCE}],
+  ['q','Width of entrance doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
   ['yn','Restroom has foyer?',''],
   ['q','Measurement between doors in foyer (inches)',''],
   ['hdr','Interior Maneuvering',''],
-  ['q','Turning space, diameter (inches)','Min 60 in diameter OR T-turn',{min:60}],
+  ['q','Turning space, diameter (inches)','Min 60 in diameter OR T-turn'],
   ['hdr','Amenities',''],
   ['yn','Hot water available?',''],
   ['yna','Hot water pipes under sink covered?','Pipes insulated or shielded'],
-  ['q','Height of sink, floor to rim (inches)','Max 34 in',{max:34}],
+  ['q','Height of sink, floor to rim (inches)','Max 34 in'],
   ['yn','Sink usable by wheelchair users?',''],
-  ['q','Lavatory knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D',{triMin:[27,30,19]}],
-  ['q','Height of soap dispenser (inches)','Max 48 in',{max:48}],
-  ['q','Height of mirror, floor to reflecting edge (inches)','Max 40 in',{max:40}],
-  ['q','Height of paper towel dispenser (inches)','Max 48 in',{max:48}],
-  ['q','Height of automatic hand dryer (inches)','Max 48 in',{max:48}],
+  ['q','Lavatory knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+  ['q','Height of soap dispenser (inches)','Max 48 in'],
+  ['q','Height of mirror, floor to reflecting edge (inches)','Max 40 in'],
+  ['q','Height of paper towel dispenser (inches)','Max 48 in'],
+  ['q','Height of automatic hand dryer (inches)','Max 48 in'],
   ['yn','Racks, dispensers, disposal units not protruding into walkways?',''],
   ['hdr','Urinals',''],
-  ['q','Height of urinal, floor to rim (inches)','Max 17 in',{max:17}],
-  ['q','Width of space around urinal (inches)','Min 30 in',{min:30}],
-  ['q','Depth of space around urinal (inches)','Min 48 in',{min:48}],
+  ['q','Height of urinal, floor to rim (inches)','Max 17 in'],
+  ['q','Width of space around urinal (inches)','Min 30 in'],
+  ['q','Depth of space around urinal (inches)','Min 48 in'],
   ['hdr','Accessible Stall',''],
   ['yn','Designated accessible stall?',''],
-  ['q','Width of accessible stall (inches)','Min 60 in',{min:60}],
-  ['q','Depth of accessible stall (inches)','Min 56 in',{min:56}],
+  ['q','Width of accessible stall (inches)','Min 60 in'],
+  ['q','Depth of accessible stall (inches)','Min 56 in'],
   ['yn','Stall door swings out?',''],
-  ['q','Width of stall door (inches)','Min 32 in',{min:32}],
+  ['q','Width of stall door (inches)','Min 32 in'],
   ['yn','Grab bars in accessible stall?',''],
   ['q','Location of grab bars (side / rear / both)',''],
-  ['q','Height of grab bars, floor to centerline (inches)','33 to 36 in',{range:[33,36]}],
+  ['q','Height of grab bars, floor to centerline (inches)','33 to 36 in'],
   ['q','Length of grab bars (inches)','Side min 40 in (42 in per 2010 ADA 604.5.1, verify per cycle); rear min 36 in'],
   ['q','Depth of grab bars from wall (inches)',''],
-  ['q','Height of accessible toilet seat (inches)','17 to 19 in',{range:[17,19]}],
-  ['q','Height of flush controls (inches)','Max 44 in, on the open side',{max:44}],
+  ['q','Height of accessible toilet seat (inches)','17 to 19 in'],
+  ['q','Height of flush controls (inches)','Max 44 in, on the open side'],
   ['yn','Flush valve on transfer/open side of toilet?',''],
   ['yn','Obstructions to reach toilet paper dispenser?',''],
   ['yn','Toilet paper dispenser operable with one hand?',''],
@@ -968,7 +731,7 @@ var CONFIG = [
   ['q','Height of toilet paper dispenser (inches)',''],
   ['q','Location of toilet tissue dispenser',''],
   ['yn','Coat hooks/shelves provided?',''],
-  ['q','Coat hook height, floor to hook (inches)','Max 48 in forward reach',{max:48}],
+  ['q','Coat hook height, floor to hook (inches)','Max 48 in forward reach'],
   ['q','Reach type for coat hook (forward / side)',''],
   ADDL
 ]},
@@ -979,8 +742,8 @@ var CONFIG = [
   ['yn','At least 50 percent accessible (spout 36 in or less)?','Hi-lo pairs: 50 percent low, 50 percent standing height (2010 ADA 211)'],
   ['yn','Fountain on accessible route?',''],
   ['yn','30 in x 48 in clear floor space in front?',''],
-  ['q','Height of spout, floor to spout outlet (inches)','Max 36 in',{max:36}],
-  ['q','Height of water flow, spout to top of arc (inches)','Min 4 in',{min:4}],
+  ['q','Height of spout, floor to spout outlet (inches)','Max 36 in'],
+  ['q','Height of water flow, spout to top of arc (inches)','Min 4 in'],
   ['yn','Water flow within 4 in of spout towards front?',''],
   ['yn','Up-front spout and control?',''],
   ['q','Controls mounted on front or side?',''],
@@ -988,7 +751,7 @@ var CONFIG = [
   ['yn','Operable parts require tight grasping/pinching/twisting?',''],
   ['yn','Force to activate exceeds 5 lbs?',''],
   ['yn','Fountain protrudes into corridors or traffic ways?',''],
-  ['q','Knee and toe clearance beneath (inches)','Min 27 in high',{min:27}],
+  ['q','Knee and toe clearance beneath (inches)','Min 27 in high'],
   ADDL
 ]},
 { key:'coolers', title:'Water Coolers and Bottle Fillers', repeat:true, unit:'Water Cooler / Bottle Filler', fields:[
@@ -998,7 +761,7 @@ var CONFIG = [
   ['yn','Station hand operated?',''],
   ['yn','Station sensor operated?',''],
   ['q','Controls mounted on front or side?',''],
-  ['q','Height of highest operable part (inches)','Max 48 in',{max:48}],
+  ['q','Height of highest operable part (inches)','Max 48 in'],
   ['yn','Controls operable with closed fist?',''],
   ['yn','Operable parts require tight grasping/pinching/twisting?',''],
   ['yn','Force to activate exceeds 5 lbs?',''],
@@ -1006,29 +769,18 @@ var CONFIG = [
 ]},
 { key:'phones', title:'Public Telephones', repeat:false, fields:[
   ['yn','Public telephone provided?','If No, mark N/A and skip remaining fields'],
-  ['q','Clear floor space, W x L (inches)','Min 30 in x 48 in',{pairMin:[30,48]}],
+  ['q','Clear floor space, W x L (inches)','Min 30 in x 48 in'],
   ['yn','Protruding objects?',''],
   ['yn','Push button controls?',''],
-  ['q','Cord length, telephone to handset (inches)','Min 29 in',{min:29}],
+  ['q','Cord length, telephone to handset (inches)','Min 29 in'],
   ['q','Approach type (Parallel / Forward)',''],
   ['q','Distance from front edge of counter to face of telephone (inches)',''],
   ['yn','Highest operable part within 15 to 48 in? (54 in max if side approach, pre-2010)',''],
   ['yn','Telephone hearing aid compatible?','Verify per cycle'],
   ['yn','Volume control provided?',''],
   ['yna','If more than 4 pay telephones, TTY available?',''],
-  ['q','Height of TTY keypad touch surface (inches)','Max 48 in',{max:48}],
+  ['q','Height of TTY keypad touch surface (inches)','Max 48 in'],
   ['yna','Telephones with TTY equipped with shelf and electrical outlet?',''],
-  ADDL
-]},
-{ key:'signage', title:'Consolidated Signage Review', repeat:false, fields:[
-  ['note','Campus-wide sweep of permanent room and space signage: raised characters, Grade II Braille, mounting height and location rules. Individual rooms are also captured in their own sections.',''],
-  ['yn','Permanent rooms and spaces identified with raised characters plus Grade II Braille?',''],
-  ['q','Typical mounting height, floor to sign centerline (inches)',SIGN_HINT,{range:[57,63]}],
-  ['yn','Signs mounted on the latch side of doors (or nearest adjacent wall at double doors)?',''],
-  ['yn','Non-glare finish and character contrast on signs?',''],
-  ['yn','Directional and informational signage legible with adequate character size?',''],
-  ['yn','ISA used to identify accessible entrances, restrooms, and routes?',''],
-  ['q','List rooms or spaces missing compliant signage',''],
   ADDL
 ]},
 { key:'pools', title:'Swimming Pools / Aquatic Facilities', repeat:false, fields:[
@@ -1042,17 +794,6 @@ var CONFIG = [
   ['yn','Accessible route to locker rooms and restrooms serving the pool?',''],
   ADDL
 ]},
-{ key:'play', title:'Play Areas', repeat:false, fields:[
-  ['yn','Play area on campus?','If No, mark N/A and skip remaining fields'],
-  ['yn','Play area on an accessible route?',''],
-  ['q','Number of ground-level play components, by type','2010 ADA 240: ground-level and elevated component ratios'],
-  ['q','Number of elevated play components',''],
-  ['yn','Required ratio of accessible ground-level components provided?','Verify ratio per 2010 ADA 240.2'],
-  ['yn','Accessible surfacing (engineered wood fiber, poured rubber, tiles) under and around components?',''],
-  ['yn','Surfacing maintained level and filled to required depth?',''],
-  ['yn','Ramps or transfer systems to elevated structures where required?',''],
-  ADDL
-]},
 { key:'egress', title:'Accessible Means of Egress / Areas of Rescue Assistance', repeat:false, fields:[
   ['yn','Accessible means of egress provided from all occupied levels?',''],
   ['yn','Areas of rescue assistance (or areas of refuge) designated?',''],
@@ -1064,15 +805,15 @@ var CONFIG = [
   ['yn','Exit routes free of steps or barriers, or supplemented by evacuation devices?',''],
   ADDL
 ]},
-{ key:'medical', title:'Medical / First-Aid Areas (Health Office, Nurse)', repeat:false, fields:[
+{ key:'medical', title:'Medical and First-Aid Areas (including Nurse\'s Office)', repeat:false, fields:[
   ['yn','Medical or first-aid area on an accessible route?',''],
-  ['q','Width of doorway (inches)','Min 32 in',{min:32}],
-  ['q','Height of door handle (inches)','Max 48 in',{max:48}],
-  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI',{max:FORCE}],
+  ['q','Width of doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
   ['yn','Cot, exam table, or rest area usable by students with mobility disabilities?',''],
-  ['q','Turning space, diameter (inches)','Min 60 in',{min:60}],
+  ['q','Turning space, diameter (inches)','Min 60 in'],
   ['yn','Accessible restroom serving the health office?',''],
-  ['q','Height of supply and medication storage operable parts (inches)','Max 48 in forward reach',{max:48}],
+  ['q','Height of supply and medication storage operable parts (inches)','Max 48 in forward reach'],
   ['yn','Identification signage with raised characters plus Braille?',''],
   ADDL
 ]},
@@ -1080,49 +821,24 @@ var CONFIG = [
   ['q','Portable number(s) / program served',''],
   ['yn','Portable on an accessible route?',''],
   ['yn','Ramp provided to the portable?','If yes, also complete a Ramps instance for this ramp'],
-  ['q','Landing at door, L x W (inches)','Min 60 in x 60 in',{pairMin:[60,60]}],
-  ['q','Width of doorway (inches)','Min 32 in',{min:32}],
-  ['q','Height of door handle (inches)','Max 48 in',{max:48}],
+  ['q','Landing at door, L x W (inches)','Min 60 in x 60 in'],
+  ['q','Width of doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
   ['yn','Door hardware operable with one hand, no tight grasping, pinching, or twisting?',''],
-  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI',{max:FORCE}],
-  ['q','Threshold height (inches)','Max 1/2 in',{max:0.5}],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
+  ['q','Threshold height (inches)','Max 1/2 in'],
   ['yn','Identification signage with raised characters plus Braille?',''],
   ADDL
 ]}
 ];
 
-/* Program Access interview questions: verbatim from the guide builder. */
-var PA_INTERVIEW = [
-  ['hdr','ADA Coordination & Compliance'],
-  ['q','1. Who is the designated ADA/Section 504 Coordinator for this facility, and how are accessibility complaints or accommodation requests handled?'],
-  ['q','2. Has the facility undergone a formal self-evaluation under Section 504? If so, when and what were the findings?'],
-  ['q','3. Does the facility have a current Transition Plan? When was it last updated and what items remain outstanding?'],
-  ['hdr','Maintenance of Accessible Features'],
-  ['q','4. Are accessible features (ramps, lifts, elevators, accessible restrooms, automatic door openers) on the regular maintenance schedule? How frequently inspected?'],
-  ['q','5. Are maintenance staff trained to identify and report accessibility barriers? Describe the training.'],
-  ['q','6. Are accessible parking spaces regularly monitored to prevent unauthorized use? What is the enforcement process?'],
-  ['q','7. How are temporary accessibility barriers (construction, equipment storage, event setup) managed to maintain accessible routes during disruptions?'],
-  ['hdr','Program Access & Relocation'],
-  ['q','8. Are there areas where a program, class, or activity has been relocated to provide program access? If so, where, why, and how was this communicated?'],
-  ['q','9. What is the process for notifying students, parents, and staff of accessible routes, features, and accommodations?'],
-  ['q','10. If a student with a disability needed access to an inaccessible area, what is the process for providing equivalent program access?'],
-  ['hdr','Emergency Egress & Safety'],
-  ['q','11. How are emergency evacuation procedures adapted for mobility impairments? Are Areas of Rescue Assistance designated, equipped, and included in drills?'],
-  ['q','12. Are two-way communication systems at Areas of Rescue Assistance tested regularly? When last tested?'],
-  ['hdr','Planned Modifications'],
-  ['q','13. Are any accessibility modifications currently planned, funded, approved, or in progress? Describe scope, timeline, and funding source.'],
-  ['q','14. Have any accessibility modifications been completed in the past five years? Describe scope and dates.'],
-  ['hdr','Reviewer Observations'],
-  ['q','Program Reviewer observations and notes from interview']
-];
-
 /* ---------------- State ---------------------------------------------------
-   S = { header:{}, pa:{}, sec:{ key: [ {meta:{loc,yb,mod,modid,desig,room}, v:{fi:value}} ] } }
+   S = { header:{}, sec:{ key: [ {meta:{loc,yb,mod,modid,desig,room}, v:{fi:value}} ] } }
 --------------------------------------------------------------------------- */
-var LS_KEY = 'cde_facilities_review_form_v1';
+var LS_KEY = 'cde_facilities_review_form_v2';
 var S = blankState();
 function blankState(){
-  var s = {header:{reviewCycle:'CRR 20'}, pa:{}, sec:{}};
+  var s = {header:{reviewCycle:'CRR 20'}, sec:{}};
   CONFIG.forEach(function(c){ s.sec[c.key] = [newInstance()]; });
   return s;
 }
@@ -1131,15 +847,13 @@ function newInstance(){ return {meta:{loc:'', yb:'', mod:'', modid:'', desig:'',
 /* ---------------- Utilities ----------------------------------------------- */
 function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function el(id){ return document.getElementById(id); }
-var saveTimer = null, sumTimer = null;
+var saveTimer = null;
 function touch(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(function(){
     try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); flashSave('Autosaved'); }
     catch(e){ flashSave('Autosave failed'); }
   }, 500);
-  clearTimeout(sumTimer);
-  sumTimer = setTimeout(renderSummary, 400);
 }
 function flashSave(msg){
   var n = el('saveMsg'); n.textContent = msg;
@@ -1147,36 +861,12 @@ function flashSave(msg){
 }
 
 /* ---------------- Rendering ----------------------------------------------- */
-function badge(std){ return '<span class="std-badge ' + std.cls + '">' + esc(std.label) + '</span>'; }
-
-function renderStdPanel(cfg, idx){
-  var inst = S.sec[cfg.key][idx];
-  var r = computeStandards(inst);
-  var html = '<div class="std-row">';
-  html += '<div class="std-cell"><span class="k">Standard from Year Built</span>' + badge(r.builtStd) + '</div>';
-  html += '<div class="std-cell"><span class="k">Standard from Latest Modification</span>' + (r.modStd ? badge(r.modStd) : '<span class="std-badge b-na">No modification date entered</span>') + '</div>';
-  html += '<div class="std-cell"><span class="k">Controlling Standard (preliminary)</span>' + badge(r.controlling) + '</div>';
-  html += '</div>';
-  if (r.changed){
-    html += '<div class="std-flag"><span class="icon">&#9888;</span><div><b>Standard change flagged:</b> the modification date moves the controlling standard from <b>' + esc(r.builtStd.label) + '</b> to <b>' + esc(r.modStd.label) + '</b>. The element-by-element rule applies: only the elements or spaces actually altered are evaluated under the newer standard; unaltered elements remain under ' + esc(r.builtStd.label) + '. List the altered elements in "Identify ADA Modifications" above. The Program Reviewer confirms the applicable standard.</div></div>';
-  }
-  if (r.controlling.id === 'PA'){
-    html += '<div class="std-flag pa-flag"><span class="icon">&#9678;</span><div><b>Program Access:</b> observational review only. No measurable dimensional standard applies to this location; it is assessed observationally and through the 14 staff interview questions. Record measurements for reference, but no thresholds are auto-applied.</div></div>';
-  }
-  if (r.controlling.id === 'AMBIG'){
-    html += '<div class="std-flag"><span class="icon">&#9888;</span><div><b>Ambiguous year:</b> the year entered spans a standards boundary. Provide the full month and day so the applicable standard can be determined.</div></div>';
-  }
-  if (r.controlling.id === 'UNKNOWN'){
-    html += '<div class="std-flag"><span class="icon">&#9888;</span><div><b>Standard undetermined:</b> enter Year Built (and any ADA modification dates). Missing dates are a completeness issue reported to the Program Reviewer; a standard is never guessed.</div></div>';
-  }
-  return html;
-}
-
 function identBlock(cfg, idx){
   var inst = S.sec[cfg.key][idx];
   var h = '<div class="ident-grid">';
+  h += '<div class="fg wide"><label>Location / Name</label><input type="text" data-meta="loc" value="' + esc(inst.meta.loc) + '" placeholder="e.g. Building B, north lot, staff lot behind gym"></div>';
   if (cfg.roomName){
-    h += '<div class="fg wide"><label>Room Name</label><input type="text" data-meta="room" value="' + esc(inst.meta.room) + '" placeholder="e.g. Wellness Center, Career Center, Counseling Office"></div>';
+    h += '<div class="fg wide"><label>Room Name</label><input type="text" data-meta="room" value="' + esc(inst.meta.room) + '" placeholder="e.g. Nurse\'s Office, Wellness Center, Career Center, Counseling Office"></div>';
   }
   if (cfg.designation){
     h += '<div class="fg"><label>Designation</label><select data-meta="desig">' +
@@ -1184,12 +874,10 @@ function identBlock(cfg, idx){
         return '<option value="' + o + '"' + (inst.meta.desig === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
       }).join('') + '</select><div class="hint">California requires Non-Gender Specific restrooms</div></div>';
   }
-  h += '<div class="fg"><label>Location / Building No.</label><input type="text" data-meta="loc" value="' + esc(inst.meta.loc) + '" placeholder="e.g. Building B, north lot"></div>';
-  h += '<div class="fg"><label>Year Built</label><input type="text" data-meta="yb" value="' + esc(inst.meta.yb) + '" placeholder="e.g. 1985 or 06/15/1985"><div class="hint">Year or full date; full date needed at boundary years</div></div>';
-  h += '<div class="fg wide"><label>ADA Modification Date(s)</label><textarea data-meta="mod" placeholder=\'Narrative; include dates, e.g. "Restroom remodeled March 2018; door hardware replaced 2021". Enter N/A if none.\'>' + esc(inst.meta.mod) + '</textarea><div class="hint">Dates found here are read live to determine the standard; the most recent date controls, element by element</div></div>';
-  h += '<div class="fg wide"><label>Identify ADA Modifications</label><textarea data-meta="modid" placeholder=\'Which elements were altered? e.g. "grab bars and lavatory only". Enter N/A if none.\'>' + esc(inst.meta.modid) + '</textarea></div>';
+  h += '<div class="fg"><label>Year Built</label><input type="text" data-meta="yb" value="' + esc(inst.meta.yb) + '" placeholder="e.g. 1985 or 06/15/1985"><div class="hint">Year, or full date if known</div></div>';
+  h += '<div class="fg wide"><label>ADA Modification Date(s)</label><textarea data-meta="mod" placeholder=\'Date(s) altered, e.g. "March 2018; 2021". Enter N/A if none.\'>' + esc(inst.meta.mod) + '</textarea><div class="hint">Alterations log: Date Altered</div></div>';
+  h += '<div class="fg wide"><label>Element(s) Altered</label><textarea data-meta="modid" placeholder=\'Which elements were altered, e.g. "grab bars and lavatory only". Enter N/A if none.\'>' + esc(inst.meta.modid) + '</textarea><div class="hint">Alterations log: Element Altered</div></div>';
   h += '</div>';
-  h += '<div class="std-panel" data-stdpanel>' + renderStdPanel(cfg, idx) + '</div>';
   return h;
 }
 
@@ -1222,8 +910,7 @@ function instanceTitle(cfg, idx){
   if (inst.meta.room) bits.push(inst.meta.room);
   if (inst.meta.desig) bits.push(inst.meta.desig);
   if (inst.meta.loc) bits.push(inst.meta.loc);
-  var suffix = bits.length ? ': ' + bits.join(', ') : '';
-  return (cfg.unit || 'Location') + ' ' + (idx + 1) + suffix;
+  return bits.length ? bits.join(', ') : (cfg.unit || 'Location');
 }
 
 function renderSection(cfg){
@@ -1260,22 +947,12 @@ function renderAllSections(){
   CONFIG.forEach(renderSection);
 }
 
-function renderPA(){
-  el('paQuestions').innerHTML = PA_INTERVIEW.map(function(f, i){
-    if (f[0] === 'hdr') return '<h3 style="font-family:var(--serif);font-weight:400;color:var(--navy);font-size:14px;margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px;">' + esc(f[1]) + '</h3>';
-    var val = S.pa['q' + i] || '';
-    return '<div class="fg"><label style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:12.5px;color:var(--text);">' + esc(f[1]) + '</label><textarea data-paq="q' + i + '">' + esc(val) + '</textarea></div>';
-  }).join('');
-}
-
 function renderToc(){
   var links = ['<div class="toc-head">Sections</div>',
     '<a href="#sec-header">School &amp; Review Information</a>'];
   CONFIG.forEach(function(cfg){
     links.push('<a href="#sec-' + cfg.key + '">' + esc(cfg.title) + (cfg.repeat ? ' <span class="cnt" id="cnt-' + cfg.key + '">1</span>' : '') + '</a>');
   });
-  links.push('<a href="#sec-pa">Program Access Interview (14 Q)</a>');
-  links.push('<a href="#sec-summary">Compliance Summary</a>');
   el('toc').innerHTML = links.join('');
 }
 function updateTocCount(cfg){
@@ -1287,8 +964,6 @@ function updateTocCount(cfg){
 document.addEventListener('input', function(e){
   var t = e.target;
   if (t.dataset.h !== undefined && t.dataset.h !== ''){ S.header[t.dataset.h] = t.value; touch(); return; }
-  if (t.dataset.pa !== undefined && t.dataset.pa !== ''){ S.pa[t.dataset.pa] = t.value; touch(); return; }
-  if (t.dataset.paq !== undefined && t.dataset.paq !== ''){ S.pa[t.dataset.paq] = t.value; touch(); return; }
   var instEl = t.closest && t.closest('.instance');
   var secEl = t.closest && t.closest('section.area');
   if (!instEl || !secEl) return;
@@ -1298,10 +973,6 @@ document.addEventListener('input', function(e){
   var inst = S.sec[cfg.key][idx];
   if (t.dataset.meta){
     inst.meta[t.dataset.meta] = t.value;
-    if (t.dataset.meta === 'yb' || t.dataset.meta === 'mod'){
-      var panel = instEl.querySelector('[data-stdpanel]');
-      if (panel) panel.innerHTML = renderStdPanel(cfg, idx);
-    }
     if (t.dataset.meta === 'loc' || t.dataset.meta === 'room' || t.dataset.meta === 'desig'){
       var titleEl = instEl.querySelector('.inst-title');
       if (titleEl) titleEl.textContent = instanceTitle(cfg, idx);
@@ -1341,89 +1012,13 @@ document.addEventListener('click', function(e){
   }
 });
 
-/* ---------------- Compliance summary --------------------------------------- */
-function renderSummary(){
-  var concerns = [];   // {group, text}
-  var paItems = [];    // observational-only instances
-  var missing = [];    // undetermined standard
-  var evaluated = 0, compliant = 0;
-
-  CONFIG.forEach(function(cfg){
-    S.sec[cfg.key].forEach(function(inst, idx){
-      var name = cfg.title + ' / ' + instanceTitle(cfg, idx);
-      var r = computeStandards(inst);
-      var stdId = r.controlling.id;
-      var hasData = Object.keys(inst.v).some(function(k){ return String(inst.v[k]).trim() !== ''; }) ||
-                    Object.keys(inst.meta).some(function(k){ return String(inst.meta[k]).trim() !== ''; });
-      if (!hasData) return;
-      if (stdId === 'PA'){
-        paItems.push(name);
-        return; // never flag measurements under Program Access
-      }
-      if (stdId === 'UNKNOWN' || stdId === 'AMBIG'){
-        missing.push(name + (stdId === 'AMBIG' ? ' (year spans a boundary; full date needed)' : ' (Year Built / modification dates not provided)'));
-        return;
-      }
-      cfg.fields.forEach(function(f, fi){
-        var check = f[3];
-        if (!check) return;
-        var res = evalCheck(check, inst.v[fi], stdId);
-        if (!res) return;
-        evaluated++;
-        if (res.ok){ compliant++; return; }
-        concerns.push({group:name, std:r.controlling, text: f[1] + ': ' + res.msg + ' (' + r.controlling.label + ')'});
-      });
-    });
-  });
-
-  var html = '';
-  html += '<div class="sum-disclaimer"><b>Preliminary, for reviewer verification. The Program Reviewer makes the final compliance determination.</b> This summary compares entered measurements against the thresholds of each instance\'s controlling standard. Values exactly at a threshold boundary are treated as compliant. The Standard column of any resulting letter cites the standard applicable at construction or alteration; corrective actions are always cited to the 2010 ADA. Program Access locations are never measured against thresholds.</div>';
-  html += '<div class="sum-strip">';
-  html += '<span class="s-pill sp-total">' + evaluated + ' measurements evaluated</span>';
-  html += '<span class="s-pill sp-ok">' + compliant + ' within threshold</span>';
-  html += '<span class="s-pill sp-viol">' + concerns.length + ' potential concerns</span>';
-  html += '<span class="s-pill sp-pa">' + paItems.length + ' Program Access (observational)</span>';
-  html += '<span class="s-pill sp-miss">' + missing.length + ' standard undetermined</span>';
-  html += '</div>';
-
-  if (concerns.length){
-    var byGroup = {};
-    concerns.forEach(function(c){ (byGroup[c.group] = byGroup[c.group] || []).push(c); });
-    html += '<div class="sum-group"><h3>Potential Concerns (by section / instance)</h3>';
-    Object.keys(byGroup).forEach(function(g){
-      html += '<div style="font-family:var(--mono);font-size:11px;color:var(--navy);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.05em;">' + esc(g) + '</div>';
-      byGroup[g].forEach(function(c){
-        html += '<div class="sum-item">' + badge(c.std) + '<span>' + esc(c.text) + '</span></div>';
-      });
-    });
-    html += '</div>';
-  } else {
-    html += '<div class="sum-group"><h3>Potential Concerns</h3><div class="sum-empty">No measurement currently falls outside its controlling standard\'s threshold.</div></div>';
-  }
-  if (paItems.length){
-    html += '<div class="sum-group"><h3>Program Access Locations</h3>';
-    paItems.forEach(function(p){
-      html += '<div class="sum-item obs"><span class="std-badge b-pa">Program Access</span><span>' + esc(p) + ': observational review only. Assessed through observation and the 14 staff interview questions; no measurable citations.</span></div>';
-    });
-    html += '</div>';
-  }
-  if (missing.length){
-    html += '<div class="sum-group"><h3>Missing Information (standard cannot be determined)</h3>';
-    missing.forEach(function(m){
-      html += '<div class="sum-item miss"><span class="std-badge b-na">Undetermined</span><span>' + esc(m) + '. This is a completeness issue for the Missing Information Report; a standard is never guessed and no finding is invented.</span></div>';
-    });
-    html += '</div>';
-  }
-  el('summaryBody').innerHTML = html;
-}
-
 /* ---------------- Save / load / clear -------------------------------------- */
 function downloadJSON(){
   var name = (S.header.schoolName || 'School').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'School';
   var blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = name + '_Facilities_Review_Form.json';
+  a.download = name + '_CRR_Building_Accessibility.json';
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
   flashSave('JSON downloaded');
@@ -1447,7 +1042,6 @@ function applyState(data){
   var s = blankState();
   if (data && typeof data === 'object'){
     s.header = Object.assign({}, s.header, data.header || {});
-    s.pa = Object.assign({}, data.pa || {});
     CONFIG.forEach(function(c){
       var arr = data.sec && data.sec[c.key];
       if (Array.isArray(arr) && arr.length){
@@ -1462,15 +1056,11 @@ function applyState(data){
     });
   }
   S = s;
-  hydrateHeader(); renderAllSections(); renderPA(); renderSummary();
+  hydrateHeader(); renderAllSections();
 }
 function hydrateHeader(){
   document.querySelectorAll('[data-h]').forEach(function(n){
     var v = S.header[n.dataset.h];
-    if (v != null) n.value = v;
-  });
-  document.querySelectorAll('[data-pa]').forEach(function(n){
-    var v = S.pa[n.dataset.pa];
     if (v != null) n.value = v;
   });
 }
@@ -1478,7 +1068,7 @@ function clearAll(){
   if (!confirm('Clear the entire form? This removes all entered data, including the autosaved copy.')) return;
   localStorage.removeItem(LS_KEY);
   S = blankState();
-  hydrateHeader(); renderAllSections(); renderPA(); renderSummary();
+  hydrateHeader(); renderAllSections();
   flashSave('Cleared');
 }
 
@@ -1488,7 +1078,7 @@ function clearAll(){
   var saved = null;
   try{ saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch(e){}
   if (saved){ applyState(saved); flashSave('Restored autosave'); }
-  else { hydrateHeader(); renderAllSections(); renderPA(); renderSummary(); }
+  else { hydrateHeader(); renderAllSections(); }
 })();
 </script>
 </body>
