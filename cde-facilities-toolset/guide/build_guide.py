@@ -1,94 +1,82 @@
-"""Build the revised fillable Facilities Review Guide (v2).
+"""Build the Civil Rights Review site documents (v3, per CDE OEO corrections).
 
-Output: Accessibility_Facilities_Checklist_v2.docx (in this directory).
+Outputs (both in this directory):
+  A) Civil_Rights_Review_Building_Accessibility.docx
+     The main guide the LEA / school site fills out. Data collection ONLY:
+     no internal reviewer process content of any kind.
+  B) Program_Access_Staff_Interview.docx
+     The 14 Program Access interview questions as a standalone document
+     (conducted by the reviewer with Facilities and Maintenance &
+     Operations staff), with response and notes fields.
 
-Derived from the proven prior builder (build_optimized_guide.py, v3 lineage:
-python-docx + raw OOXML SDT content-control injection).
+v3 changes (owner corrections, Murjani McTier, CDE OEO):
+  * Title is "Civil Rights Review - Building Accessibility" (already on the
+    base document's cover page and footer, preserved verbatim).
+  * Standards Applicability Guide page REMOVED (that knowledge lives in the
+    LOF agent, not the site document).
+  * All reviewer-facing notes and prompts REMOVED: no shaded rule boxes, no
+    standard-determination prompts. The site document only collects data.
+  * Construction-date dropdowns REMOVED from Section Details. Kept as plain
+    data fields: Year Built, ADA Modification Date(s), Identify ADA
+    Modifications. The Program Reviewer determines standards later,
+    outside this document.
+  * Alterations Log tables reduced to TWO columns: Element Altered and
+    Date Altered.
+  * Corrective Action Summary REMOVED (belongs only in the Letter of
+    Findings).
+  * Section Templates page REMOVED. Each multi-location section's fillable
+    block is wrapped in a native Word Repeating Section Content Control
+    (w15:repeatingSection, the proven v5 mechanism from
+    build_optimized_guide.py): click in the block and Word shows a "+"
+    control to duplicate it in place. Unique sequential SDT ids, no
+    docPart placeholder references.
+  * No numbered instance labels; each block has a blank Location /
+    Building Name field instead.
+  * Play Areas section REMOVED (high schools).
+  * Standalone Signage section REMOVED (each area carries its own signage
+    questions).
+  * Standalone Parking Lot Lighting and Surface Condition section REMOVED.
+    A surface-condition question was added inside Accessible Parking.
+    No lighting question (the base document has none).
+  * Medical section renamed "Medical and First-Aid Areas (including
+    Nurse's Office)".
+  * Program Access staff interview moved out entirely, into document B.
 
-v2 changes:
-  * NO em-dash characters anywhere: not in this script, not in the generated
-    document. Threshold hints rewritten with commas / colons / hyphens / pipes.
-    A final scrub pass also strips any em-dash surviving in the preserved
-    front matter and Glossary. Hard build-blocking house rule.
-  * Standards Applicability Guide page up front: the date-to-standard table,
-    the element-by-element alteration rule with plain-language examples, and
-    the rule that corrective actions are always made per 2010 ADA.
-    Source of truth: cde-facilities-toolset/references/standards-matrix.md.
-  * Standard-specific threshold notations beside each measurement field,
-    consistent with cde-facilities-toolset/references/thresholds.md.
-  * Eight new sections: Passenger Loading Zones; Signage (consolidated);
-    Swimming Pools / Aquatic Areas; Play Areas; Accessible Means of Egress /
-    Areas of Rescue Assistance; Medical / First-Aid Areas; Portable /
-    Temporary Classrooms; Parking Lot Lighting & Surface Condition.
-  * Corrective Action Summary table near the end (completed by the Program
-    Reviewer), with 10 blank SDT-filled rows.
-  * Arial font throughout, 12 pt body. Core properties author and
-    last-modified-by set to "Murjani McTier".
-
-Retained from the proven builder:
-  * Sequential unique SDT IDs (no collisions).
-  * No docPart placeholder references (inline placeholder text).
-  * No Repeating Section content controls (they froze Word in v1).
-  * Year Built + era-to-standard prompt per section, element-by-element
-    Alterations Log.
+Retained fundamentals:
+  * NO em-dash characters anywhere (hard build-blocking house rule); a
+    final scrub pass cleans any surviving in preserved front matter.
+  * Standard-specific threshold notations beside each measurement field
+    (per cde-facilities-toolset/references/thresholds.md).
   * Male / Female / Non-Gender Specific dropdowns (restrooms, locker rooms).
   * Free-text room-name field for Rooms & Offices.
-  * The 14 Program Access staff interview questions.
-  * Copy-paste Section Templates page at the back.
-  * Cover page, Accessibility Standards listing, Tips for Measuring with all
-    8 screenclip images, and Glossary of Terms preserved from the base doc.
-
-Historical notes from the source builder (v3):
-  * Full field-level match with the LEA-facing self-eval HTML
-    (Civil_Rights_Review___Building_Accessibility_v3_Part_1.html).
-  * ~500 fields across 24 sections, every HTML field mirrored in Word.
-  * Standards Guide quick-reference table added near the front (mirrors
-    the HTML's std-guide page).
-  * Program Access Interview section added (mirrors the HTML's
-    program-access page, 14 staff-interview questions).
-  * Per-standard threshold notes embedded in field hints
-    (e.g., "Max 5 lbs interior, 1991 ADA/UFAS/2010 ADA |
-    Max 8.5 lbs, ANSI") so the Word doc carries the same nuance.
-  * Locker Rooms separated from Dressing/Fitting (HTML splits them).
-  * Stadium/Field, Gym/Auditorium, Telephones rendered as single-
-    instance (HTML treats them as single-instance too).
-  * Cover page, Accessibility Standards listing, Tips for Measuring
-    with all 8 screenclip images, and Glossary of Terms PRESERVED
-    verbatim from the original source, non-negotiable per user.
-
-Same v2 fundamentals retained:
-  * Sequential unique SDT IDs (no collisions).
-  * No docPart placeholder references (inline placeholder text).
-  * No Repeating Section CCs (Word-stable across desktop/Mac/web).
-  * Era dropdowns + element-by-element Alterations Log.
-  * Copy-paste section templates at the back for multi-instance areas.
+  * Arial font, 12 pt body. Core properties author and last-modified-by
+    set to "Murjani McTier".
+  * Cover page, Accessibility Standards listing, Tips for Measuring with
+    all 8 screenclip images, and Glossary of Terms preserved from the
+    base doc (BLANK_Facilities_Review_Guide_optimized.docx).
 """
 import os, re, copy
 from docx import Document
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from docx.shared import Pt, Inches, RGBColor
+from lxml import etree
+
+# w15 namespace, Microsoft Word 2012 wordml extensions (repeatingSection)
+W15_NS = "http://schemas.microsoft.com/office/word/2012/wordml"
 
 # Base document: the previously generated guide in this repo. Its cover page,
 # Accessibility Standards listing, Tips for Measuring (8 screenclip images),
 # and Glossary of Terms are preserved; everything in between is replaced.
 _HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.normpath(os.path.join(_HERE, "..", "..", "BLANK_Facilities_Review_Guide_optimized.docx"))
-OUT = os.path.join(_HERE, "Accessibility_Facilities_Checklist_v2.docx")
+OUT_GUIDE     = os.path.join(_HERE, "Civil_Rights_Review_Building_Accessibility.docx")
+OUT_INTERVIEW = os.path.join(_HERE, "Program_Access_Staff_Interview.docx")
+OLD_OUT       = os.path.join(_HERE, "Accessibility_Facilities_Checklist_v2.docx")
 
 DOC_AUTHOR = "Murjani McTier"
 
 # ── Dropdowns ────────────────────────────────────────────────────────────────
-# Date boundaries per references/standards-matrix.md (verified this cycle).
-ERA_DROPDOWN = [
-    ("- Pick the era -", ""),
-    ("On or before June 3, 1977: Program Access / Existing Facility (Section 504)", "Program Access"),
-    ("June 4, 1977 to January 17, 1991: ANSI A117.1 (1961, R1971)",   "ANSI A117.1"),
-    ("January 18, 1991 to January 26, 1992: UFAS (1984)",             "UFAS"),
-    ("January 27, 1992 to September 14, 2010: 1991 ADA / ADAAG",      "1991 ADA"),
-    ("September 15, 2010 to March 14, 2012: 1991 ADA or 2010 ADA (UFAS also permitted)", "1991 ADA or 2010 ADA"),
-    ("On or after March 15, 2012: 2010 ADA Standards",                "2010 ADA"),
-]
 YES_NO   = [("- Pick one -", ""), ("Yes", "Yes"), ("No", "No")]
 YES_NO_NA = [("- Pick one -", ""), ("Yes", "Yes"), ("No", "No"), ("N/A", "N/A")]
 
@@ -216,18 +204,14 @@ def section_details_table(area_name):
         vp = _para(after=0); vp.append(ctrl)
         rows.append([_cell(LBL, [lp], shade=CREAM), _cell(VAL, [vp])])
 
-    kv("Location / Building name:", make_plain_text("Click to type the location"))
-    kv("Year Built:", make_date_picker("Click to pick the original construction date"))
-    kv("Year Built era, applicable standard:", make_dropdown(ERA_DROPDOWN, "Click to pick era / standard"))
-    kv("Has this area or its elements been altered?", make_dropdown(YES_NO, "Pick Yes or No"))
-
-    rule1 = _para("REVIEWER RULE, Element-by-element alteration analysis", bold=True, size=18, color="713F12", after=40)
-    rule2 = _para("The original construction era controls UNALTERED elements only. Each altered element is evaluated under the standard in effect at the time of alteration, record those in the Alterations Log below.", size=18, color="713F12", after=80)
-    rows.append([_cell(LBL+VAL, [rule1, rule2], shade=YELLOW, gridSpan=2)])
+    kv("Location / Building Name:", make_plain_text("Click to type the location"))
+    kv("Year Built:", make_plain_text("Click to enter the year built"))
+    kv('ADA Modification Date(s):', make_plain_text('Click to enter date(s), or "N/A" if none'))
+    kv("Identify ADA Modifications:", make_plain_text('Click to describe the modifications, or "N/A" if none'))
     return _tbl([LBL, VAL], rows)
 
 def alterations_log_table(area_name, n_rows=4):
-    EL, DT, ST, DS = 3000, 2200, 2500, 1900
+    EL, DT = 5800, 3800
     rows = []
     tr_run = OxmlElement("w:r")
     rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
@@ -235,9 +219,9 @@ def alterations_log_table(area_name, n_rows=4):
     cc = OxmlElement("w:color"); cc.set(qn("w:val"), GOLD); rp.append(cc)
     tr_run.append(rp)
     t = OxmlElement("w:t"); t.text = f"ALTERATIONS LOG, {area_name.upper()}"; tr_run.append(t)
-    rows.append([_cell(EL+DT+ST+DS, [_para(after=80, runs_extra=[tr_run])], shade=NAVY, gridSpan=4)])
-    instr = _para("List each element altered, the date of alteration, and the era/standard at the time of alteration. Add more rows by tabbing in the last cell.", size=18, color="6B6659", after=80)
-    rows.append([_cell(EL+DT+ST+DS, [instr], shade=CREAM, gridSpan=4)])
+    rows.append([_cell(EL+DT, [_para(after=80, runs_extra=[tr_run])], shade=NAVY, gridSpan=2)])
+    instr = _para("List each element altered and the date of the alteration. Add more rows by tabbing in the last cell.", size=18, color="6B6659", after=80)
+    rows.append([_cell(EL+DT, [instr], shade=CREAM, gridSpan=2)])
     def th(text, w):
         rn = OxmlElement("w:r"); rp = OxmlElement("w:rPr")
         rp.append(OxmlElement("w:b"))
@@ -245,15 +229,53 @@ def alterations_log_table(area_name, n_rows=4):
         cc = OxmlElement("w:color"); cc.set(qn("w:val"), GOLD); rp.append(cc)
         rn.append(rp); t = OxmlElement("w:t"); t.text = text.upper(); rn.append(t)
         return _cell(w, [_para(after=0, runs_extra=[rn])], shade=NAVY)
-    rows.append([th("Element altered", EL), th("Date altered", DT), th("Era → standard", ST), th("Description", DS)])
+    rows.append([th("Element Altered", EL), th("Date Altered", DT)])
     for _ in range(n_rows):
         rows.append([
             _cell(EL, [_para(after=0, runs_extra=[make_plain_text('(e.g., "Toilet seat")')])]),
             _cell(DT, [_para(after=0, runs_extra=[make_date_picker('Click to pick date')])]),
-            _cell(ST, [_para(after=0, runs_extra=[make_dropdown(ERA_DROPDOWN, 'Pick era → standard')])]),
-            _cell(DS, [_para(after=0, runs_extra=[make_plain_text('(optional)')])]),
         ])
-    return _tbl([EL, DT, ST, DS], rows)
+    return _tbl([EL, DT], rows)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REPEATING SECTION CONTENT CONTROL helper (proven v5 mechanism, copied from
+# build_optimized_guide.py). Wrap the section's fillable block in a
+# w15:repeatingSection SDT. When the cursor is inside the block in Word, a
+# "+" button appears; clicking it duplicates the inner item's content in
+# place. Word 2013+ / Mac 2016+ / Word for the web. Unique sequential SDT
+# ids; NO docPart placeholder references (a missing docPart placeholder plus
+# duplicate SDT ids froze Word in v1; v5 solved it exactly this way).
+# ─────────────────────────────────────────────────────────────────────────────
+def wrap_repeating_section(elements, alias_name):
+    """Wrap a list of block-level elements in a Repeating Section Content Control."""
+    # Outer SDT, declares this is a repeating section
+    outer = OxmlElement("w:sdt")
+    outer_pr = OxmlElement("w:sdtPr")
+    rid = OxmlElement("w:id"); rid.set(qn("w:val"), next_id()); outer_pr.append(rid)
+    alias = OxmlElement("w:alias"); alias.set(qn("w:val"), alias_name); outer_pr.append(alias)
+    tag = OxmlElement("w:tag")
+    tag.set(qn("w:val"), "rs_" + re.sub(r"[^A-Za-z0-9]+", "_", alias_name).strip("_"))
+    outer_pr.append(tag)
+    etree.SubElement(outer_pr, f"{{{W15_NS}}}repeatingSection")
+    outer.append(outer_pr)
+    outer.append(OxmlElement("w:sdtEndPr"))
+    outer_content = OxmlElement("w:sdtContent")
+    outer.append(outer_content)
+
+    # Inner SDT, one repeating-section ITEM (the unit that gets cloned)
+    inner = OxmlElement("w:sdt")
+    inner_pr = OxmlElement("w:sdtPr")
+    rid2 = OxmlElement("w:id"); rid2.set(qn("w:val"), next_id()); inner_pr.append(rid2)
+    etree.SubElement(inner_pr, f"{{{W15_NS}}}repeatingSectionItem")
+    inner.append(inner_pr)
+    inner.append(OxmlElement("w:sdtEndPr"))
+    inner_content = OxmlElement("w:sdtContent")
+    for el in elements:
+        inner_content.append(el)
+    inner.append(inner_content)
+
+    outer_content.append(inner)
+    return outer
 
 print("Loading source guide...")
 doc = Document(SRC)
@@ -378,8 +400,13 @@ def render_section_fields(fields):
         out.extend(render_field(f))
     return out
 
-def render_section(area_name, fields, multi_instance=True, instance_label=""):
-    """Render a complete section: Section Details + Alterations Log + the field set."""
+def render_section(area_name, fields, multi_instance=True):
+    """Render a complete section: Section Details + Alterations Log + the field set.
+
+    Multi-location sections wrap the whole fillable block in a Repeating
+    Section Content Control so the site can add another copy inline with
+    Word's "+" control. No numbered instance labels; each copy has its own
+    blank Location / Building Name field."""
     out = []
     # Section heading
     rn = OxmlElement("w:r")
@@ -387,20 +414,25 @@ def render_section(area_name, fields, multi_instance=True, instance_label=""):
     sz = OxmlElement("w:sz"); sz.set(qn("w:val"), "32"); rp.append(sz)
     cc = OxmlElement("w:color"); cc.set(qn("w:val"), NAVY); rp.append(cc)
     rn.append(rp)
-    heading_text = area_name if not instance_label else f"{area_name}, {instance_label}"
-    t = OxmlElement("w:t"); t.text = heading_text; rn.append(t)
+    t = OxmlElement("w:t"); t.text = area_name; rn.append(t)
     # Page break first
     pbp = OxmlElement("w:p"); pbr = OxmlElement("w:r")
     pbk = OxmlElement("w:br"); pbk.set(qn("w:type"), "page"); pbr.append(pbk); pbp.append(pbr)
     out.append(pbp)
     out.append(_para(after=120, runs_extra=[rn]))
-    # Section Details + Alterations Log
-    out.append(section_details_table(area_name))
-    out.append(_para(after=80))
-    out.append(alterations_log_table(area_name, n_rows=4))
-    out.append(_para(after=120))
-    # Field set
-    out.extend(render_section_fields(fields))
+    # The fillable block: Section Details + Alterations Log + field set
+    block = []
+    block.append(section_details_table(area_name))
+    block.append(_para(after=80))
+    block.append(alterations_log_table(area_name, n_rows=4))
+    block.append(_para(after=120))
+    block.extend(render_section_fields(fields))
+    if multi_instance:
+        out.append(_para("If this area exists in more than one location, click anywhere inside the block below and use the plus (+) control at its edge to add another blank copy for each additional location.", size=18, color="5A6A7A", italic=True, after=80))
+        out.append(wrap_repeating_section(block, f"{area_name} locations"))
+        out.append(_para(after=80))
+    else:
+        out.extend(block)
     return out
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -462,6 +494,7 @@ PARKING_FIELDS = [
     ('num',  'Vertical clearance for van parking/access aisles (inches)', 'Min. 98", All standards', '', 'in'),
     ('yn',   'Ground surface slope less than 1:48?', ''),
     ('yn',   'Access aisle slope less than 1:48?', ''),
+    ('yn',   'Parking surface stable, firm, slip-resistant, and free of potholes or broken pavement at accessible spaces and access aisles?', ''),
     ('subs', 'Markings & Signage', ''),
     ('yn',   'Accessible spaces marked with lines?', ''),
     ('yn',   'Access aisle marked to discourage parking in it?', ''),
@@ -1037,22 +1070,6 @@ LOADING_ZONES_FIELDS = [
     ('yn',   'Zone connects to an accessible route to the entrance?', ''),
 ] + NOTES_FIELD
 
-SIGNAGE_FIELDS = [
-    ('note', 'Consolidated signage review. Use this section to record campus-wide signage conditions; individual room and entrance sign measurements also appear in each area section.', ''),
-    ('wide', 'Sign location / building', '', 'e.g. Admin lobby, Building C corridor'),
-    ('yn',   'Room and space identification signs have raised characters?', ''),
-    ('yn',   'Grade II Braille provided on identification signs?', ''),
-    ('num',  'Height of sign, floor to centerline of characters (inches)', '60 in. centerline, all standards; 2010 ADA baseline band 48 in. to 60 in. (record 57 in. to 63 in. centerline per instrument)', '', 'in'),
-    ('num',  'Height of characters on sign (inches)', '', '', 'in'),
-    ('yn',   'Signs mounted adjacent to latch side of door?', ''),
-    ('yna',  'At double doors, sign on nearest adjacent wall?', ''),
-    ('yn',   'Non-glare finish and light/dark character contrast?', ''),
-    ('yn',   'Protruding objects within 3 in. of sign?', ''),
-    ('yn',   'Directional and informational signs comply (character size, contrast)?', ''),
-    ('yn',   'ISA displayed where required (accessible entrances, restrooms, parking)?', ''),
-    ('yn',   'ISA contrasts light-on-dark or dark-on-light?', ''),
-] + NOTES_FIELD
-
 POOLS_FIELDS = [
     ('yna',  'Swimming pool or aquatic facility present? (If none, mark N/A and skip remaining fields)', ''),
     ('text', 'Pool type / use', '', 'e.g. competition pool, instruction pool, spa'),
@@ -1066,19 +1083,6 @@ POOLS_FIELDS = [
     ('yn',   'Accessible route connects deck, entries, and locker/shower facilities?', ''),
 ] + NOTES_FIELD
 
-PLAY_AREAS_FIELDS = [
-    ('yna',  'Play area provided? (If none, mark N/A and skip remaining fields)', ''),
-    ('text', 'Play area location', '', 'e.g. kindergarten yard, upper playground'),
-    ('num',  'Number of ground-level play components', '', '', '#'),
-    ('num',  'Number of elevated play components', '', '', '#'),
-    ('yn',   'Required number and type of ground-level components provided?', 'Ground-level and elevated play component ratios per 2010 ADA 240'),
-    ('yn',   'Accessible route to the play area and to ground-level components?', ''),
-    ('sel',  'Accessible surfacing type', '', ['Engineered wood fiber','Poured-in-place rubber','Rubber tiles','Other']),
-    ('yn',   'Surfacing firm, stable, slip-resistant, and maintained?', ''),
-    ('yna',  'Ramp or transfer system to elevated components where required?', 'Ramp access required when 20 or more elevated components, 2010 ADA 240.2.2'),
-    ('num',  'Accessible route clear width within play area (inches)', 'Min. 60 in., 2010 ADA 1008.2.1 (44 in. permitted with passing spaces)', '', 'in'),
-] + NOTES_FIELD
-
 EGRESS_FIELDS = [
     ('yn',   'Accessible means of egress provided from all occupied areas?', ''),
     ('num',  'Number of accessible means of egress', 'Same number as required exits, up to code limits', '', '#'),
@@ -1089,11 +1093,11 @@ EGRESS_FIELDS = [
     ('yn',   'Signage identifying areas of rescue assistance (with ISA)?', ''),
     ('yn',   'Illuminated exit signage on accessible egress routes?', ''),
     ('yn',   'Egress routes free of steps and barriers, or an evacuation alternative provided?', ''),
-    ('yn',   'Evacuation procedures address mobility impairments? (See interview questions 11 and 12)', ''),
+    ('yn',   'Evacuation procedures address mobility impairments?', ''),
 ] + NOTES_FIELD
 
 MEDICAL_FIELDS = [
-    ('text', 'Room name / number', '', 'e.g. Health Office, Nurse 12'),
+    ('text', 'Room name / number', '', "e.g. Nurse's Office, Health Office, First-Aid Room"),
     ('yn',   'Medical / first-aid area on accessible route?', ''),
     ('num',  'Width of doorway (inches)', 'Min. 32 in., all standards', '', 'in'),
     ('num',  'Height of door handle (inches)', 'Max 48 in., all standards', '', 'in'),
@@ -1125,19 +1129,9 @@ PORTABLES_FIELDS = [
     ('yn',   'Visual and audible alarms provided?', ''),
 ] + NOTES_FIELD
 
-LOT_CONDITION_FIELDS = [
-    ('note', 'Observational review: lighting and surface condition support safe use of accessible parking and accessible routes. Record conditions observed; lighting levels carry no dimensional standard under the CRR instrument.', ''),
-    ('wide', 'Parking lot location', '', 'e.g. main lot, staff lot, event lot'),
-    ('yn',   'Lighting present and functioning at accessible spaces and along accessible routes?', ''),
-    ('yn',   'Accessible spaces and access aisles evenly illuminated (no dark zones)?', ''),
-    ('yn',   'Surface free of potholes, heaving, or broken pavement at accessible spaces and aisles?', ''),
-    ('yn',   'Striping and ISA markings legible (not faded)?', ''),
-    ('yn',   'Drainage grates and utility covers located outside accessible spaces and aisles?', ''),
-    ('yn',   'Route from accessible parking stable, firm, and slip-resistant?', ''),
-    ('wide', 'Describe any lighting or surface deficiencies observed', '', 'Description'),
-] + NOTES_FIELD
-
-# Program Access Interview, 14 staff-interview questions (textarea responses)
+# Program Access Interview, 14 staff-interview questions (textarea responses).
+# These now live in a SEPARATE standalone document (document B), never in the
+# site guide.
 PA_INTERVIEW_QUESTIONS = [
     ('subs', 'ADA Coordination & Compliance', ''),
     ('area', '1. Who is the designated ADA/Section 504 Coordinator for this facility, and how are accessibility complaints or accommodation requests handled?', '', 'Staff response...'),
@@ -1169,19 +1163,17 @@ PA_INTERVIEW_QUESTIONS = [
 SECTIONS = [
     ('Accessible Parking',                   'multi',  PARKING_FIELDS),
     ('Passenger Loading Zones',              'multi',  LOADING_ZONES_FIELDS),
-    ('Parking Lot Lighting & Surface Condition', 'multi', LOT_CONDITION_FIELDS),
     ('Accessible Routes / Walkways',         'multi',  ROUTES_FIELDS),
     ('Curb Ramps',                           'multi',  CURB_RAMPS_FIELDS),
     ('Stadium / Field',                      'single', STADIUM_FIELDS),
     ('Entrances, Doors, and Gates',          'multi',  ENTRANCES_FIELDS),
-    ('Signage',                              'multi',  SIGNAGE_FIELDS),
     ('Stairways and Steps',                  'multi',  STAIRS_FIELDS),
     ('Ramps',                                'multi',  RAMPS_FIELDS),
     ('Elevators',                            'multi',  ELEVATORS_FIELDS),
     ('Lifts',                                'multi',  LIFTS_FIELDS),
     ('Accessible Means of Egress / Areas of Rescue Assistance', 'multi', EGRESS_FIELDS),
     ('Rooms & Offices',                      'multi',  ROOMS_FIELDS),
-    ('Medical / First-Aid Areas',            'multi',  MEDICAL_FIELDS),
+    ("Medical and First-Aid Areas (including Nurse's Office)", 'multi', MEDICAL_FIELDS),
     ('Cafeteria',                            'single', CAFETERIA_FIELDS),
     ('Library',                              'single', LIBRARY_FIELDS),
     ('CTE Classroom(s)',                     'multi',  CTE_FIELDS),
@@ -1189,7 +1181,6 @@ SECTIONS = [
     ('Portable / Temporary Classrooms',      'multi',  PORTABLES_FIELDS),
     ('Gymnasium / Auditorium / Weight Room', 'single', GYM_FIELDS),
     ('Swimming Pools / Aquatic Areas',       'single', POOLS_FIELDS),
-    ('Play Areas',                           'multi',  PLAY_AREAS_FIELDS),
     ('Locker Rooms',                         'multi',  LOCKER_FIELDS),
     ('Restrooms (Male / Female / Non-Gender Specific)', 'multi', RESTROOMS_FIELDS),
     ('Accessible Drinking Fountains',        'multi',  FOUNTAINS_FIELDS),
@@ -1201,9 +1192,8 @@ SECTIONS = [
 # STRATEGY: keep the source doc's front-matter (cover, accessibility-standards
 # listing, tips-for-measuring with the 8 screenclip images) and back-matter
 # (Glossary of Terms), REPLACE every section body in between with new
-# schema-driven content. Append a Standards Guide table near the top, and a
-# Program Access Interview + Section Templates page near the back (before
-# Glossary).
+# schema-driven content. A thresholds-only Standards Guide table sits near
+# the top; nothing internal-process-related appears anywhere in document A.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Identify cut points in the base doc (the previously generated guide):
@@ -1232,9 +1222,8 @@ print(f"Cut points: first section title = p[{first_cut_idx}] '{para_list[first_c
 #      title (plus its preceding page-break paragraph) and the Glossary H1.
 #   2. Remove everything between them (inclusive of the section title,
 #      exclusive of Glossary).
-#   3. Insert NEW content (Standards Applicability Guide + Standards Guide +
-#      sections + PA Interview + Corrective Action Summary + Section
-#      Templates) at the cut position.
+#   3. Insert NEW content (Standards Guide thresholds table + sections)
+#      at the cut position.
 
 first_h1_xml = para_list[first_cut_idx]._p
 glossary_xml = para_list[glossary_idx]._p
@@ -1267,10 +1256,6 @@ def insert_before_glossary(elements):
         parent.insert(idx, e)
         idx += 1
 
-# ─────────────────────────────────────────────────────────────────────────────
-# BUILD: Standards Applicability Guide (date-to-standard table + reviewer
-# rules), per references/standards-matrix.md
-# ─────────────────────────────────────────────────────────────────────────────
 def _heading_run(text, half_points="32"):
     rn = OxmlElement("w:r")
     rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
@@ -1284,66 +1269,6 @@ def _page_break_para():
     pbp = OxmlElement("w:p"); pbr = OxmlElement("w:r")
     pbk = OxmlElement("w:br"); pbk.set(qn("w:type"), "page"); pbr.append(pbk); pbp.append(pbr)
     return pbp
-
-def standards_applicability_block():
-    out = []
-    out.append(_page_break_para())
-    out.append(_para(after=80, runs_extra=[_heading_run("Standards Applicability Guide")]))
-    out.append(_para("Which accessibility standard applies to each element depends on when that element was built or last altered. Use the Year Built and Alterations Log entries in each section together with this page. Source: CRR standards matrix, verified each review cycle.", size=20, color="5A6A7A", italic=True, after=120))
-
-    # 1) Date-to-standard table
-    out.append(_para(after=40, runs_extra=[_heading_run("1. Standard by construction or alteration date", "26")]))
-    cols = [4200, 3700, 1800]
-    rows = []
-
-    def th(text, w):
-        rn = OxmlElement("w:r")
-        rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
-        sz = OxmlElement("w:sz"); sz.set(qn("w:val"), "18"); rp.append(sz)
-        cc = OxmlElement("w:color"); cc.set(qn("w:val"), GOLD); rp.append(cc)
-        rn.append(rp)
-        t = OxmlElement("w:t"); t.text = text.upper(); rn.append(t)
-        return _cell(w, [_para(after=0, runs_extra=[rn])], shade=NAVY)
-
-    rows.append([th("Standard", cols[0]), th("Date built or last altered", cols[1]), th("Findings?", cols[2])])
-
-    MATRIX = [
-        ("Program Access / Existing Facility (Section 504)", "On or before June 3, 1977", "NO: observational only, no measurable citations"),
-        ("ANSI A117.1 (1961, R1971)", "June 4, 1977 to January 17, 1991", "Yes"),
-        ("UFAS (1984)", "January 18, 1991 to January 26, 1992", "Yes"),
-        ("1991 ADA / ADAAG", "January 27, 1992 to September 14, 2010", "Yes"),
-        ("1991 ADA or 2010 ADA (subrecipient's choice; UFAS also permitted)", "September 15, 2010 to March 14, 2012", "Yes"),
-        ("2010 ADA", "On or after March 15, 2012", "Yes"),
-    ]
-    for std, dates, findings in MATRIX:
-        rows.append([
-            _cell(cols[0], [_para(std, size=20, bold=True, color=NAVY, after=0)], shade=CREAM),
-            _cell(cols[1], [_para(dates, size=20, after=0)]),
-            _cell(cols[2], [_para(findings, size=20, after=0)]),
-        ])
-    out.append(_tbl(cols, rows))
-    out.append(_para("Measurements exactly at a threshold boundary are COMPLIANT. If Year Built or ADA Modification Date is missing, the standard cannot be determined: record it as a completeness issue for the Missing Information Report. Never guess a standard and never invent a finding.", size=18, color="5A6A7A", italic=True, after=120))
-
-    # 2) Element-by-element alteration rule
-    out.append(_para(after=40, runs_extra=[_heading_run("2. Element-by-element alteration rule", "26")]))
-    out.append(_tbl([9700], [[_cell(9700, [
-        _para("Per 2010 ADA Section 202.3 and 28 CFR Section 35.151(b): only those elements or spaces altered are required to comply with the standard in effect at the time of alteration. If a room or space is completely altered (or built new as part of an alteration), the entire room or space is fully subject to that standard.", size=20, color="713F12", after=60),
-        _para("Plain-language examples:", bold=True, size=20, color="713F12", after=40),
-        _para("A 1968 restroom with grab bars replaced in 2018: the grab bars are evaluated under 2010 ADA; everything else in the room remains Program Access.", size=20, color="713F12", after=40),
-        _para("A 1985 building re-roofed in 2020: re-roofing is not an accessibility-affecting alteration; the whole building stays ANSI.", size=20, color="713F12", after=40),
-        _para("Whole-room exception: a gutted and rebuilt room is entirely subject to the alteration-date standard.", size=20, color="713F12", after=40),
-    ], shade=YELLOW)]]))
-    out.append(_para(after=80))
-
-    # 3) Corrective actions rule
-    out.append(_para(after=40, runs_extra=[_heading_run("3. Corrective actions are always made per 2010 ADA", "26")]))
-    out.append(_tbl([9700], [[_cell(9700, [
-        _para("The Standard / Violation column cites the standard in effect when the element was built or last altered (Program Access / ANSI / UFAS / 1991 ADA / 2010 ADA). The Corrective Action is ALWAYS cited to the 2010 ADA Standards, irrespective of construction or alteration date.", size=20, color="713F12", after=40),
-        _para("Consequence: some noted deficiencies will NOT require corrective action because the condition already meets 2010 ADA (the corrective baseline).", size=20, color="713F12", after=40),
-        _para("Program Access: no measurable dimensional standard. For any element under Program Access, both the Violation and Corrective Action columns read exactly \"None.\" Program Access compliance is assessed observationally and through the 14 Facilities / Maintenance and Operations staff interview questions.", size=20, color="713F12", after=40),
-    ], shade=YELLOW)]]))
-    out.append(_para("Each section below keeps its own Year Built and era-to-standard prompt: the Program Reviewer determines the applicable standard per element from the dates the LEA records.", size=18, color="5A6A7A", italic=True, after=80))
-    return out
 
 # ─────────────────────────────────────────────────────────────────────────────
 # BUILD: Standards Guide quick-reference table
@@ -1362,7 +1287,7 @@ def standards_guide_block():
     rn.append(rp)
     t = OxmlElement("w:t"); t.text = "Standards Guide, Key Measurement Thresholds"; rn.append(t)
     out.append(_para(after=80, runs_extra=[rn]))
-    out.append(_para("Quick reference. Find the applicable standard for the area you are measuring, then check the dimension in this column.", size=18, color="5A6A7A", italic=True, after=120))
+    out.append(_para("Quick reference of key measurement thresholds. These same notations also appear beside each measurement field in the sections that follow.", size=18, color="5A6A7A", italic=True, after=120))
 
     # Build comparison table
     cols = [3300, 1500, 1500, 1500, 1500]
@@ -1414,170 +1339,46 @@ def standards_guide_block():
     for r in THRESHOLDS:
         rows.append(row(*r))
     out.append(_tbl(cols, rows))
-
-    # Reviewer reminder
-    out.append(_para(after=80))
-    out.append(_tbl([9700], [[_cell(9700, [
-        _para("REMINDER, Two reviewer rules:", bold=True, size=20, color="713F12", after=40),
-        _para("(1) Element-by-element alterations: only the altered element gets the alteration-date standard. Unaltered elements keep the original construction-date standard.", size=18, color="713F12", after=40),
-        _para("(2) Corrective actions are ALWAYS written to 2010 ADA, irrespective of the violation's standard.", size=18, color="713F12", after=40),
-    ], shade=YELLOW)]]))
     return out
-
 # ─────────────────────────────────────────────────────────────────────────────
-# BUILD: Section Templates page (copy-paste blanks for multi-instance areas)
-# ─────────────────────────────────────────────────────────────────────────────
-def section_templates_block(multi_sections):
-    out = []
-    pbp = OxmlElement("w:p"); pbr = OxmlElement("w:r")
-    pbk = OxmlElement("w:br"); pbk.set(qn("w:type"), "page"); pbr.append(pbk); pbp.append(pbr)
-    out.append(pbp)
-    rn = OxmlElement("w:r")
-    rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
-    sz = OxmlElement("w:sz"); sz.set(qn("w:val"), "32"); rp.append(sz)
-    cc = OxmlElement("w:color"); cc.set(qn("w:val"), NAVY); rp.append(cc)
-    rn.append(rp)
-    t = OxmlElement("w:t"); t.text = "SECTION TEMPLATES, copy & paste to add another instance"; rn.append(t)
-    out.append(_para(after=120, runs_extra=[rn]))
-    out.append(_para("Each template below is a blank SECTION DETAILS + ALTERATIONS LOG pair for one location. To add another Restroom (Restroom #2), CTE Classroom (CTE Classroom #3), etc.:", size=20, after=20))
-    for s in (
-        "1.  Select the appropriate template below (highlight from SECTION DETAILS title through the end of the section's field list).",
-        "2.  Copy:  Ctrl+C (Windows) / Cmd+C (Mac).",
-        "3.  Scroll up to the matching area section earlier in the guide. Click at the END of that area's content.",
-        "4.  Paste:  Ctrl+V (Windows) / Cmd+V (Mac).",
-        "5.  Fill in the new instance's location, dates, era, alteration log, and questions.",
-    ):
-        out.append(_para(s, size=20, after=20))
-    out.append(_para(after=160))
-
-    for name, _kind, fields in multi_sections:
-        out.append(_para(after=120))
-        # Sub-heading
-        sh_run = OxmlElement("w:r")
-        rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
-        sz = OxmlElement("w:sz"); sz.set(qn("w:val"), "26"); rp.append(sz)
-        cc = OxmlElement("w:color"); cc.set(qn("w:val"), NAVY); rp.append(cc)
-        sh_run.append(rp)
-        sh_t = OxmlElement("w:t"); sh_t.text = f"Template, {name}"; sh_run.append(sh_t)
-        out.append(_para(after=80, runs_extra=[sh_run]))
-        out.append(section_details_table(name))
-        out.append(_para(after=40))
-        out.append(alterations_log_table(name, n_rows=2))
-    return out
-
-# ─────────────────────────────────────────────────────────────────────────────
-# ASSEMBLE EVERYTHING and insert before the Glossary
+# ASSEMBLE DOCUMENT A and insert before the Glossary
 # ─────────────────────────────────────────────────────────────────────────────
 all_new = []
 
-# 0) Standards Applicability Guide (date-to-standard + reviewer rules)
-all_new.extend(standards_applicability_block())
-
-# 1) Standards Guide quick-reference
+# 1) Standards Guide quick-reference (thresholds only, no process content)
 all_new.extend(standards_guide_block())
 
-# 2) Per-section bodies (instance #1 inline)
+# 2) Per-section bodies (multi-location sections wrapped in a Repeating
+#    Section Content Control; no numbered instance labels)
 for name, kind, fields in SECTIONS:
-    instance_label = "Instance 1" if kind == "multi" else ""
-    all_new.extend(render_section(name, fields, multi_instance=(kind=="multi"), instance_label=instance_label))
-
-# 3) Program Access Interview (single, no Section Details / Alterations Log)
-pbp = OxmlElement("w:p"); pbr = OxmlElement("w:r")
-pbk = OxmlElement("w:br"); pbk.set(qn("w:type"), "page"); pbr.append(pbk); pbp.append(pbr)
-all_new.append(pbp)
-rn = OxmlElement("w:r")
-rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
-sz = OxmlElement("w:sz"); sz.set(qn("w:val"), "32"); rp.append(sz)
-cc = OxmlElement("w:color"); cc.set(qn("w:val"), NAVY); rp.append(cc)
-rn.append(rp)
-t = OxmlElement("w:t"); t.text = "Program Access, Facilities & M&O Staff Interview"; rn.append(t)
-all_new.append(_para(after=120, runs_extra=[rn]))
-
-all_new.append(_tbl([9700], [[_cell(9700, [
-    _para("These questions are asked of the school site's Facilities and Maintenance & Operations staff by the Program Reviewer during the on-site visit. Program Access compliance is determined OBSERVATIONALLY and through staff responses, not through physical measurement.",
-          size=18, color="1A4A6A", after=40),
-], shade="E8F4FD")]]))
-all_new.append(_para(after=80))
-
-# Interview header fields
-HDR = 2400
-hdr_rows = [
-    ("Staff Member Name:", make_plain_text("Click to enter name")),
-    ("Title:",             make_plain_text("Click to enter title")),
-    ("Date of Interview:", make_date_picker("Click to pick the interview date")),
-    ("Interviewer:",       make_plain_text("Click to enter interviewer name")),
-]
-for lbl, ctrl in hdr_rows:
-    lp = _para(lbl, bold=True, size=24, color=NAVY, after=0)
-    vp = _para(after=0); vp.append(ctrl)
-    all_new.append(_tbl([HDR, 7300], [[_cell(HDR, [lp], shade=CREAM), _cell(7300, [vp])]]))
-all_new.append(_para(after=80))
-
-# Interview questions
-all_new.extend(render_section_fields(PA_INTERVIEW_QUESTIONS))
-
-# 4) Corrective Action Summary (completed by the Program Reviewer)
-def corrective_action_summary_block(n_rows=10):
-    out = []
-    out.append(_page_break_para())
-    out.append(_para(after=80, runs_extra=[_heading_run("Corrective Action Summary")]))
-    out.append(_tbl([9700], [[_cell(9700, [
-        _para("This summary is completed by the Program Reviewer, not the school site. The interactive HTML form auto-calculates compliance; this Word guide records data. List each required corrective action identified during the review. Corrective actions are ALWAYS cited to the 2010 ADA Standards, irrespective of the standard under which the violation was assessed.", size=18, color="1A4A6A", after=40),
-    ], shade="E8F4FD")]]))
-    out.append(_para(after=80))
-
-    CA, RP, TL, CE = 4300, 2200, 1600, 1600
-    cols = [CA, RP, TL, CE]
-    rows = []
-
-    def th(text, w):
-        rn = OxmlElement("w:r")
-        rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
-        sz = OxmlElement("w:sz"); sz.set(qn("w:val"), "18"); rp.append(sz)
-        cc = OxmlElement("w:color"); cc.set(qn("w:val"), GOLD); rp.append(cc)
-        rn.append(rp)
-        t = OxmlElement("w:t"); t.text = text.upper(); rn.append(t)
-        return _cell(w, [_para(after=0, runs_extra=[rn])], shade=NAVY)
-
-    rows.append([th("Required Corrective Action", CA), th("Responsible Party", RP), th("Timeline", TL), th("Cost Estimate", CE)])
-    for _ in range(n_rows):
-        c1 = _para(after=0); c1.append(make_plain_text("Click to enter corrective action (cite 2010 ADA)"))
-        c2 = _para(after=0); c2.append(make_plain_text("Click to enter"))
-        c3 = _para(after=0); c3.append(make_plain_text("Click to enter"))
-        c4 = _para(after=0); c4.append(make_plain_text("Click to enter"))
-        rows.append([_cell(CA, [c1]), _cell(RP, [c2]), _cell(TL, [c3]), _cell(CE, [c4])])
-    out.append(_tbl(cols, rows))
-    return out
-
-all_new.extend(corrective_action_summary_block(n_rows=10))
-
-# 5) Section Templates page
-multi_sections = [(n, k, f) for (n, k, f) in SECTIONS if k == "multi"]
-all_new.extend(section_templates_block(multi_sections))
+    all_new.extend(render_section(name, fields, multi_instance=(kind == "multi")))
 
 # Insert before the Glossary
 print(f"Inserting {len(all_new)} top-level elements before Glossary...")
 insert_before_glossary(all_new)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Finalize: Arial 12 pt base style, author metadata, em-dash scrub
-# ─────────────────────────────────────────────────────────────────────────────
-# Arial throughout: runs generated above set size/color but no font, so they
-# inherit the Normal style. Force Normal to Arial 12 pt.
-normal = doc.styles["Normal"]
-normal.font.name = "Arial"
-normal.font.size = Pt(12)
-normal.element.rPr.rFonts.set(qn("w:hAnsi"), "Arial")
-normal.element.rPr.rFonts.set(qn("w:cs"), "Arial")
+# Ensure the document root declares the w15 namespace so Word recognizes the
+# repeating-section markers we just embedded (v5 mechanism). The base doc
+# already declares it when built by build_optimized_guide.py v5; this guards
+# against a base doc that does not.
+doc_root = body.getparent()  # <w:document>
+if doc_root.nsmap.get("w15") != W15_NS:
+    new_nsmap = dict(doc_root.nsmap)
+    new_nsmap["w15"] = W15_NS
+    new_root = etree.Element(doc_root.tag, attrib=dict(doc_root.attrib), nsmap=new_nsmap)
+    for child in list(doc_root):
+        new_root.append(child)
+    mc_ns = "http://schemas.openxmlformats.org/markup-compatibility/2006"
+    ign_attr = f"{{{mc_ns}}}Ignorable"
+    cur = new_root.get(ign_attr, "")
+    if "w15" not in cur.split():
+        new_root.set(ign_attr, (cur + " w15").strip())
+    doc.part._element = new_root
+    print("Added w15 namespace declaration to document.xml root.")
 
-# Authored by Murjani McTier, never Claude.
-cp = doc.core_properties
-cp.author = DOC_AUTHOR
-cp.last_modified_by = DOC_AUTHOR
-
-# Em-dash scrub (hard house rule): strip every U+2014 from the document part
-# and all header/footer parts, in text nodes, tails, and attribute values.
-# " X " becomes ": "; a bare em-dash becomes "-".
+# ─────────────────────────────────────────────────────────────────────────────
+# Finalize helpers: Arial 12 pt base style, author metadata, em-dash scrub
+# ─────────────────────────────────────────────────────────────────────────────
 EMDASH = "\u2014"  # em dash (U+2014), banned by house style; never write the literal glyph
 def _scrub(el):
     fixed = 0
@@ -1591,16 +1392,125 @@ def _scrub(el):
                 node.set(k, v.replace(" " + EMDASH + " ", ": ").replace(EMDASH, "-")); fixed += 1
     return fixed
 
-n_fixed = _scrub(doc.element)
-for rel in doc.part.rels.values():
-    if rel.reltype.endswith("/header") or rel.reltype.endswith("/footer"):
-        n_fixed += _scrub(rel.target_part.element)
-print(f"Em-dash scrub: cleaned {n_fixed} node(s).")
+def finalize(document):
+    """Arial 12 pt Normal style, author metadata, em-dash scrub (all parts)."""
+    normal = document.styles["Normal"]
+    normal.font.name = "Arial"
+    normal.font.size = Pt(12)
+    normal.element.rPr.rFonts.set(qn("w:hAnsi"), "Arial")
+    normal.element.rPr.rFonts.set(qn("w:cs"), "Arial")
+
+    # Authored by Murjani McTier, never Claude.
+    cp = document.core_properties
+    cp.author = DOC_AUTHOR
+    cp.last_modified_by = DOC_AUTHOR
+
+    n_fixed = _scrub(document.element)
+    for rel in document.part.rels.values():
+        if rel.reltype.endswith("/header") or rel.reltype.endswith("/footer"):
+            n_fixed += _scrub(rel.target_part.element)
+    print(f"Em-dash scrub: cleaned {n_fixed} node(s).")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Save
+# Save DOCUMENT A
 # ─────────────────────────────────────────────────────────────────────────────
-doc.save(OUT)
-print(f"\n✓ Saved → {OUT}")
-print(f"  File size: {os.path.getsize(OUT)/1024:.1f} KB")
+finalize(doc)
+doc.save(OUT_GUIDE)
+print(f"\nSaved -> {OUT_GUIDE}")
+print(f"  File size: {os.path.getsize(OUT_GUIDE)/1024:.1f} KB")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DOCUMENT B: Program Access, Facilities and Maintenance & Operations
+# Staff Interview (standalone document)
+# ─────────────────────────────────────────────────────────────────────────────
+def build_interview_doc():
+    idoc = Document()
+    ibody = idoc.element.body
+    sectPr = ibody.find(qn("w:sectPr"))
+
+    def add(el):
+        if sectPr is not None:
+            sectPr.addprevious(el)
+        else:
+            ibody.append(el)
+
+    # Title
+    rn = OxmlElement("w:r")
+    rp = OxmlElement("w:rPr"); rp.append(OxmlElement("w:b"))
+    sz = OxmlElement("w:sz"); sz.set(qn("w:val"), "32"); rp.append(sz)
+    cc = OxmlElement("w:color"); cc.set(qn("w:val"), NAVY); rp.append(cc)
+    rn.append(rp)
+    t = OxmlElement("w:t")
+    t.text = "Program Access, Facilities and Maintenance & Operations Staff Interview"
+    rn.append(t)
+    add(_para(after=120, runs_extra=[rn]))
+
+    add(_tbl([9700], [[_cell(9700, [
+        _para("These questions are asked of the school site's Facilities and Maintenance & Operations staff by the Program Reviewer during the on-site visit. Program Access compliance is determined observationally and through staff responses, not through physical measurement.",
+              size=18, color="1A4A6A", after=40),
+    ], shade="E8F4FD")]]))
+    add(_para(after=80))
+
+    # Header block: school name, date, staff interviewed (name / title), interviewer
+    HDR, RSP = 3200, 6500
+    hdr_rows = [
+        ("School Name:",              make_plain_text("Click to enter the school name")),
+        ("Date of Interview:",        make_date_picker("Click to pick the interview date")),
+        ("Staff Interviewed, Name:",  make_plain_text("Click to enter name")),
+        ("Staff Interviewed, Title:", make_plain_text("Click to enter title")),
+        ("Interviewer:",              make_plain_text("Click to enter interviewer name")),
+    ]
+    for lbl, ctrl in hdr_rows:
+        lp = _para(lbl, bold=True, size=24, color=NAVY, after=0)
+        vp = _para(after=0); vp.append(ctrl)
+        add(_tbl([HDR, RSP], [[_cell(HDR, [lp], shade=CREAM), _cell(RSP, [vp])]]))
+    add(_para(after=120))
+
+    # The 14 interview questions, each with a Response field and Notes space
+    def _bold_label_para(prefix, placeholder, after):
+        p = _para(after=after)
+        lb = OxmlElement("w:r")
+        lbp = OxmlElement("w:rPr"); lbp.append(OxmlElement("w:b"))
+        lbsz = OxmlElement("w:sz"); lbsz.set(qn("w:val"), "22"); lbp.append(lbsz)
+        lb.append(lbp)
+        lbt = OxmlElement("w:t"); lbt.set(qn("xml:space"), "preserve"); lbt.text = prefix
+        lb.append(lbt)
+        p.append(lb)
+        p.append(make_plain_text(placeholder))
+        return p
+
+    for field in PA_INTERVIEW_QUESTIONS:
+        kind, label = field[0], field[1]
+        if kind == 'subs':
+            hr = OxmlElement("w:r")
+            hrp = OxmlElement("w:rPr"); hrp.append(OxmlElement("w:b"))
+            hsz = OxmlElement("w:sz"); hsz.set(qn("w:val"), "26"); hrp.append(hsz)
+            hcc = OxmlElement("w:color"); hcc.set(qn("w:val"), NAVY); hrp.append(hcc)
+            hr.append(hrp)
+            ht = OxmlElement("w:t"); ht.text = label.upper(); hr.append(ht)
+            add(_para(after=80, runs_extra=[hr]))
+            continue
+        q_para = _para(label, bold=True, size=24, color=NAVY, after=40)
+        resp_para = _bold_label_para("Response:  ", "Click to enter the staff response", 40)
+        notes_para = _bold_label_para("Notes:  ", "Click to enter notes", 0)
+        add(_tbl([9700], [
+            [_cell(9700, [q_para], shade=CREAM)],
+            [_cell(9700, [resp_para])],
+            [_cell(9700, [notes_para])],
+        ]))
+        add(_para(after=120))
+
+    return idoc
+
+interview_doc = build_interview_doc()
+finalize(interview_doc)
+interview_doc.save(OUT_INTERVIEW)
+print(f"Saved -> {OUT_INTERVIEW}")
+print(f"  File size: {os.path.getsize(OUT_INTERVIEW)/1024:.1f} KB")
+
+# Remove the superseded v2 output if it is still present
+if os.path.exists(OLD_OUT):
+    os.remove(OLD_OUT)
+    print(f"Removed superseded output: {OLD_OUT}")
+
 print(f"  Final SDT ID counter: {_next_id}")
