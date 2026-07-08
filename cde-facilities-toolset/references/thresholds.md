@@ -137,7 +137,7 @@ generic operable-part rule: max 48 inches forward reach; side reach max
 - Stacks: aisle min 36 in; overhead clearance min 80 in.
 - Card catalog: aisle min 36 in; operable parts max 48 in forward reach.
 
-## 12. CTE Classrooms and 13. Labs / Shops
+## 12. CTE Classrooms and 13. CTE Labs and Shops
 
 - Doorway, handle, force, threshold: same as area 6.
 - Fixed tables, counters, workstations: 28 to 34 in.

@@ -110,7 +110,7 @@ Four columns, approximately 30 / 14 / 28 / 28 percent widths:
 10. Cafeteria
 11. Library
 12. CTE Classrooms
-13. Labs/Shops
+13. CTE Labs and Shops
 14. Gymnasium/Auditorium/Weight Room/Other
 15. Stadium/Field
 16. Dressing, Fitting, and Locker Rooms

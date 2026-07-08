@@ -35,7 +35,7 @@ const FIXED_ROW_ORDER = [
   "Cafeteria",
   "Library",
   "CTE Classrooms",
-  "Labs/Shops",
+  "CTE Labs and Shops",
   "Gymnasium/Auditorium/Weight Room/Other",
   "Stadium/Field",
   "Dressing, Fitting, and Locker Rooms",

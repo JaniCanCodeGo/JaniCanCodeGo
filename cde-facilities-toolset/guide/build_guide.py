@@ -1177,7 +1177,7 @@ SECTIONS = [
     ('Cafeteria',                            'single', CAFETERIA_FIELDS),
     ('Library',                              'single', LIBRARY_FIELDS),
     ('CTE Classroom(s)',                     'multi',  CTE_FIELDS),
-    ('Labs / Shops',                         'multi',  LABS_FIELDS),
+    ('CTE Labs and Shops',                   'multi',  LABS_FIELDS),
     ('Portable / Temporary Classrooms',      'multi',  PORTABLES_FIELDS),
     ('Gymnasium / Auditorium / Weight Room', 'single', GYM_FIELDS),
     ('Swimming Pools / Aquatic Areas',       'single', POOLS_FIELDS),
