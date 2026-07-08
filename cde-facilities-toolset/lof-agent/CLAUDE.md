@@ -47,6 +47,13 @@ Flag every instance of:
 - Missing Year Built or ADA Modification Date (these are required to
   determine the applicable standard)
 - Contradictions between entries
+- Alterations gate inconsistencies: each section asks "Have any
+  alterations or ADA modifications been made since original
+  construction?" A "Yes" with an empty Alterations Log, a "No" or blank
+  gate with populated log rows, or a blank gate altogether are all
+  completeness flags. The Alterations Log (Element Altered / Date
+  Altered) is the ONLY place modification data lives; there are no
+  separate narrative modification fields.
 - Missing signature block
 - Skipped conditional follow-ups (for example: "Ramp leading to
   entrance? Yes" but no matching Ramps instance)

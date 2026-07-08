@@ -17,7 +17,7 @@ v3 changes (owner corrections, Murjani McTier, CDE OEO):
   * All reviewer-facing notes and prompts REMOVED: no shaded rule boxes, no
     standard-determination prompts. The site document only collects data.
   * Construction-date dropdowns REMOVED from Section Details. Kept as plain
-    data fields: Year Built, ADA Modification Date(s), Identify ADA
+    data fields: Year Built, an alterations Yes/No gate, and the
     Modifications. The Program Reviewer determines standards later,
     outside this document.
   * Alterations Log tables reduced to TWO columns: Element Altered and
@@ -206,8 +206,8 @@ def section_details_table(area_name):
 
     kv("Location / Building Name:", make_plain_text("Click to type the location"))
     kv("Year Built:", make_plain_text("Click to enter the year built"))
-    kv('ADA Modification Date(s):', make_plain_text('Click to enter date(s), or "N/A" if none'))
-    kv("Identify ADA Modifications:", make_plain_text('Click to describe the modifications, or "N/A" if none'))
+    kv("Have any alterations or ADA modifications been made since original construction? If Yes, complete the Alterations Log below.",
+       make_dropdown([("Yes", "Yes"), ("No", "No")]))
     return _tbl([LBL, VAL], rows)
 
 def alterations_log_table(area_name, n_rows=4):

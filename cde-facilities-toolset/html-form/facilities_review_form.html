@@ -842,7 +842,7 @@ function blankState(){
   CONFIG.forEach(function(c){ s.sec[c.key] = [newInstance()]; });
   return s;
 }
-function newInstance(){ return {meta:{loc:'', yb:'', mod:'', modid:'', desig:'', room:''}, v:{}}; }
+function newInstance(){ return {meta:{loc:'', yb:'', altgate:'', mod:'', modid:'', desig:'', room:''}, v:{}}; }
 
 /* ---------------- Utilities ----------------------------------------------- */
 function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -875,8 +875,14 @@ function identBlock(cfg, idx){
       }).join('') + '</select><div class="hint">California requires Non-Gender Specific restrooms</div></div>';
   }
   h += '<div class="fg"><label>Year Built</label><input type="text" data-meta="yb" value="' + esc(inst.meta.yb) + '" placeholder="e.g. 1985 or 06/15/1985"><div class="hint">Year, or full date if known</div></div>';
-  h += '<div class="fg wide"><label>ADA Modification Date(s)</label><textarea data-meta="mod" placeholder=\'Date(s) altered, e.g. "March 2018; 2021". Enter N/A if none.\'>' + esc(inst.meta.mod) + '</textarea><div class="hint">Alterations log: Date Altered</div></div>';
-  h += '<div class="fg wide"><label>Element(s) Altered</label><textarea data-meta="modid" placeholder=\'Which elements were altered, e.g. "grab bars and lavatory only". Enter N/A if none.\'>' + esc(inst.meta.modid) + '</textarea><div class="hint">Alterations log: Element Altered</div></div>';
+  h += '<div class="fg wide"><label>Have any alterations or ADA modifications been made since original construction?</label><select data-meta="altgate">' +
+    ['','Yes','No'].map(function(o){
+      return '<option value="' + o + '"' + (inst.meta.altgate === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
+    }).join('') + '<\/select><div class="hint">If Yes, complete the Alterations Log below</div></div>';
+  if (inst.meta.altgate === 'Yes'){
+    h += '<div class="fg wide"><label>Alterations Log: Element(s) Altered</label><textarea data-meta="modid" placeholder=\'Which elements were altered, e.g. "grab bars and lavatory only"\'>' + esc(inst.meta.modid) + '</textarea></div>';
+    h += '<div class="fg wide"><label>Alterations Log: Date(s) Altered</label><textarea data-meta="mod" placeholder=\'Date(s) altered, matching the elements above, e.g. "March 2018; 2021"\'>' + esc(inst.meta.mod) + '</textarea></div>';
+  }
   h += '</div>';
   return h;
 }
@@ -978,6 +984,7 @@ document.addEventListener('input', function(e){
       if (titleEl) titleEl.textContent = instanceTitle(cfg, idx);
       updateTocCount(cfg);
     }
+    if (t.dataset.meta === 'altgate'){ renderSection(cfg); }
     touch(); return;
   }
   if (t.dataset.fi !== undefined){
