@@ -82,10 +82,23 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
 /* Toolbar / status */
 .toolbar-note{font-size:10px;font-family:var(--mono);color:var(--gold-light);}
 .savemsg{font-size:10px;font-family:var(--mono);color:var(--gold-light);min-width:110px;text-align:right;}
+/* Privacy footer */
+footer.privacy-footer{background:#FBF3DC;border-top:3px solid var(--gold);padding:18px 28px 26px;font-size:13px;line-height:1.6;color:var(--text);margin-top:8px;}
+footer.privacy-footer .inner{max-width:1340px;margin:0 auto;}
+footer.privacy-footer strong{color:var(--navy);}
+footer.privacy-footer .imp{font-weight:700;color:var(--red);}
 /* Signature block */
 .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:22px;}
 @media(max-width:640px){.sig-grid{grid-template-columns:1fr;}}
 .sig-line{border-top:1px solid var(--text);padding-top:5px;font-size:11px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:34px;}
+.sig-img-slot{min-height:0;}
+.sig-img-slot img{max-height:60px;max-width:100%;height:auto;display:block;}
+.sig-tools{margin-top:16px;padding:12px;border:1px dashed var(--border);border-radius:4px;background:var(--sage);}
+.sig-tools .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.sig-tools a{color:var(--red);font-size:12px;}
+#sigPadWrap{margin-top:10px;}
+#sigPad{border:1px solid var(--border);background:var(--white);border-radius:3px;touch-action:none;max-width:100%;display:block;}
+#sigPadWrap .row{margin-top:8px;}
 /* Print */
 @media print{
   header,nav.toc,.header-actions,.add-bar,.btn,.no-print{display:none !important;}
@@ -99,8 +112,12 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
   .instance{break-inside:avoid-page;}
   table.fields input,table.fields select,table.fields textarea,.fg input,.fg select,.fg textarea{border:none;border-bottom:1px solid #999;border-radius:0;background:var(--white);}
   #printHeaderRepeat{display:block !important;}
+  #printPrivacyFooter{display:block !important;}
+  .sig-tools{display:none !important;}
+  footer.privacy-footer{display:none !important;}
 }
 #printHeaderRepeat{display:none;font-family:var(--serif);font-size:15px;color:var(--navy);margin-bottom:12px;}
+#printPrivacyFooter{display:none;font-size:10px;color:var(--muted);border-top:1px solid #999;margin-top:16px;padding-top:8px;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -113,10 +130,8 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
   </div>
   <div class="header-actions">
     <span class="savemsg" id="saveMsg"></span>
-    <button class="btn btn-gold btn-sm" onclick="downloadJSON()">Save JSON</button>
-    <button class="btn btn-outline btn-sm" style="border-color:var(--gold);color:var(--gold-light);" onclick="document.getElementById('loadFile').click()">Load JSON</button>
-    <input type="file" id="loadFile" accept=".json,application/json" style="display:none" onchange="loadJSONFile(this)">
     <button class="btn btn-outline btn-sm" style="border-color:var(--gold);color:var(--gold-light);" onclick="window.print()">Print / PDF</button>
+    <button class="btn btn-gold btn-sm" id="btnWord" onclick="downloadWord()">Download Word (.doc)</button>
     <button class="btn btn-danger btn-sm" onclick="clearAll()">Clear</button>
   </div>
 </header>
@@ -147,16 +162,45 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
           <div class="fg"><label>Preparer Title</label><input type="text" data-h="preparerTitle" placeholder="e.g. Director of Facilities"></div>
           <div class="fg"><label>Preparer Email / Phone</label><input type="text" data-h="preparerContact" placeholder="Optional"></div>
         </div>
+        <div class="sig-tools no-print" id="sigTools">
+          <div class="row">
+            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('sigFile').click()">Add signature image</button>
+            <input type="file" id="sigFile" accept="image/*" style="display:none">
+            <button type="button" class="btn btn-outline btn-sm" id="sigDrawBtn">Draw signature</button>
+            <a href="#" id="sigRemove" style="display:none;">Remove signature</a>
+          </div>
+          <div id="sigPadWrap" style="display:none;">
+            <canvas id="sigPad" width="400" height="100"></canvas>
+            <div class="row">
+              <button type="button" class="btn btn-outline btn-sm" id="sigPadClear">Clear</button>
+              <button type="button" class="btn btn-primary btn-sm" id="sigPadAccept">Accept</button>
+              <button type="button" class="btn btn-outline btn-sm" id="sigPadCancel">Cancel</button>
+            </div>
+          </div>
+          <p class="hint">For certificate-based digital signatures (Adobe), print to PDF and sign the PDF in Adobe Acrobat.</p>
+        </div>
         <div class="sig-grid">
-          <div><div class="sig-line">Preparer Signature</div><div class="sig-line">Date</div></div>
+          <div>
+            <div class="sig-img-slot" id="sigPreview"></div>
+            <div class="sig-line">Preparer Signature</div>
+            <div class="fg" style="margin-top:10px;"><label>Signature Date</label><input type="text" data-h="sigDate" placeholder="e.g. December 10, 2025"></div>
+          </div>
           <div><div class="sig-line">Site Administrator Signature</div><div class="sig-line">Date</div></div>
         </div>
       </div>
     </div>
 
     <div id="sections"></div>
+
+    <div id="printPrivacyFooter">Privacy Notice: This form runs entirely in your web browser on your device. No data you enter is transmitted, collected, retained, saved, monitored, or tracked by the California Department of Education or anyone else. Nothing is sent over the internet. Your entries exist only in this browser tab while it is open. IMPORTANT: If you close this tab or browser, or your device restarts, all entered data will be permanently lost and cannot be retrieved. Print or download your work before closing. If you step away, your work remains only until the tab is closed.</div>
   </main>
 </div>
+
+<footer class="privacy-footer" id="privacyFooter">
+  <div class="inner">
+    <strong>Privacy Notice:</strong> This form runs entirely in your web browser on your device. No data you enter is transmitted, collected, retained, saved, monitored, or tracked by the California Department of Education or anyone else. Nothing is sent over the internet. Your entries exist only in this browser tab while it is open. <span class="imp">IMPORTANT: If you close this tab or browser, or your device restarts, all entered data will be permanently lost and cannot be retrieved.</span> Print or download your work before closing. If you step away, your work remains only until the tab is closed.
+  </div>
+</footer>
 
 <script>
 'use strict';
@@ -165,7 +209,8 @@ table.fields input:focus,table.fields select:focus,table.fields textarea:focus{b
    Completed by the LEA / school site. Data collection only.
    Data-driven: CONFIG describes every section; one engine renders all.
    Hint text next to measurement fields mirrors the Word guide.
-   No network calls. Autosaves to localStorage. No em-dash characters.
+   No network calls. Autosaves to sessionStorage only (cleared when the
+   tab or browser closes). No em-dash characters.
    ========================================================================== */
 
 /* ---------------- Field shorthand ----------------------------------------
@@ -832,10 +877,14 @@ var CONFIG = [
 ]}
 ];
 
+/* Uniform Notes field: appended programmatically as the LAST field of every
+   section so it appears in every instance, including new instances. */
+CONFIG.forEach(function(c){ c.fields.push(['ta','Notes / Additional Information','']); });
+
 /* ---------------- State ---------------------------------------------------
    S = { header:{}, sec:{ key: [ {meta:{loc,yb,mod,modid,desig,room}, v:{fi:value}} ] } }
 --------------------------------------------------------------------------- */
-var LS_KEY = 'cde_facilities_review_form_v2';
+var SS_KEY = 'crr_ba_form_v3';
 var S = blankState();
 function blankState(){
   var s = {header:{reviewCycle:'CRR 20'}, sec:{}};
@@ -851,7 +900,7 @@ var saveTimer = null;
 function touch(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(function(){
-    try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); flashSave('Autosaved'); }
+    try{ sessionStorage.setItem(SS_KEY, JSON.stringify(S)); flashSave('Autosaved (this tab only)'); }
     catch(e){ flashSave('Autosave failed'); }
   }, 500);
 }
@@ -1019,32 +1068,180 @@ document.addEventListener('click', function(e){
   }
 });
 
-/* ---------------- Save / load / clear -------------------------------------- */
-function downloadJSON(){
-  var name = (S.header.schoolName || 'School').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'School';
-  var blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name + '_CRR_Building_Accessibility.json';
-  document.body.appendChild(a); a.click();
-  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
-  flashSave('JSON downloaded');
+/* ---------------- Word (.doc) export ---------------------------------------
+   Zero-library export: a complete standalone HTML document with Word-specific
+   markup, saved as a Blob of type application/msword. Word opens it directly.
+---------------------------------------------------------------------------- */
+var PRIVACY_TEXT = 'Privacy Notice: This form runs entirely in your web browser on your device. No data you enter is transmitted, collected, retained, saved, monitored, or tracked by the California Department of Education or anyone else. Nothing is sent over the internet. Your entries exist only in this browser tab while it is open. IMPORTANT: If you close this tab or browser, or your device restarts, all entered data will be permanently lost and cannot be retrieved. Print or download your work before closing. If you step away, your work remains only until the tab is closed.';
+
+var HEADER_LABELS = [
+  ['schoolName','School Name'], ['districtName','District Name'],
+  ['cdsCode','CDS Code'], ['reviewCycle','Review Cycle'],
+  ['reviewDate','Review Date / Site Visit Date'], ['preparerName','Preparer Name'],
+  ['preparerTitle','Preparer Title'], ['preparerContact','Preparer Email / Phone']
+];
+var META_LABELS = [
+  ['loc','Location / Name'], ['room','Room Name'], ['desig','Designation'],
+  ['yb','Year Built'], ['altgate','Alterations or ADA modifications since original construction'],
+  ['modid','Alterations Log: Element(s) Altered'], ['mod','Alterations Log: Date(s) Altered']
+];
+
+function wordRow(label, value){
+  return '<tr><td style="width:55%;border:1pt solid #999;padding:3pt 5pt;">' + esc(label) +
+    '</td><td style="border:1pt solid #999;padding:3pt 5pt;">' + esc(value).replace(/\n/g,'<br>') + '</td></tr>';
 }
-function loadJSONFile(input){
-  var file = input.files && input.files[0];
+function wordSubhdr(label){
+  return '<tr><td colspan="2" style="border:1pt solid #999;padding:3pt 5pt;background:#EDF0EB;font-weight:bold;">' + esc(label) + '</td></tr>';
+}
+
+function buildWordHtml(){
+  var h = [];
+  h.push('<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">');
+  h.push('<head><meta charset="utf-8"><title>CRR Building Accessibility</title>');
+  h.push('<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->');
+  h.push('<style>');
+  h.push('@page WordSection1 {size:8.5in 11.0in; margin:1.0in 0.75in 1.0in 0.75in; mso-header-margin:0.5in; mso-footer-margin:0.5in;}');
+  h.push('div.WordSection1 {page:WordSection1;}');
+  h.push('body {font-family:Arial, sans-serif; font-size:10pt; color:#1a1a1a;}');
+  h.push('h1 {font-size:16pt; color:#1A2744;} h2 {font-size:13pt; color:#1A2744; margin-top:14pt;} h3 {font-size:11pt; color:#243460;}');
+  h.push('table {border-collapse:collapse; width:100%;}');
+  h.push('</style></head><body><div class="WordSection1">');
+  h.push('<h1>Civil Rights Review - Building Accessibility</h1>');
+  h.push('<p style="font-size:9pt;color:#6B6659;">California Department of Education, Office of Equal Opportunity</p>');
+
+  h.push('<h2>School &amp; Review Information</h2><table>');
+  HEADER_LABELS.forEach(function(pair){ h.push(wordRow(pair[1], S.header[pair[0]] || '')); });
+  h.push('</table>');
+
+  CONFIG.forEach(function(cfg, i){
+    h.push('<h2>Area ' + (i + 1) + ': ' + esc(cfg.title) + '</h2>');
+    S.sec[cfg.key].forEach(function(inst, idx){
+      if (cfg.repeat || S.sec[cfg.key].length > 1){
+        h.push('<h3>' + esc(cfg.unit || 'Location') + ' ' + (idx + 1) +
+          (instanceTitle(cfg, idx) !== (cfg.unit || 'Location') ? ': ' + esc(instanceTitle(cfg, idx)) : '') + '</h3>');
+      }
+      h.push('<table>');
+      META_LABELS.forEach(function(pair){
+        var mk = pair[0];
+        if (mk === 'room' && !cfg.roomName) return;
+        if (mk === 'desig' && !cfg.designation) return;
+        if ((mk === 'modid' || mk === 'mod') && inst.meta.altgate !== 'Yes') return;
+        h.push(wordRow(pair[1], inst.meta[mk] || ''));
+      });
+      cfg.fields.forEach(function(f, fi){
+        if (f[0] === 'hdr'){ h.push(wordSubhdr(f[1])); return; }
+        if (f[0] === 'note'){ h.push('<tr><td colspan="2" style="border:1pt solid #999;padding:3pt 5pt;font-style:italic;color:#6B6659;">' + esc(f[1]) + '</td></tr>'); return; }
+        h.push(wordRow(f[1], inst.v[fi] != null ? inst.v[fi] : ''));
+      });
+      h.push('</table>');
+    });
+  });
+
+  h.push('<h2>Signatures</h2>');
+  if (S.header.sigImage){
+    h.push('<p><img src="' + S.header.sigImage + '" style="max-height:60px;height:60px;" alt="Preparer signature"></p>');
+  }
+  h.push('<table style="width:100%;"><tr>');
+  h.push('<td style="width:48%;border-top:1pt solid #1a1a1a;padding-top:3pt;font-size:8pt;color:#6B6659;">PREPARER SIGNATURE<br>' +
+    esc(S.header.preparerName || '') + (S.header.preparerTitle ? ', ' + esc(S.header.preparerTitle) : '') +
+    (S.header.sigDate ? '<br>Date: ' + esc(S.header.sigDate) : '') + '</td>');
+  h.push('<td style="width:4%;border:none;"></td>');
+  h.push('<td style="width:48%;border-top:1pt solid #1a1a1a;padding-top:3pt;font-size:8pt;color:#6B6659;">SITE ADMINISTRATOR SIGNATURE<br>Date:</td>');
+  h.push('</tr></table>');
+
+  h.push('<p style="font-size:8pt;color:#6B6659;border-top:1pt solid #999;padding-top:4pt;margin-top:14pt;">' + esc(PRIVACY_TEXT) + '</p>');
+  h.push('</div></body></html>');
+  return h.join('\n');
+}
+
+function downloadWord(){
+  var name = (S.header.schoolName || 'School').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'School';
+  var blob = new Blob(['\ufeff', buildWordHtml()], {type:'application/msword'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'CRR_Building_Accessibility_' + name + '.doc';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 400);
+  flashSave('Word file downloaded');
+}
+
+/* ---------------- Signature ------------------------------------------------
+   Image upload or drawn signature. Stored as a data URI in S.header.sigImage
+   (in-memory plus sessionStorage only, consistent with the privacy notice).
+   Certificate-based (Adobe) signing is not possible in a standalone HTML
+   page; users are directed to print to PDF and sign in Acrobat.
+---------------------------------------------------------------------------- */
+function renderSig(){
+  var slot = el('sigPreview');
+  var rm = el('sigRemove');
+  if (S.header.sigImage){
+    slot.innerHTML = '<img src="' + S.header.sigImage + '" alt="Preparer signature">';
+    rm.style.display = '';
+  } else {
+    slot.innerHTML = '';
+    rm.style.display = 'none';
+  }
+}
+function setSig(dataUri){
+  S.header.sigImage = dataUri;
+  renderSig(); touch();
+}
+el('sigFile').addEventListener('change', function(){
+  var file = this.files && this.files[0];
+  var input = this;
   if (!file) return;
   var reader = new FileReader();
-  reader.onload = function(){
-    try{
-      var data = JSON.parse(reader.result);
-      applyState(data);
-      flashSave('Loaded from file');
-      touch();
-    } catch(err){ alert('Could not read that file as saved form JSON: ' + err.message); }
-  };
-  reader.readAsText(file);
-  input.value = '';
-}
+  reader.onload = function(){ setSig(reader.result); input.value = ''; };
+  reader.readAsDataURL(file);
+});
+el('sigRemove').addEventListener('click', function(e){
+  e.preventDefault();
+  S.header.sigImage = '';
+  renderSig(); touch();
+});
+
+/* Drawing pad: mouse and touch */
+(function(){
+  var pad = el('sigPad');
+  var ctx = pad.getContext('2d');
+  var drawing = false, hasInk = false;
+  ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1a1a1a';
+
+  function pos(e){
+    var r = pad.getBoundingClientRect();
+    var p = (e.touches && e.touches.length) ? e.touches[0] : e;
+    return { x:(p.clientX - r.left) * (pad.width / r.width), y:(p.clientY - r.top) * (pad.height / r.height) };
+  }
+  function start(e){ drawing = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); if (e.type === 'touchstart') e.preventDefault(); }
+  function move(e){ if (!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasInk = true; if (e.type === 'touchmove') e.preventDefault(); }
+  function end(){ drawing = false; }
+
+  pad.addEventListener('mousedown', start);
+  pad.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', end);
+  pad.addEventListener('touchstart', start, {passive:false});
+  pad.addEventListener('touchmove', move, {passive:false});
+  pad.addEventListener('touchend', end);
+  pad.addEventListener('touchcancel', end);
+
+  function clearPad(){ ctx.clearRect(0, 0, pad.width, pad.height); hasInk = false; }
+  el('sigDrawBtn').addEventListener('click', function(){
+    var w = el('sigPadWrap');
+    w.style.display = (w.style.display === 'none') ? '' : 'none';
+  });
+  el('sigPadClear').addEventListener('click', clearPad);
+  el('sigPadCancel').addEventListener('click', function(){ clearPad(); el('sigPadWrap').style.display = 'none'; });
+  el('sigPadAccept').addEventListener('click', function(){
+    if (!hasInk){ alert('Draw a signature first, or Cancel.'); return; }
+    setSig(pad.toDataURL('image/png'));
+    clearPad();
+    el('sigPadWrap').style.display = 'none';
+  });
+})();
+
+/* ---------------- State apply / clear -------------------------------------- */
 function applyState(data){
   var s = blankState();
   if (data && typeof data === 'object'){
@@ -1068,12 +1265,13 @@ function applyState(data){
 function hydrateHeader(){
   document.querySelectorAll('[data-h]').forEach(function(n){
     var v = S.header[n.dataset.h];
-    if (v != null) n.value = v;
+    n.value = (v != null) ? v : '';
   });
+  renderSig();
 }
 function clearAll(){
-  if (!confirm('Clear the entire form? This removes all entered data, including the autosaved copy.')) return;
-  localStorage.removeItem(LS_KEY);
+  if (!confirm('Clear the entire form? This removes all entered data, including the tab autosave copy.')) return;
+  try{ sessionStorage.removeItem(SS_KEY); } catch(e){}
   S = blankState();
   hydrateHeader(); renderAllSections();
   flashSave('Cleared');
@@ -1083,8 +1281,8 @@ function clearAll(){
 (function boot(){
   renderToc();
   var saved = null;
-  try{ saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch(e){}
-  if (saved){ applyState(saved); flashSave('Restored autosave'); }
+  try{ saved = JSON.parse(sessionStorage.getItem(SS_KEY) || 'null'); } catch(e){}
+  if (saved){ applyState(saved); flashSave('Restored (this tab)'); }
   else { hydrateHeader(); renderAllSections(); }
 })();
 </script>
