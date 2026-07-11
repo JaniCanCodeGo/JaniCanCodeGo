@@ -877,9 +877,49 @@ var CONFIG = [
 ]}
 ];
 
-/* Uniform Notes field: appended programmatically as the LAST field of every
-   section so it appears in every instance, including new instances. */
-CONFIG.forEach(function(c){ c.fields.push(['ta','Notes / Additional Information','']); });
+/* Guide order and titles: reorder CONFIG to match the revised Word guide
+   (Civil_Rights_Review_Building_Accessibility.docx). Entries keep their key,
+   fields, and flags; only the order and titles change. */
+var GUIDE_ORDER = [
+  ['parking','Accessible Parking'],
+  ['loading','Passenger Loading Zones'],
+  ['routes','Accessible Routes / Walkways'],
+  ['curbramps','Curb Ramps'],
+  ['stadium','Stadium / Field'],
+  ['entrances','Entrances, Doors, and Gates'],
+  ['stairs','Stairways and Steps'],
+  ['ramps','Ramps'],
+  ['elevators','Elevators'],
+  ['lifts','Lifts'],
+  ['egress','Accessible Means of Egress / Areas of Rescue Assistance'],
+  ['rooms','Rooms & Offices'],
+  ['medical','Medical and First-Aid Areas (including Nurse\'s Office)'],
+  ['cafeteria','Cafeteria'],
+  ['library','Library'],
+  ['cte','CTE Classroom(s)'],
+  ['labs','CTE Labs and Shops'],
+  ['portables','Portable / Temporary Classrooms'],
+  ['gym','Gymnasium / Auditorium / Weight Room'],
+  ['pools','Swimming Pools / Aquatic Areas'],
+  ['locker','Locker Rooms'],
+  ['restrooms','Restrooms (Male / Female / Non-Gender Specific)'],
+  ['fountains','Accessible Drinking Fountains'],
+  ['coolers','Water Coolers & Bottle Fillers'],
+  ['phones','Public Telephones']
+];
+CONFIG = GUIDE_ORDER.map(function(pair){
+  var c = null;
+  for (var i = 0; i < CONFIG.length; i++){ if (CONFIG[i].key === pair[0]){ c = CONFIG[i]; break; } }
+  c.title = pair[1];
+  return c;
+});
+/* Room Name row applies to Medical per the guide */
+CONFIG.forEach(function(c){ if (c.key === 'medical') c.roomName = true; });
+/* Audit: every section must END with exactly one Additional Information field */
+CONFIG.forEach(function(c){
+  var last = c.fields[c.fields.length - 1];
+  if (!(last && last[0] === 'ta' && last[1] === ADDL[1])) c.fields.push(ADDL);
+});
 
 /* ---------------- State ---------------------------------------------------
    S = { header:{}, sec:{ key: [ {meta:{loc,yb,mod,modid,desig,room}, v:{fi:value}} ] } }
@@ -1080,18 +1120,42 @@ var HEADER_LABELS = [
   ['reviewDate','Review Date / Site Visit Date'], ['preparerName','Preparer Name'],
   ['preparerTitle','Preparer Title'], ['preparerContact','Preparer Email / Phone']
 ];
-var META_LABELS = [
-  ['loc','Location / Name'], ['room','Room Name'], ['desig','Designation'],
-  ['yb','Year Built'], ['altgate','Alterations or ADA modifications since original construction'],
-  ['modid','Alterations Log: Element(s) Altered'], ['mod','Alterations Log: Date(s) Altered']
-];
+/* Word table building blocks, styled to mirror the guide:
+   navy (#1A2744) banner cells with bold gold (#C8A84B) text, cream (#F7F4EE)
+   bold navy label cells, thin #D4CEBD borders, Arial. */
+var W_TD = 'border:1pt solid #D4CEBD;padding:4pt 6pt;vertical-align:top;';
+var W_NAVY = W_TD + 'background:#1A2744;color:#C8A84B;font-weight:bold;';
+var W_LBL = 'width:55%;' + W_TD + 'background:#F7F4EE;font-weight:bold;color:#1A2744;';
 
+function wVal(value){ return esc(value == null ? '' : value).replace(/\n/g,'<br>'); }
 function wordRow(label, value){
-  return '<tr><td style="width:55%;border:1pt solid #999;padding:3pt 5pt;">' + esc(label) +
-    '</td><td style="border:1pt solid #999;padding:3pt 5pt;">' + esc(value).replace(/\n/g,'<br>') + '</td></tr>';
+  return '<tr><td style="' + W_LBL + '">' + esc(label) + '</td><td style="' + W_TD + '">' + wVal(value) + '</td></tr>';
+}
+function wordBanner(text){
+  return '<tr><td colspan="2" style="' + W_NAVY + '">' + esc(text) + '</td></tr>';
 }
 function wordSubhdr(label){
-  return '<tr><td colspan="2" style="border:1pt solid #999;padding:3pt 5pt;background:#EDF0EB;font-weight:bold;">' + esc(label) + '</td></tr>';
+  return '<tr><td colspan="2" style="' + W_TD + 'background:#EDF0EB;font-weight:bold;color:#1A2744;">' + esc(label) + '</td></tr>';
+}
+
+/* SECTION DETAILS block (plus ALTERATIONS LOG when the gate is Yes),
+   mirroring the guide's per-section header tables. */
+function wordSectionDetails(cfg, inst){
+  var t = cfg.title.toUpperCase();
+  var h = '<table>' + wordBanner('SECTION DETAILS, ' + t);
+  h += wordRow('Location / Building Name:', inst.meta.loc);
+  if (cfg.roomName) h += wordRow('Room Name:', inst.meta.room);
+  if (cfg.designation) h += wordRow('Designation:', inst.meta.desig);
+  h += wordRow('Year Built:', inst.meta.yb);
+  h += wordRow('Have any alterations or ADA modifications been made since original construction? If Yes, complete the Alterations Log below.', inst.meta.altgate);
+  h += '</table>';
+  if (inst.meta.altgate === 'Yes'){
+    h += '<table style="margin-top:6pt;">' + wordBanner('ALTERATIONS LOG, ' + t);
+    h += '<tr><td style="width:55%;' + W_NAVY + '">ELEMENT ALTERED</td><td style="' + W_NAVY + '">DATE ALTERED</td></tr>';
+    h += '<tr><td style="' + W_TD + '">' + wVal(inst.meta.modid) + '</td><td style="' + W_TD + '">' + wVal(inst.meta.mod) + '</td></tr>';
+    h += '</table>';
+  }
+  return h;
 }
 
 function buildWordHtml(){
@@ -1102,8 +1166,9 @@ function buildWordHtml(){
   h.push('<style>');
   h.push('@page WordSection1 {size:8.5in 11.0in; margin:1.0in 0.75in 1.0in 0.75in; mso-header-margin:0.5in; mso-footer-margin:0.5in;}');
   h.push('div.WordSection1 {page:WordSection1;}');
-  h.push('body {font-family:Arial, sans-serif; font-size:10pt; color:#1a1a1a;}');
-  h.push('h1 {font-size:16pt; color:#1A2744;} h2 {font-size:13pt; color:#1A2744; margin-top:14pt;} h3 {font-size:11pt; color:#243460;}');
+  h.push('body {font-family:Arial, sans-serif; font-size:12pt; color:#1a1a1a;}');
+  h.push('table, td {font-family:Arial, sans-serif; font-size:12pt;}');
+  h.push('h1 {font-size:16pt; color:#1A2744;} h2 {font-size:14pt; color:#1A2744; margin-top:14pt;} h3 {font-size:12pt; color:#243460;}');
   h.push('table {border-collapse:collapse; width:100%;}');
   h.push('</style></head><body><div class="WordSection1">');
   h.push('<h1>Civil Rights Review - Building Accessibility</h1>');
@@ -1120,17 +1185,11 @@ function buildWordHtml(){
         h.push('<h3>' + esc(cfg.unit || 'Location') + ' ' + (idx + 1) +
           (instanceTitle(cfg, idx) !== (cfg.unit || 'Location') ? ': ' + esc(instanceTitle(cfg, idx)) : '') + '</h3>');
       }
-      h.push('<table>');
-      META_LABELS.forEach(function(pair){
-        var mk = pair[0];
-        if (mk === 'room' && !cfg.roomName) return;
-        if (mk === 'desig' && !cfg.designation) return;
-        if ((mk === 'modid' || mk === 'mod') && inst.meta.altgate !== 'Yes') return;
-        h.push(wordRow(pair[1], inst.meta[mk] || ''));
-      });
+      h.push(wordSectionDetails(cfg, inst));
+      h.push('<table style="margin-top:6pt;">');
       cfg.fields.forEach(function(f, fi){
         if (f[0] === 'hdr'){ h.push(wordSubhdr(f[1])); return; }
-        if (f[0] === 'note'){ h.push('<tr><td colspan="2" style="border:1pt solid #999;padding:3pt 5pt;font-style:italic;color:#6B6659;">' + esc(f[1]) + '</td></tr>'); return; }
+        if (f[0] === 'note'){ h.push('<tr><td colspan="2" style="' + W_TD + 'font-style:italic;color:#6B6659;">' + esc(f[1]) + '</td></tr>'); return; }
         h.push(wordRow(f[1], inst.v[fi] != null ? inst.v[fi] : ''));
       });
       h.push('</table>');
