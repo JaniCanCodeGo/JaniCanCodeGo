@@ -126,13 +126,13 @@ footer.privacy-footer .imp{font-weight:700;color:var(--red);}
   <div class="seal">CDE</div>
   <div class="header-text">
     <h1>Civil Rights Review - Building Accessibility</h1>
-    <p>Civil Rights Review &middot; CRR 20 / CRR 21 &middot; Building Accessibility &middot; Office of Equal Opportunity</p>
+    <p>Civil Rights Review &middot; CRR 20 &middot; Building Accessibility &middot; Office of Equal Opportunity</p>
   </div>
   <div class="header-actions">
     <span class="savemsg" id="saveMsg"></span>
     <button class="btn btn-outline btn-sm" style="border-color:var(--gold);color:var(--gold-light);" onclick="window.print()">Print / PDF</button>
     <button class="btn btn-gold btn-sm" id="btnWord" onclick="downloadWord()">Download Word (.doc)</button>
-    <button class="btn btn-danger btn-sm" onclick="clearAll()">Clear</button>
+    <button class="btn btn-danger btn-sm" style="border-color:#E8A9A9;color:#E8A9A9;" onclick="clearAll()">Clear</button>
   </div>
 </header>
 
@@ -147,30 +147,34 @@ footer.privacy-footer .imp{font-weight:700;color:var(--red);}
       <div class="card-body">
         <p class="section-note">This form is completed by the school site. It collects facility data only. Record what you observe and measure; do not leave measurements blank if they can be taken. If a value cannot be measured, note why in the Additional Information field for that area. Never estimate a measurement.</p>
         <div class="grid-2">
-          <div class="fg"><label>School Name</label><input type="text" data-h="schoolName" placeholder="e.g. Pacific Career and Technology High School"></div>
-          <div class="fg"><label>District Name</label><input type="text" data-h="districtName" placeholder="e.g. Twin Rivers Unified School District"></div>
-          <div class="fg"><label>CDS Code (14 digits)</label><input type="text" data-h="cdsCode" placeholder="e.g. 34674470000000"></div>
+          <div class="fg"><label for="f-schoolName">School Name</label><input id="f-schoolName" type="text" data-h="schoolName" placeholder="e.g. Pacific Career and Technology High School"></div>
+          <div class="fg"><label for="f-districtName">District Name</label><input id="f-districtName" type="text" data-h="districtName" placeholder="e.g. Twin Rivers Unified School District"></div>
+          <div class="fg"><label for="f-cdsCode">CDS Code (14 digits)</label><input id="f-cdsCode" type="text" data-h="cdsCode" placeholder="e.g. 34674470000000"></div>
           <div class="fg">
-            <label>Review Cycle</label>
-            <select data-h="reviewCycle">
-              <option value="CRR 20">CRR 20 (2025-26)</option>
-              <option value="CRR 21">CRR 21 (2024-25)</option>
+            <label for="f-reviewCycle">Review Cycle (CRR 20)</label>
+            <select id="f-reviewCycle" data-h="reviewCycle">
+              <option value="">Select...</option>
+              <option value="2026-2027">2026-2027</option>
+              <option value="2027-2028">2027-2028</option>
+              <option value="2028-2029">2028-2029</option>
+              <option value="2029-2030">2029-2030</option>
+              <option value="2030-2031">2030-2031</option>
             </select>
           </div>
-          <div class="fg"><label>Review Date / Site Visit Date</label><input type="text" data-h="reviewDate" placeholder="e.g. December 10, 2025"></div>
-          <div class="fg"><label>Preparer Name</label><input type="text" data-h="preparerName" placeholder="Name of site staff completing this form"></div>
-          <div class="fg"><label>Preparer Title</label><input type="text" data-h="preparerTitle" placeholder="e.g. Director of Facilities"></div>
-          <div class="fg"><label>Preparer Email / Phone</label><input type="text" data-h="preparerContact" placeholder="Optional"></div>
+          <div class="fg"><label for="f-reviewDate">Review Date / Site Visit Date</label><input id="f-reviewDate" type="text" data-h="reviewDate" placeholder="e.g. December 10, 2025"></div>
+          <div class="fg"><label for="f-preparerName">Preparer Name</label><input id="f-preparerName" type="text" data-h="preparerName" placeholder="Name of site staff completing this form"></div>
+          <div class="fg"><label for="f-preparerTitle">Preparer Title</label><input id="f-preparerTitle" type="text" data-h="preparerTitle" placeholder="e.g. Director of Facilities"></div>
+          <div class="fg"><label for="f-preparerContact">Preparer Email / Phone</label><input id="f-preparerContact" type="text" data-h="preparerContact" placeholder="Optional"></div>
         </div>
         <div class="sig-tools no-print" id="sigTools">
           <div class="row">
             <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('sigFile').click()">Add signature image</button>
             <input type="file" id="sigFile" accept="image/*" style="display:none">
             <button type="button" class="btn btn-outline btn-sm" id="sigDrawBtn">Draw signature</button>
-            <a href="#" id="sigRemove" style="display:none;">Remove signature</a>
+            <a href="#" id="sigRemove" style="display:none;" aria-label="Remove signature image">Remove signature</a>
           </div>
           <div id="sigPadWrap" style="display:none;">
-            <canvas id="sigPad" width="400" height="100"></canvas>
+            <canvas id="sigPad" width="400" height="100" role="img" aria-label="Signature drawing area. Draw your signature with a mouse or finger, then choose Accept."></canvas>
             <div class="row">
               <button type="button" class="btn btn-outline btn-sm" id="sigPadClear">Clear</button>
               <button type="button" class="btn btn-primary btn-sm" id="sigPadAccept">Accept</button>
@@ -183,7 +187,7 @@ footer.privacy-footer .imp{font-weight:700;color:var(--red);}
           <div>
             <div class="sig-img-slot" id="sigPreview"></div>
             <div class="sig-line">Preparer Signature</div>
-            <div class="fg" style="margin-top:10px;"><label>Signature Date</label><input type="text" data-h="sigDate" placeholder="e.g. December 10, 2025"></div>
+            <div class="fg" style="margin-top:10px;"><label for="f-sigDate">Signature Date</label><input id="f-sigDate" type="text" data-h="sigDate" placeholder="e.g. December 10, 2025"></div>
           </div>
           <div><div class="sig-line">Site Administrator Signature</div><div class="sig-line">Date</div></div>
         </div>
@@ -927,7 +931,7 @@ CONFIG.forEach(function(c){
 var SS_KEY = 'crr_ba_form_v3';
 var S = blankState();
 function blankState(){
-  var s = {header:{reviewCycle:'CRR 20'}, sec:{}};
+  var s = {header:{reviewCycle:''}, sec:{}};
   CONFIG.forEach(function(c){ s.sec[c.key] = [newInstance()]; });
   return s;
 }
@@ -953,24 +957,24 @@ function flashSave(msg){
 function identBlock(cfg, idx){
   var inst = S.sec[cfg.key][idx];
   var h = '<div class="ident-grid">';
-  h += '<div class="fg wide"><label>Location / Name</label><input type="text" data-meta="loc" value="' + esc(inst.meta.loc) + '" placeholder="e.g. Building B, north lot, staff lot behind gym"></div>';
+  h += '<div class="fg wide"><label>Location / Name</label><input type="text" data-meta="loc" aria-label="Location / Name" value="' + esc(inst.meta.loc) + '" placeholder="e.g. Building B, north lot, staff lot behind gym"></div>';
   if (cfg.roomName){
-    h += '<div class="fg wide"><label>Room Name</label><input type="text" data-meta="room" value="' + esc(inst.meta.room) + '" placeholder="e.g. Nurse\'s Office, Wellness Center, Career Center, Counseling Office"></div>';
+    h += '<div class="fg wide"><label>Room Name</label><input type="text" data-meta="room" aria-label="Room Name" value="' + esc(inst.meta.room) + '" placeholder="e.g. Nurse\'s Office, Wellness Center, Career Center, Counseling Office"></div>';
   }
   if (cfg.designation){
-    h += '<div class="fg"><label>Designation</label><select data-meta="desig">' +
+    h += '<div class="fg"><label>Designation</label><select data-meta="desig" aria-label="Designation">' +
       ['','Male','Female','Non-Gender Specific'].map(function(o){
         return '<option value="' + o + '"' + (inst.meta.desig === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
       }).join('') + '</select><div class="hint">California requires Non-Gender Specific restrooms</div></div>';
   }
-  h += '<div class="fg"><label>Year Built</label><input type="text" data-meta="yb" value="' + esc(inst.meta.yb) + '" placeholder="e.g. 1985 or 06/15/1985"><div class="hint">Year, or full date if known</div></div>';
-  h += '<div class="fg wide"><label>Have any alterations or ADA modifications been made since original construction?</label><select data-meta="altgate">' +
+  h += '<div class="fg"><label>Year Built</label><input type="text" data-meta="yb" aria-label="Year Built" value="' + esc(inst.meta.yb) + '" placeholder="e.g. 1985 or 06/15/1985"><div class="hint">Year, or full date if known</div></div>';
+  h += '<div class="fg wide"><label>Have any alterations or ADA modifications been made since original construction?</label><select data-meta="altgate" aria-label="Have any alterations or ADA modifications been made since original construction?">' +
     ['','Yes','No'].map(function(o){
       return '<option value="' + o + '"' + (inst.meta.altgate === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
     }).join('') + '<\/select><div class="hint">If Yes, complete the Alterations Log below</div></div>';
   if (inst.meta.altgate === 'Yes'){
-    h += '<div class="fg wide"><label>Alterations Log: Element(s) Altered</label><textarea data-meta="modid" placeholder=\'Which elements were altered, e.g. "grab bars and lavatory only"\'>' + esc(inst.meta.modid) + '</textarea></div>';
-    h += '<div class="fg wide"><label>Alterations Log: Date(s) Altered</label><textarea data-meta="mod" placeholder=\'Date(s) altered, matching the elements above, e.g. "March 2018; 2021"\'>' + esc(inst.meta.mod) + '</textarea></div>';
+    h += '<div class="fg wide"><label>Alterations Log: Element(s) Altered</label><textarea data-meta="modid" aria-label="Alterations Log: Element(s) Altered" placeholder=\'Which elements were altered, e.g. "grab bars and lavatory only"\'>' + esc(inst.meta.modid) + '</textarea></div>';
+    h += '<div class="fg wide"><label>Alterations Log: Date(s) Altered</label><textarea data-meta="mod" aria-label="Alterations Log: Date(s) Altered" placeholder=\'Date(s) altered, matching the elements above, e.g. "March 2018; 2021"\'>' + esc(inst.meta.mod) + '</textarea></div>';
   }
   h += '</div>';
   return h;
@@ -983,16 +987,17 @@ function fieldRows(cfg, idx){
     if (kind === 'hdr') return '<tr class="subhdr"><td colspan="2">' + esc(label) + '</td></tr>';
     if (kind === 'note') return '<tr class="fnote"><td colspan="2">' + esc(label) + '</td></tr>';
     var val = inst.v[fi] != null ? inst.v[fi] : '';
+    var aria = ' aria-label="' + esc(label) + '"';
     var ctl;
     if (kind === 'yn' || kind === 'yna'){
       var opts = ['','Yes','No'].concat(kind === 'yna' ? ['N/A'] : []);
-      ctl = '<select data-fi="' + fi + '">' + opts.map(function(o){
+      ctl = '<select data-fi="' + fi + '"' + aria + '>' + opts.map(function(o){
         return '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
       }).join('') + '</select>';
     } else if (kind === 'ta'){
-      ctl = '<textarea data-fi="' + fi + '">' + esc(val) + '</textarea>';
+      ctl = '<textarea data-fi="' + fi + '"' + aria + '>' + esc(val) + '</textarea>';
     } else {
-      ctl = '<input type="text" data-fi="' + fi + '" value="' + esc(val) + '">';
+      ctl = '<input type="text" data-fi="' + fi + '"' + aria + ' value="' + esc(val) + '">';
     }
     return '<tr><td class="lbl">' + esc(label) + (hint ? '<span class="fh">' + esc(hint) + '</span>' : '') + '</td><td>' + ctl + '</td></tr>';
   });
@@ -1116,7 +1121,7 @@ var PRIVACY_TEXT = 'Privacy Notice: This form runs entirely in your web browser 
 
 var HEADER_LABELS = [
   ['schoolName','School Name'], ['districtName','District Name'],
-  ['cdsCode','CDS Code'], ['reviewCycle','Review Cycle'],
+  ['cdsCode','CDS Code'], ['reviewCycle','Review Cycle (CRR 20)'],
   ['reviewDate','Review Date / Site Visit Date'], ['preparerName','Preparer Name'],
   ['preparerTitle','Preparer Title'], ['preparerContact','Preparer Email / Phone']
 ];
