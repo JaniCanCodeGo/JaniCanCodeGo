@@ -104,6 +104,72 @@
       </fieldset>
 
       <fieldset>
+        <legend>Funding opportunity (makes the application submittable)</legend>
+        <label for="opp_query">Search open grant opportunities (Grants.gov + California Grants Portal)</label>
+        <div>
+          <input id="opp_query" type="text" placeholder="e.g. after-school STEM youth" style="max-width:24rem">
+          <button type="button" class="secondary" id="opp_btn">Search opportunities</button>
+        </div>
+        <div id="opp_results" role="region" aria-live="polite" aria-label="Opportunity search results"></div>
+        <label for="funder_name">Funder / program name you are applying to</label>
+        <input id="funder_name" name="funder_name" type="text">
+        <label for="rfp_text">Paste the RFP / NOFO text (or just its application questions)</label>
+        <textarea id="rfp_text" name="rfp_text" rows="8" aria-describedby="rfp_hint"></textarea>
+        <p class="hint" id="rfp_hint">The agent extracts the funder's questions, page limits, deadlines, and scoring rubric, then writes an answer to each question — this is what makes the output an actual application instead of a generic narrative.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Local need data (reviewers weight this most)</legend>
+        <label for="county">County</label>
+        <input id="county" name="county" type="text" placeholder="e.g. Sacramento County" style="max-width:20rem">
+        <label for="local_need">Local statistics, one per line</label>
+        <textarea id="local_need" name="local_need" rows="4" placeholder="e.g. 68% of students at partner schools qualify for free/reduced lunch (CDE DataQuest, 2025)"></textarea>
+        <p class="hint">These lead your needs statement, above national research. The results page links county-level data sources (Census QuickFacts, CDE DataQuest, kidsdata.org) if you need numbers.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Project budget (line items; auto-allocated from the request if blank)</legend>
+        <div class="grid-2">
+          <div><label for="b_personnel">Personnel ($)</label>
+            <input id="b_personnel" type="number" min="0" step="100"></div>
+          <div><label for="b_travel">Travel ($)</label>
+            <input id="b_travel" type="number" min="0" step="50"></div>
+          <div><label for="b_equipment">Equipment ($)</label>
+            <input id="b_equipment" type="number" min="0" step="50"></div>
+          <div><label for="b_supplies">Supplies ($)</label>
+            <input id="b_supplies" type="number" min="0" step="50"></div>
+          <div><label for="b_contractual">Contractual ($)</label>
+            <input id="b_contractual" type="number" min="0" step="50"></div>
+          <div><label for="b_other">Other ($)</label>
+            <input id="b_other" type="number" min="0" step="50"></div>
+          <div><label for="fringe_pct">Fringe rate (%)</label>
+            <input id="fringe_pct" type="number" min="0" max="60" step="0.5" placeholder="22"></div>
+          <div><label for="indirect_pct">Indirect rate (%)</label>
+            <input id="indirect_pct" type="number" min="0" max="60" step="0.5" placeholder="10 (de minimis)"></div>
+          <div><label for="match_amount">Match / in-kind ($)</label>
+            <input id="match_amount" type="number" min="0" step="100"></div>
+        </div>
+        <p class="hint">Produces a funder-format line-item budget with a written justification and a funding-gap statement answering “why do you need this grant?”</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Documents and registrations you already have</legend>
+        <p class="hint">Everything left unchecked appears on your readiness checklist with instructions and links.</p>
+        <div class="grid-2" id="have_items">
+          <p><input type="checkbox" id="h1" value="sam_gov"><label for="h1" style="display:inline;font-weight:400"> SAM.gov registration + UEI (required for federal grants)</label></p>
+          <p><input type="checkbox" id="h2" value="irs_determination"><label for="h2" style="display:inline;font-weight:400"> IRS 501(c)(3) determination letter</label></p>
+          <p><input type="checkbox" id="h3" value="ca_registry"><label for="h3" style="display:inline;font-weight:400"> CA Registry of Charities current (RRF-1)</label></p>
+          <p><input type="checkbox" id="h4" value="board_list"><label for="h4" style="display:inline;font-weight:400"> Board list with affiliations</label></p>
+          <p><input type="checkbox" id="h5" value="bylaws"><label for="h5" style="display:inline;font-weight:400"> Articles of incorporation &amp; bylaws</label></p>
+          <p><input type="checkbox" id="h6" value="form_990"><label for="h6" style="display:inline;font-weight:400"> Most recent Form 990</label></p>
+          <p><input type="checkbox" id="h7" value="financials"><label for="h7" style="display:inline;font-weight:400"> Audited financials / board-approved budget</label></p>
+          <p><input type="checkbox" id="h8" value="letters_support"><label for="h8" style="display:inline;font-weight:400"> Letters of support / MOUs</label></p>
+          <p><input type="checkbox" id="h9" value="logic_model"><label for="h9" style="display:inline;font-weight:400"> Logic model</label></p>
+          <p><input type="checkbox" id="h10" value="staff_bios"><label for="h10" style="display:inline;font-weight:400"> Key staff bios</label></p>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>Forecast assumptions (defaults used if blank)</legend>
         <p class="hint">Every number in the forecast traces to these assumptions — they are printed with the plan.</p>
         <div class="grid-2">

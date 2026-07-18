@@ -19,9 +19,16 @@
     website_review: "Website review & 508 spot-check",
     ein: "EIN lookup / application prep",
     business_plan: "Research, forecast, business plan & prospectus",
+    budget: "Line-item budget & justification",
+    readiness: "Registrations & attachments readiness",
     trademark: "Trademark search & TEAS packet",
     grant: "Grant narrative",
+    rfp: "RFP question-by-question response",
+    tailor: "AI prose tailoring",
   };
+
+  const BUDGET_ITEM_IDS = ["b_personnel", "b_travel", "b_equipment",
+    "b_supplies", "b_contractual", "b_other"];
 
   const FORECAST_FIELDS = [
     "grant_target", "base_revenue", "base_expenses", "revenue_growth_pct",
@@ -64,6 +71,24 @@
       trademark_name: val("trademark_name"),
       mark_in_use: document.getElementById("mark_in_use").checked,
       forecast: forecast,
+      county: val("county"),
+      local_need: val("local_need"),
+      funder_name: val("funder_name"),
+      rfp_text: val("rfp_text"),
+      budget_items: (function () {
+        const items = {};
+        for (const id of BUDGET_ITEM_IDS) {
+          const v = document.getElementById(id).value;
+          if (v !== "") items[id.slice(2)] = Number(v);
+        }
+        return items;
+      })(),
+      fringe_pct: numOrNull("fringe_pct"),
+      indirect_pct: numOrNull("indirect_pct"),
+      match_amount: numOrNull("match_amount"),
+      have_items: Array.from(
+        document.querySelectorAll("#have_items input:checked"))
+        .map(cb => cb.value),
     };
 
     runBtn.disabled = true;
@@ -91,6 +116,68 @@
   });
 
   function val(id) { return document.getElementById(id).value.trim(); }
+
+  function numOrNull(id) {
+    const v = document.getElementById(id).value;
+    return v === "" ? null : Number(v);
+  }
+
+  // Grant opportunity search widget
+  const oppBtn = document.getElementById("opp_btn");
+  oppBtn.addEventListener("click", async function () {
+    const q = val("opp_query");
+    const box = document.getElementById("opp_results");
+    if (!q) { box.textContent = "Enter a search term first."; return; }
+    oppBtn.disabled = true;
+    box.textContent = "Searching Grants.gov and the California Grants Portal…";
+    try {
+      const resp = await fetch("/api/opportunities/search?q=" +
+        encodeURIComponent(q));
+      const data = await resp.json();
+      box.innerHTML = "";
+      renderOppList(box, "Federal (Grants.gov)", data.federal);
+      renderOppList(box, "California Grants Portal", data.california);
+      const links = document.createElement("p");
+      links.append("Search manually: ");
+      for (const l of data.manual_links || []) {
+        const a = document.createElement("a");
+        a.href = l.url; a.textContent = l.label;
+        a.rel = "noopener"; a.target = "_blank";
+        links.append(a, "  ");
+      }
+      box.appendChild(links);
+    } catch (err) {
+      box.textContent = "Search failed: " + err.message;
+    } finally {
+      oppBtn.disabled = false;
+    }
+  });
+
+  function renderOppList(box, title, result) {
+    const h = document.createElement("h4");
+    h.textContent = title;
+    box.appendChild(h);
+    if (!result || !result.ok) {
+      addPara(box, "Unavailable right now" +
+        (result && result.error ? " (" + result.error + ")" : "") +
+        " — use the manual links below.");
+      return;
+    }
+    if (!result.results.length) { addPara(box, "No open matches found."); return; }
+    const ul = document.createElement("ul");
+    for (const r of result.results) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = r.url; a.textContent = r.title || r.number || "Untitled";
+      a.rel = "noopener"; a.target = "_blank";
+      li.appendChild(a);
+      const bits = [r.agency, r.close_date ? "closes " + r.close_date : ""]
+        .filter(Boolean).join(" — ");
+      if (bits) li.append(" (" + bits + ")");
+      ul.appendChild(li);
+    }
+    box.appendChild(ul);
+  }
 
   function announce(msg) { liveStatus.textContent = msg; }
 
@@ -173,6 +260,45 @@
         ein.matches.map(m => [m.ein, m.name, m.city, m.state])));
     }
 
+    // Readiness
+    let readyCard = null;
+    if (result.readiness) {
+      readyCard = card("Application readiness");
+      addPara(readyCard, result.readiness.ready + " of " +
+        result.readiness.total + " registrations and attachments in place. " +
+        "The full checklist with links is in your downloads.");
+      const gaps = result.readiness.items
+        .filter(i => i.status === "action_needed").map(i => i.label);
+      if (gaps.length) {
+        addPara(readyCard, "Blocking items: " + gaps.join("; "));
+      }
+    }
+
+    // Budget
+    let budgetCard = null;
+    if (result.budget) {
+      budgetCard = card("Project budget");
+      addPara(budgetCard, "Line items total $" +
+        result.budget.total.toLocaleString() +
+        (result.budget.allocated_by_default_pcts
+          ? " (auto-allocated from your request using standard percentages — replace with actual figures before submission)."
+          : " (from your figures)."));
+    }
+
+    // RFP
+    let rfpCard = null;
+    if (result.rfp) {
+      rfpCard = card("RFP response");
+      addPara(rfpCard, result.rfp.questions.length +
+        " funder question(s) extracted and answered." +
+        (result.rfp.deadlines.length
+          ? " Deadline(s) found: " + result.rfp.deadlines.join("; ") + "."
+          : "") +
+        (result.rfp.limits.length
+          ? " Limits: " + result.rfp.limits.map(l => l.limit + " " + l.unit).join(", ") + "."
+          : ""));
+    }
+
     // Trademark
     let tmCard = null;
     if (result.trademark) {
@@ -223,7 +349,8 @@
           [c.id, c.wcag, c.status, c.detail])));
     }
 
-    for (const el of [dl, einCard, tmCard, siteCard]) {
+    for (const el of [dl, readyCard, budgetCard, rfpCard, einCard, tmCard,
+                      siteCard]) {
       if (el) resultsDiv.appendChild(el);
     }
     const h = resultsSection.querySelector("h2");

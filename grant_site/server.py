@@ -18,7 +18,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from agent import ein, pipeline, trademark
+from agent import ein, opportunities, pipeline, trademark
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
@@ -64,6 +64,16 @@ class RunRequest(BaseModel):
     trademark_name: str = ""
     mark_in_use: bool = False
     forecast: ForecastAssumptions = ForecastAssumptions()
+    # Competitive-application inputs
+    county: str = ""
+    local_need: str = ""
+    funder_name: str = ""
+    rfp_text: str = Field(default="", max_length=200_000)
+    budget_items: dict[str, float] = {}
+    fringe_pct: float | None = None
+    indirect_pct: float | None = None
+    match_amount: float | None = None
+    have_items: list[str] = []
 
 
 @app.post("/api/runs")
@@ -135,6 +145,11 @@ def ein_lookup(name: str, state: str = ""):
 @app.get("/api/trademark/search")
 def trademark_search(q: str, goods: str = ""):
     return trademark.search_trademark(q, goods)
+
+
+@app.get("/api/opportunities/search")
+def opportunities_search(q: str, limit: int = 10):
+    return opportunities.search_opportunities(q, min(limit, 25))
 
 
 @app.get("/api/health")

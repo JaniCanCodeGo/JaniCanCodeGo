@@ -5,7 +5,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agent import business_plan, documents, ein, trademark, website_review
+from agent import (budget, business_plan, documents, ein, readiness, rfp,
+                   trademark, website_review)
 
 
 def test_forecast_is_deterministic_and_traceable():
@@ -101,6 +102,89 @@ def test_teas_document_is_filled_and_has_filing_guide():
     assert "teas.uspto.gov" in text
     assert "Signature screen" in text       # filing walkthrough present
     assert "Clearance summary" in doc["sections"][0][0]
+
+
+SAMPLE_RFP = """
+Community Youth Grant Program — Notice of Funding Opportunity
+Applications are due September 15, 2026. Narratives are limited to
+no more than 10 pages.
+
+Application Questions:
+1. Describe the community need your project addresses, using local data.
+2. What are your project's goals, objectives, and key activities?
+3. How will you evaluate outcomes and measure success?
+4. Provide a budget narrative explaining how funds will be spent.
+5. How will the program be sustained beyond the grant period?
+
+Scoring:
+Need Statement (30 points)
+Project Design (30 points)
+Evaluation (20 points)
+Budget (20 points)
+"""
+
+
+def test_rfp_extraction():
+    parsed = rfp.extract_rfp(SAMPLE_RFP)
+    assert len(parsed["questions"]) >= 5
+    topics = {q["topic"] for q in parsed["questions"]}
+    assert {"need", "evaluation", "budget", "sustainability"} <= topics
+    assert parsed["limits"][0] == {"limit": 10, "unit": "pages"}
+    assert any("September 15, 2026" in d for d in parsed["deadlines"])
+    assert {"criterion": "Need Statement", "points": 30} in [
+        {"criterion": s["criterion"], "points": s["points"]}
+        for s in parsed["scoring"]]
+
+
+def test_rfp_response_answers_every_question():
+    parsed = rfp.extract_rfp(SAMPLE_RFP)
+    ctx = {"org": {"name": "Test Org"}, "need_text": "NEED",
+           "project_text": "PROJECT", "budget_text": "BUDGET",
+           "evaluation_text": "EVAL", "capacity_text": "CAP",
+           "sustainability_text": "SUSTAIN"}
+    doc = rfp.build_rfp_response(parsed, ctx, "Test Funder")
+    numbered = [s for s in doc["sections"] if s[0][0].isdigit()]
+    assert len(numbered) == len(parsed["questions"])
+    bodies = " ".join(b for _, b in numbered)
+    assert "NEED" in bodies and "EVAL" in bodies and "BUDGET" in bodies
+
+
+def test_budget_auto_allocation_sums_to_request():
+    b = budget.build_budget(50000)
+    assert abs(b["total"] - 50000) < 1
+    assert b["allocated_by_default_pcts"]
+    assert any("Indirect" in l["category"] for l in b["lines"])
+
+
+def test_budget_user_items_and_gap_statement():
+    b = budget.build_budget(10000, items={"personnel": 6000, "supplies": 2000},
+                            fringe_pct=20, indirect_pct=10, match_amount=2500)
+    fringe = 6000 * 0.20
+    assert b["total"] == round((8000 + fringe) * 1.10, 2)
+    fc = business_plan.build_forecast({"base_revenue": 10000,
+                                       "base_expenses": 60000,
+                                       "grant_target": 10000})
+    text = budget.request_justification(b, fc)
+    assert "deficit" in text
+    assert "$2,500" in text
+
+
+def test_readiness_flags_missing_ein_and_counts_have_items():
+    r = readiness.assess_readiness({"found": False, "matches": []},
+                                   have_items=["sam_gov", "board_list"])
+    by_key = {i["key"]: i for i in r["items"]}
+    assert by_key["ein"]["status"] == "action_needed"
+    assert by_key["sam_gov"]["status"] == "ready"
+    assert by_key["board_list"]["status"] == "ready"
+    assert by_key["form_990"]["status"] == "needed"
+
+
+def test_local_need_leads_painpoints():
+    res = business_plan.research_painpoints(
+        ["education"], local_need="72% of local students qualify for "
+        "free/reduced lunch (DataQuest 2025)", county="Sacramento County")
+    assert "72%" in res["painpoints"][0]["pain"]
+    assert res["local_data_sources"]
 
 
 def test_document_writer(tmp_path):

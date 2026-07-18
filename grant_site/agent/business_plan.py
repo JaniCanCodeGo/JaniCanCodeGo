@@ -57,10 +57,25 @@ SECTOR_PAINPOINTS = {
 }
 
 
-def research_painpoints(focus_areas, mission_text=""):
-    """Assemble documented pain points for the plan's needs statement."""
+def research_painpoints(focus_areas, mission_text="", local_need="",
+                        county=""):
+    """Assemble documented pain points for the plan's needs statement.
+
+    local_need: applicant-provided local statistics (strongest evidence —
+    listed first). county: used to generate local data-source links so the
+    applicant can replace national figures with local ones.
+    """
     text = " ".join(focus_areas or []).lower() + " " + (mission_text or "").lower()
     hits, seen = [], set()
+    for line in (local_need or "").splitlines():
+        line = line.strip().lstrip("•-* ")
+        if len(line) > 15:
+            hits.append({"pain": line,
+                         "source": "Local data provided by applicant — "
+                                   "cite the underlying source in the final "
+                                   "submission",
+                         "sector": "local"})
+            seen.add(line)
     for sector, items in SECTOR_PAINPOINTS.items():
         if sector in text or not focus_areas:
             for item in items:
@@ -71,11 +86,23 @@ def research_painpoints(focus_areas, mission_text=""):
         hits = [dict(item, sector=sector)
                 for sector in ("community",)
                 for item in SECTOR_PAINPOINTS[sector]]
+    county_label = county.strip() if county else "your county"
     return {
-        "painpoints": hits[:8],
-        "method": ("Sector pain points drawn from named public research "
-                   "sources; verify current-year figures at each source "
-                   "before submission."),
+        "painpoints": hits[:10],
+        "method": ("Local applicant-provided data is listed first (funders "
+                   "weight local need most heavily), followed by sector "
+                   "pain points from named public research sources; verify "
+                   "current-year figures at each source before submission."),
+        "local_data_sources": [
+            {"label": f"US Census QuickFacts for {county_label}",
+             "url": "https://www.census.gov/quickfacts/"},
+            {"label": "CDE DataQuest (CA school/district data)",
+             "url": "https://dq.cde.ca.gov/dataquest/"},
+            {"label": f"kidsdata.org child well-being data for {county_label}",
+             "url": "https://www.kidsdata.org/"},
+            {"label": "CA EDD labor market data by county",
+             "url": "https://labormarketinfo.edd.ca.gov/"},
+        ],
     }
 
 
@@ -134,7 +161,10 @@ def build_business_plan(org, website, painpoints, forecast, trademark=None):
     name = org.get("name", "The Organization")
     mission = (org.get("mission") or website.get("mission_text") or
                website.get("description") or
-               f"{name} serves its community through its core programs.")
+               "[ACTION NEEDED: no mission statement was provided or found "
+               "on the website — add 2-3 sentences on who you serve, what "
+               "you do, and the change you create. Reviewers score this "
+               "section heavily.]")
     programs = org.get("programs") or "Core programs as described on the website."
     merch = org.get("merchandise") or "Branded merchandise supporting the mission."
     y = forecast["years"]

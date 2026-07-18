@@ -11,8 +11,9 @@ and writes every deliverable to out_dir.
 
 import traceback
 
-from . import business_plan, documents, ein, grant_writer, trademark
-from . import website_review
+from . import budget as budget_mod
+from . import business_plan, documents, ein, grant_writer, narrative_ai
+from . import readiness, rfp, trademark, website_review
 
 
 def run_pipeline(payload, out_dir, progress=None):
@@ -66,10 +67,39 @@ def run_pipeline(payload, out_dir, progress=None):
     report("business_plan", "running")
     focus = [f.strip() for f in
              (payload.get("focus_areas") or "").split(",") if f.strip()]
-    pains = business_plan.research_painpoints(focus, site.get("mission_text"))
+    pains = business_plan.research_painpoints(
+        focus, site.get("mission_text"),
+        local_need=payload.get("local_need", ""),
+        county=payload.get("county", ""))
     forecast = business_plan.build_forecast(payload.get("forecast") or {})
     results["painpoints"] = pains
     results["forecast"] = forecast
+
+    # Line-item budget + justification
+    report("budget", "running")
+    budget = budget_mod.build_budget(
+        forecast["assumptions"]["grant_target"],
+        items=payload.get("budget_items") or None,
+        fringe_pct=payload.get("fringe_pct"),
+        indirect_pct=payload.get("indirect_pct"),
+        match_amount=payload.get("match_amount") or 0)
+    results["budget"] = budget
+    budget_doc = budget_mod.build_budget_document(org["name"], budget,
+                                                  forecast)
+    results["files"] += documents.write_document(
+        budget_doc, out_dir, f"{base}_Project_Budget_Justification")
+    report("budget", "done", f"Line-item budget totals ${budget['total']:,.0f}")
+
+    # Readiness checklist (registrations + attachments)
+    report("readiness", "running")
+    ready = readiness.assess_readiness(ein_result,
+                                       payload.get("have_items") or [])
+    results["readiness"] = ready
+    results["files"] += documents.write_document(
+        readiness.build_readiness_document(org["name"], ready),
+        out_dir, f"{base}_Readiness_Checklist")
+    report("readiness", "done",
+           f"{ready['ready']}/{ready['total']} readiness items in place")
 
     # 4. Trademark
     tm_result = None
@@ -106,14 +136,74 @@ def run_pipeline(payload, out_dir, progress=None):
     report("grant", "running")
     grant = grant_writer.build_grant_narrative(org, site, pains, forecast,
                                                ein_result)
+    report("grant", "done", "Grant narrative drafted")
+
+    # 6. RFP-specific response (if an RFP was pasted)
+    rfp_doc = None
+    rfp_text = (payload.get("rfp_text") or "").strip()
+    if rfp_text:
+        report("rfp", "running")
+        parsed = rfp.extract_rfp(rfp_text)
+        results["rfp"] = {k: parsed[k] for k in
+                          ("questions", "limits", "deadlines", "scoring")}
+        sections = {h: b for h, b in grant["sections"]}
+        plan_sections = {h: b for h, b in
+                         business_plan.build_business_plan(
+                             org, site, pains, forecast, tm_result)["sections"]}
+        ctx = {
+            "org": org,
+            "need_text": sections.get("Statement of Need", ""),
+            "project_text": sections.get("Project Description and Goals", ""),
+            "budget_text": budget_mod.request_justification(budget, forecast) +
+            "\n\nSee the attached line-item Project Budget & Justification.",
+            "evaluation_text": sections.get("Evaluation Plan", ""),
+            "capacity_text": sections.get("Organizational Capacity", ""),
+            "sustainability_text": sections.get("Sustainability", ""),
+        }
+        rfp_doc = rfp.build_rfp_response(parsed, ctx,
+                                         payload.get("funder_name", ""))
+        report("rfp", "done",
+               f"{len(parsed['questions'])} funder questions answered")
+
+    # 7. Optional Claude tailoring of the prose documents
+    context_notes = (
+        f"Organization: {org['name']}. Programs: {org['programs']}. "
+        f"Grant request: ${forecast['assumptions']['grant_target']:,.0f}. "
+        f"County: {payload.get('county', '')}. "
+        f"Local need data: {payload.get('local_need', '')[:2000]}")
+    ai_used = narrative_ai.available()
+    if ai_used:
+        report("tailor", "running", "Rewriting prose with Claude")
+
+    def maybe_tailor(doc):
+        if not doc:
+            return doc
+        if ai_used:
+            tailored = narrative_ai.tailor_document(doc, context_notes)
+            if tailored:
+                return tailored
+        return doc
+
+    grant = maybe_tailor(grant)
     results["files"] += documents.write_document(
         grant, out_dir, f"{base}_Grant_Narrative")
-    report("grant", "done", "Grant narrative written")
+    if rfp_doc:
+        rfp_doc = maybe_tailor(rfp_doc)
+        results["files"] += documents.write_document(
+            rfp_doc, out_dir, f"{base}_RFP_Response")
+    if ai_used:
+        report("tailor", "done", "Prose tailored by Claude")
+    else:
+        report("tailor", "done",
+               "Template prose used (install `anthropic` and set "
+               "ANTHROPIC_API_KEY for AI-tailored writing)")
+    results["ai_tailored"] = ai_used
 
     # Machine-readable reports
     results["files"] += documents.write_json(
         {k: results[k] for k in
-         ("website_review", "ein", "painpoints", "forecast")
+         ("website_review", "ein", "painpoints", "forecast", "budget",
+          "readiness", "rfp")
          if k in results} | ({"trademark": tm_result} if tm_result else {}),
         out_dir, f"{base}_Agent_Reports")
     return results
