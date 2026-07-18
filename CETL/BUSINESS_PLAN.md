@@ -156,6 +156,13 @@ and subscribers converting at 2% fills 40 seats annually — full capacity for a
 founder-taught program. The engaged ADHD-midlife audience demonstrably exists at that
 scale: single publications survey 1,500–2,600+ women in this exact demographic.[^3][^4]
 
+**Current starting point (founder input, July 2026): audience of zero.** That makes
+audience-building the critical path, not curriculum. The roadmap in §9 therefore front-
+loads a 3–6 month audience runway (podcast launch, guesting, email list) before the beta
+cohort, with an explicit gate: **do not launch the beta until the email list clears ~150
+subscribers**, which at typical warm-launch conversion fills 8–12 beta seats from people
+who already trust the voice.
+
 ### 4.3 Ideal customer profile
 
 - Woman, 40–55, perimenopausal or early menopause; ADHD diagnosed (often recently) or
@@ -255,16 +262,20 @@ benchmarks they rest on are cited.*
 
 ### 8.2 Three-year sketch (founder assumptions)
 
+Calibrated to the founder's actual constraints: ~10 hours/week, audience starting from
+zero, beta cohort targeted 3–6 months out (early 2027). Year 1 is therefore an
+audience-building year with two cohorts, not three.
+
 | | Year 1 | Year 2 | Year 3 |
 |---|---|---|---|
-| Cohorts | 3 (first is beta) | 4 | 5 |
-| Average seats | 10–14 | 16 | 18 |
+| Cohorts | 2 (first is beta, ~month 5) | 4 | 5 |
+| Average seats | 8–12 | 16 | 18 |
 | Average price | $299 beta, then $500 | $650 | $800 |
-| Cohort revenue | ~$17K | ~$42K | ~$72K |
-| Community members (avg, $24/mo) | 15 | 60 | 130 |
-| Community revenue | ~$4K | ~$17K | ~$37K |
+| Cohort revenue | ~$8–9K | ~$42K | ~$72K |
+| Community members (avg, $24/mo) | 8 | 50 | 120 |
+| Community revenue | ~$2K | ~$14K | ~$35K |
 | Podcast revenue | ~$0 | $2–5K | $5–15K |
-| **Total** | **~$21K** | **~$60–65K** | **~$115–125K** |
+| **Total** | **~$10–12K** | **~$58–61K** | **~$112–122K** |
 
 **Podcast monetization reality check:** host-read ads average $18–26 CPM,[^22] which is
 immaterial at early download counts; shows under ~5,000 downloads/episode should sell
@@ -284,19 +295,31 @@ constraint is founder time and energy — addressed in §10.
 
 ## 9. Operations & Roadmap
 
-**Phase 0 (now–month 2):** finish the four curriculum modules (all currently in
-development; the repo's content agent scaffolds lesson plans, exercises, and scripts);
-record the three scoped launch episodes; landing page + email capture; LLC, waiver, ToS.
+Calibrated to ~10 founder hours/week and an audience starting at zero, with the beta
+cohort targeted 3–6 months out.
 
-**Phase 1 (months 2–4):** enroll 8–12 beta students at $299; run the beta; instrument
+**Phase 0 — audience runway (months 1–4, ~10 hrs/wk):** launch the podcast with the
+three scoped episodes and hold a weekly cadence (~4 hrs/wk); finish the four curriculum
+modules using the repo's content agent (~4 hrs/wk); landing page + email capture; LLC,
+waiver, ToS. **Gate to Phase 1: email list ≥ ~150 and all four modules teachable.**
+
+**Phase 1 — beta cohort (months 4–6):** enroll 8–12 beta students at $299 from the list
+and warm network; run the beta (the two weekly live sessions temporarily displace most
+podcast production — pre-record episodes in Phase 0 to cover the gap); instrument
 attendance, completion, and artifacts shipped; collect testimonials.
 
-**Phase 2 (months 4–9):** revise curriculum from beta learnings; raise price to ~$500;
-run cohorts 2–3; open CETL Circle to alumni; start the guest-podcast circuit.
+**Phase 2 (months 6–12):** revise curriculum from beta learnings; raise price to ~$500;
+run cohort 2; open CETL Circle to alumni; start the guest-podcast circuit.
 
-**Phase 3 (months 9–18):** price toward $650–$950 as social proof accumulates;[^18][^19]
-evaluate Maven as an added distribution channel;[^18] pilot one corporate/ERG workshop;
-first flat-fee podcast sponsorships.[^23]
+**Phase 3 (months 12–24):** price toward $650–$950 as social proof accumulates;[^18][^19]
+evaluate Maven as an added distribution channel once testimonials exist;[^18] pilot one
+corporate/ERG workshop; first flat-fee podcast sponsorships.[^23]
+
+**Delivery stack (deliberately minimal for beta):** Zoom for live sessions, a simple
+email service for the list and nurture sequence, shared cloud folder for materials —
+roughly $30/month, no new tools to learn while teaching. Defer Maven (its ~10% share[^18]
+buys distribution a zero-audience launch can't yet use) and defer a dedicated community
+platform until CETL Circle has actual alumni; revisit both at cohort 3.
 
 **KPIs:** cohort completion (target ≥70%, above the 64.2% cohort benchmark[^16]);
 artifacts shipped per student (target: 4 of 4 modules); email list growth; waitlist→seat
