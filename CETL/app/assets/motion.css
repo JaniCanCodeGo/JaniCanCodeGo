@@ -1,0 +1,116 @@
+/* Moving graphics for Clear Enough To Lead — "Brains on Fire" palette.
+   All ambient motion is pure CSS and fully disabled under
+   prefers-reduced-motion. Entrance animations come from the vendored
+   animate.css (assets/vendor/animate.min.css); this file tunes them. */
+
+body { overflow-x: hidden; }
+
+/* --- Flame glow blobs drifting behind every hero --- */
+.hero { position: relative; }
+.hero::before,
+.hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(52px);
+  opacity: 0.32;
+  pointer-events: none;
+}
+.hero::before {
+  width: 24rem;
+  height: 24rem;
+  top: -7rem;
+  right: -9rem;
+  background: radial-gradient(circle at 30% 70%, var(--flame), var(--accent) 72%);
+  animation: flame-drift-a 16s ease-in-out infinite alternate;
+}
+.hero::after {
+  width: 17rem;
+  height: 17rem;
+  bottom: -6rem;
+  left: -7rem;
+  background: radial-gradient(circle at 70% 30%, var(--gold), var(--teal) 78%);
+  animation: flame-drift-b 21s ease-in-out infinite alternate;
+}
+@keyframes flame-drift-a {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-3.5rem, 2rem) scale(1.18); }
+}
+@keyframes flame-drift-b {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(2.5rem, -1.75rem) scale(1.12); }
+}
+
+/* --- Rising embers (decorative, aria-hidden markup) --- */
+.embers {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.embers span {
+  position: absolute;
+  bottom: -1rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--gold), var(--flame) 70%, transparent);
+  opacity: 0;
+  animation: ember-rise 9s linear infinite;
+}
+.embers span:nth-child(1) { left: 8%;  animation-delay: 0s;   animation-duration: 10s; }
+.embers span:nth-child(2) { left: 22%; animation-delay: 2.5s; width: 0.35rem; height: 0.35rem; }
+.embers span:nth-child(3) { left: 38%; animation-delay: 5s;   animation-duration: 12s; }
+.embers span:nth-child(4) { left: 55%; animation-delay: 1.2s; width: 0.4rem; height: 0.4rem; }
+.embers span:nth-child(5) { left: 68%; animation-delay: 6.4s; animation-duration: 11s; }
+.embers span:nth-child(6) { left: 79%; animation-delay: 3.8s; width: 0.3rem; height: 0.3rem; }
+.embers span:nth-child(7) { left: 90%; animation-delay: 7.6s; animation-duration: 13s; }
+@keyframes ember-rise {
+  0%   { transform: translateY(0) translateX(0);        opacity: 0; }
+  8%   { opacity: 0.55; }
+  60%  { opacity: 0.35; }
+  100% { transform: translateY(-16rem) translateX(1.2rem); opacity: 0; }
+}
+
+/* --- Entrance tuning for vendored animate.css classes --- */
+.animate__animated { --animate-duration: 0.7s; }
+.delay-1 { animation-delay: 0.12s; animation-fill-mode: both; }
+.delay-2 { animation-delay: 0.24s; animation-fill-mode: both; }
+.delay-3 { animation-delay: 0.36s; animation-fill-mode: both; }
+
+/* --- Game card motion --- */
+.game-card.flipped { animation: card-flip 0.3s ease; }
+@keyframes card-flip {
+  from { transform: rotateY(88deg); }
+  to   { transform: rotateY(0deg); }
+}
+.game-card.matched { animation: match-pop 0.45s ease; }
+@keyframes match-pop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.1); box-shadow: 0 0 18px var(--flame); }
+  100% { transform: scale(1); }
+}
+.win-banner:not([hidden]) { animation: banner-glow 1.6s ease; }
+@keyframes banner-glow {
+  0%   { box-shadow: 0 0 0 rgba(232, 133, 58, 0); }
+  35%  { box-shadow: 0 0 26px rgba(232, 133, 58, 0.55); }
+  100% { box-shadow: 0 0 0 rgba(232, 133, 58, 0); }
+}
+
+/* --- Accessibility: kill all ambient/entrance motion on request --- */
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .hero::after {
+    animation: none;
+  }
+  .embers { display: none; }
+  .game-card.flipped,
+  .game-card.matched,
+  .win-banner:not([hidden]),
+  .animate__animated {
+    animation: none !important;
+  }
+  .delay-1, .delay-2, .delay-3 { animation-delay: 0s; }
+}

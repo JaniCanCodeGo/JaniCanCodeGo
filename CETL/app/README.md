@@ -26,6 +26,20 @@ python3 -m http.server 8000
 
 Episode pages are hand-built from `../data/podcast_episodes.json` (the source of truth per `site_manifest.json`). When an episode's `status` changes to `published`, replace its "Audio coming soon" placeholder with a real `<audio>` element and add new episode pages following the existing ones.
 
+## Design & motion
+
+The color palette comes from the **"Brains on Fire" Canva brand set** (podcast cover art + founding invite flyer): cream, deep maroon, flame orange, amber gold, and deep teal. Light theme is cream with maroon accents; dark theme is maroon-black with gold accents.
+
+Moving graphics live in `assets/motion.css` and are all pure CSS: drifting flame-glow blobs behind every page hero, rising embers on the home and game heroes, card flip/match-pop animations in the game, and a win-banner glow. Entrance animations (fade-in on headings and cards) use a vendored copy of **animate.css v4.1.1**. Everything ambient is fully disabled under `prefers-reduced-motion`.
+
+### Vendored animation library — supply-chain audit
+
+`assets/vendor/animate.min.css` is animate.css v4.1.1 (MIT, license alongside), pinned by content:
+
+- SHA-256: `5fbaeb9f8e25d7e0143bae61d4b1802c16ce7390b96ceb2d498b0d96ff4c853f`
+- Audited before vendoring: pure declarative CSS — zero JavaScript, no `url()`, no `@import`, no `expression()`, no `javascript:`/`behavior:` patterns, no external references (the only URLs in the file are inside the license comment). CSS cannot execute code, so this file cannot carry a virus or prompt-injection payload.
+- Served locally from the same origin — no CDN — so the site's `style-src 'self'` CSP still holds.
+
 ## Themes
 
 `assets/theme.js` runs synchronously in `<head>`: it applies the visitor's saved choice from `localStorage`, falling back to the OS `prefers-color-scheme`. Every page has a toggle button in the nav. All colors live as CSS custom properties at the top of `assets/styles.css` (`:root` = light, `:root[data-theme="dark"]` = dark).

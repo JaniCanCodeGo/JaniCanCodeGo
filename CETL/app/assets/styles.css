@@ -1,31 +1,38 @@
 /* Clear Enough To Lead — shared styles with light/dark themes.
    Theme is driven by [data-theme] on <html>; theme.js sets it before paint. */
 
+/* Palette from the "Brains on Fire" Canva brand set (podcast cover art +
+   founding invite flyer): cream, deep maroon, flame orange, amber gold,
+   deep teal over warm bronze. */
 :root {
-  --bg: #faf7f2;
-  --bg-raised: #ffffff;
-  --ink: #2b2440;
-  --ink-soft: #5c5470;
-  --accent: #7c3a6d;
-  --accent-ink: #ffffff;
-  --accent-soft: #f3e4ee;
-  --gold: #b8860b;
-  --line: #e5ddd2;
-  --focus: #7c3a6d;
-  --shadow: 0 2px 12px rgba(43, 36, 64, 0.08);
+  --bg: #f7f0dd;
+  --bg-raised: #fdf9ee;
+  --ink: #33191f;
+  --ink-soft: #6e544e;
+  --accent: #6b1f2f;
+  --accent-ink: #f7f0dd;
+  --accent-soft: #f2e0c8;
+  --gold: #a06b10;
+  --teal: #1f4e46;
+  --flame: #e8853a;
+  --line: #e5d8bd;
+  --focus: #6b1f2f;
+  --shadow: 0 2px 12px rgba(51, 25, 31, 0.08);
 }
 
 :root[data-theme="dark"] {
-  --bg: #1c1826;
-  --bg-raised: #272033;
-  --ink: #f0ecf5;
-  --ink-soft: #b5aec6;
-  --accent: #d78cc4;
-  --accent-ink: #241323;
-  --accent-soft: #3a2a3f;
-  --gold: #e2b64c;
-  --line: #3b3349;
-  --focus: #d78cc4;
+  --bg: #201115;
+  --bg-raised: #301a21;
+  --ink: #f2ecd9;
+  --ink-soft: #cbb49a;
+  --accent: #d9b64a;
+  --accent-ink: #2a1118;
+  --accent-soft: #43222b;
+  --gold: #e8994a;
+  --teal: #3f8578;
+  --flame: #e8853a;
+  --line: #46262e;
+  --focus: #d9b64a;
   --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
 }
 
