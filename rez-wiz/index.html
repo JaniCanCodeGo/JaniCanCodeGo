@@ -245,6 +245,10 @@ footer{border-top:1px solid var(--line);background:var(--panel);margin-top:40px}
   <div class="eyebrow">Step 1</div>
   <h2>Resume Builder</h2>
   <p class="lead">Fill in your details — the live preview updates as you type, and your work auto-saves in this browser. Keywords you use (like “manager” or “supervisor”) power the <b>Jobs That Might Interest You</b> panel below the form.</p>
+  <div class="export-row no-print">
+    <button type="button" class="btn quiet" id="load-sample">↻ Load sample resume</button>
+    <button type="button" class="btn quiet" id="clear-all">✕ Clear everything &amp; start fresh</button>
+  </div>
   <div class="split">
     <div>
       <form id="resume-form" autocomplete="on">
@@ -491,12 +495,44 @@ const KEY='rezwiz.v1';
 const blankExp = () => ({role:'',org:'',dates:'',duties:''});
 const blankEdu = () => ({deg:'',school:'',year:''});
 const blankSoq = () => ({factor:'',answer:''});
-let state = {
+const BLANK = {
   name:'',title:'',email:'',phone:'',city:'',link:'',summary:'',skills:'',
   exp:[blankExp()], edu:[blankEdu()],
   soq:{jc:'',dept:'',cls:'',limit:'',items:[blankSoq()]},
   tpl:'t-modern'
 };
+/* Sample profile shown on first visit so every page renders populated. */
+const SAMPLE = {
+  name:'Alex Sacramento',
+  title:'Staff Services Manager I',
+  email:'alex.sacramento@example.com',
+  phone:'(916) 555-0100',
+  city:'Sacramento, CA',
+  link:'linkedin.com/in/alexsacramento',
+  summary:'Program analyst with six years of increasingly responsible experience in California state service, supervising analyst teams, managing program budgets, and advising executive leadership. Known for translating statute and CalHR policy into workable procedures and for building audit-ready program records.',
+  skills:'Supervision & staff development, Budget & contract management, Policy analysis, Legislative bill analysis, Stakeholder engagement, FI$Cal, Microsoft 365, Report writing',
+  exp:[
+    {role:'Associate Governmental Program Analyst', org:'California Department of Education — Sacramento, CA', dates:'06/2021 – Present',
+     duties:'Lead a unit of 4 analysts administering a statewide program serving 1,100 local educational agencies\nManage a $2.4M contract portfolio; monitor invoices, deliverables, and vendor performance\nDraft policy guidance, management reports, and executive briefings for division leadership\nTrain and mentor new analysts; developed the unit desk manual and onboarding plan'},
+    {role:'Staff Services Analyst', org:'Department of General Services — West Sacramento, CA', dates:'05/2018 – 06/2021',
+     duties:'Processed and analyzed 300+ purchase requests annually for compliance with State Contracting Manual policy\nReconciled program budgets and prepared quarterly expenditure projections for management\nCoordinated interagency workgroups and produced formal meeting minutes and action logs'}
+  ],
+  edu:[
+    {deg:'B.A., Public Policy', school:'California State University, Sacramento', year:'2017'},
+    {deg:'Certificate, Leadership Development Program', school:'CalHR', year:'2023'}
+  ],
+  soq:{
+    jc:'JC-458210', dept:'California Department of Education', cls:'Staff Services Manager I', limit:'2 pages maximum, Arial 12 pt',
+    items:[
+      {factor:'Describe your experience planning, organizing, and directing the work of a multidisciplinary team, including how you set priorities and evaluated performance.',
+       answer:'As lead Associate Governmental Program Analyst at the California Department of Education, I direct the daily work of a four-analyst unit administering a statewide program serving 1,100 local educational agencies. I set weekly priorities against statutory deadlines, built a shared workload tracker, and hold monthly one-on-ones with documented expectations and development goals. As a result, on-time deliverable completion rose from 82 percent to 98 percent within two quarters, and the tracker was adopted division-wide.'},
+      {factor:'Describe your experience interpreting and applying laws, rules, and policies, and communicating requirements to varied audiences.',
+       answer:'In my current role I interpret Education Code, federal grant terms, and CalHR policy to answer program questions from districts and internal staff. When a regulation change affected subgrantee reporting, I analyzed the revised requirements, rewrote the program guidance in plain language, and delivered webinar training to more than 200 district staff. Follow-up help-desk tickets on the topic dropped by roughly half the following quarter.'}
+    ]
+  },
+  tpl:'t-modern'
+};
+let state = JSON.parse(JSON.stringify(SAMPLE));
 try{ const saved = JSON.parse(localStorage.getItem(KEY)); if(saved && saved.exp) state = Object.assign(state, saved); }catch(e){}
 const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} };
 const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -696,6 +732,21 @@ document.getElementById('print-soq').addEventListener('click',()=>printDoc(soqHT
 document.getElementById('doc-soq').addEventListener('click',()=>downloadDoc(soqHTML(),fname('SOQ')));
 
 /* ============================ Add buttons & search ============================ */
+function setFormValues(){
+  document.querySelectorAll('[data-k]').forEach(el=>{ el.value = state[el.dataset.k]||''; });
+  document.querySelectorAll('[data-sk]').forEach(el=>{ el.value = state.soq[el.dataset.sk]||''; });
+}
+function refreshAll(){
+  setFormValues(); renderExp(); renderEdu(); renderSoqForm();
+  renderPreviews(); renderSoq(); scanKeywords();
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('sel',c.dataset.tpl===state.tpl));
+}
+document.getElementById('load-sample').addEventListener('click',()=>{
+  state = JSON.parse(JSON.stringify(SAMPLE)); save(); refreshAll();
+});
+document.getElementById('clear-all').addEventListener('click',()=>{
+  state = JSON.parse(JSON.stringify(BLANK)); save(); refreshAll();
+});
 document.getElementById('add-exp').addEventListener('click',()=>{state.exp.push(blankExp());save();renderExp();});
 document.getElementById('add-edu').addEventListener('click',()=>{state.edu.push(blankEdu());save();renderEdu();});
 document.getElementById('add-soq').addEventListener('click',()=>{state.soq.items.push(blankSoq());save();renderSoqForm();});

@@ -11,6 +11,10 @@ no dependencies. (Or serve the folder: `python3 -m http.server` and visit
 
 - **Resume Builder** — contact, summary, repeatable work-experience and
   education entries, skills; live preview; auto-saves to browser localStorage.
+  First visit loads a fully populated sample profile (Alex Sacramento, Staff
+  Services Manager I) so every page renders with content; use
+  "Clear everything & start fresh" to wipe it or "Load sample resume" to
+  bring it back.
 - **SOQ Writer** — paste each factor exactly as written in the CalCareers
   posting, answer in STAR format, and export a correctly formatted SOQ
   (Arial, name + JC number header, factors restated in order).
