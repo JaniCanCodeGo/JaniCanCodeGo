@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="description" content="Concentration — a memory matching brain-break game from Clear Enough To Lead.">
+  <title>Concentration — Clear Enough To Lead</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/theme.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="../index.html">Clear <span class="amp">Enough</span> To Lead</a>
+      <nav aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../podcast/index.html">Podcast</a>
+        <a href="index.html" aria-current="page">Focus Game</a>
+        <button class="theme-toggle" type="button">☾ Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <h1>Concentration</h1>
+      <p class="tagline">A two-minute brain break. Flip two cards at a time and find all the matching pairs — fewest moves wins. Built as a "Before Apps" workgroup project.</p>
+    </div>
+
+    <section aria-label="Game">
+      <div class="game-controls">
+        <label for="difficulty">Board size:</label>
+        <select id="difficulty">
+          <option value="easy" selected>Easy — 4 × 3 (6 pairs)</option>
+          <option value="hard">Hard — 6 × 4 (12 pairs)</option>
+        </select>
+        <button class="btn" id="new-game" type="button">New game</button>
+      </div>
+
+      <div class="game-status">
+        <span>Moves: <span id="moves">0</span></span>
+        <span>Matches: <span id="matches">0</span> / <span id="total-pairs">6</span></span>
+        <span>Best (fewest moves): <span id="best">—</span></span>
+      </div>
+
+      <div class="game-board" id="board" aria-label="Concentration board"></div>
+
+      <div class="win-banner" id="win-banner" hidden>
+        <strong>Cleared it!</strong> <span id="win-detail"></span> That focus you just used? Same muscle you lead with.
+      </div>
+
+      <p class="visually-hidden" id="announcer" aria-live="polite"></p>
+    </section>
+
+    <section aria-labelledby="how-heading">
+      <h2 id="how-heading">How to play</h2>
+      <ul>
+        <li>Click or tap a card to flip it over — or Tab to it and press Enter.</li>
+        <li>Flip a second card. If the two match, they stay face up.</li>
+        <li>If they don't match, they flip back — remember where they were.</li>
+        <li>Clear the whole board in as few moves as you can.</li>
+      </ul>
+      <p>Want to build this yourself? This game is a project in the <strong>Build With Claude</strong> workgroup's "Before Apps" module.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© 2026 Clear Enough To Lead</span>
+      <a href="../legal/terms.html">Terms of Service</a>
+      <a href="../legal/privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>

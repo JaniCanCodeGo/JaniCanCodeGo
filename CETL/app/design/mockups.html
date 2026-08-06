@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CETL App — Design Mockups</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <style>
+    /* Self-contained mockup sheet: miniature wireframes of every CETL app screen,
+       rendered in both the light and dark theme palettes. */
+    :root {
+      --sheet-bg: #f2eee8;
+      --sheet-ink: #2b2440;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 2rem 1.5rem 4rem;
+      background: var(--sheet-bg);
+      color: var(--sheet-ink);
+      font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+    }
+    h1 { margin: 0 0 0.25rem; }
+    .subtitle { color: #6b6480; margin: 0 0 2rem; }
+    h2 { margin: 2.5rem 0 1rem; border-bottom: 2px solid #d8d0c4; padding-bottom: 0.4rem; }
+    .row { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+    figure { margin: 0; }
+    figcaption { font-size: 0.85rem; color: #6b6480; margin-top: 0.5rem; text-align: center; }
+
+    /* Device frame */
+    .frame {
+      width: 340px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(43,36,64,0.18);
+      border: 1px solid rgba(43,36,64,0.15);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    /* Theme palettes (mirror assets/styles.css) */
+    .light { --bg:#faf7f2; --raised:#ffffff; --ink:#2b2440; --soft:#5c5470; --accent:#7c3a6d; --accent-ink:#fff; --accent-soft:#f3e4ee; --gold:#b8860b; --line:#e5ddd2; }
+    .dark  { --bg:#1c1826; --raised:#272033; --ink:#f0ecf5; --soft:#b5aec6; --accent:#d78cc4; --accent-ink:#241323; --accent-soft:#3a2a3f; --gold:#e2b64c; --line:#3b3349; }
+
+    .frame { background: var(--bg); color: var(--ink); }
+    .m-header {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--raised); border-bottom: 1px solid var(--line);
+      padding: 8px 12px; font-weight: 700;
+    }
+    .m-header .amp { color: var(--accent); }
+    .m-nav { margin-left: auto; display: flex; gap: 8px; color: var(--soft); font-weight: 400; }
+    .m-nav .active { color: var(--accent); font-weight: 600; }
+    .m-toggle {
+      border: 1px solid var(--line); border-radius: 999px;
+      padding: 1px 7px; font-size: 9px; color: var(--ink);
+    }
+    .m-body { padding: 12px 14px 16px; }
+    .m-h1 { font-size: 15px; font-weight: 700; line-height: 1.25; margin: 6px 0; }
+    .m-sub { color: var(--soft); }
+    .m-btn {
+      display: inline-block; background: var(--accent); color: var(--accent-ink);
+      border-radius: 5px; padding: 3px 9px; font-weight: 600; margin: 6px 6px 0 0;
+    }
+    .m-btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+    .m-card {
+      background: var(--raised); border: 1px solid var(--line);
+      border-radius: 7px; padding: 8px 10px; margin-top: 8px;
+    }
+    .m-card b { display: block; margin: 3px 0 1px; }
+    .m-tag {
+      display: inline-block; background: var(--accent-soft); color: var(--accent);
+      border-radius: 999px; padding: 0 6px; font-size: 8px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .m-badge {
+      display: inline-block; color: var(--gold); border: 1px solid var(--gold);
+      border-radius: 999px; padding: 0 6px; font-size: 8px; font-weight: 700;
+      text-transform: uppercase; margin-left: 4px;
+    }
+    .m-player {
+      border: 1px dashed var(--line); background: var(--raised);
+      border-radius: 7px; padding: 8px 10px; color: var(--soft); margin-top: 8px;
+    }
+    .m-footer {
+      border-top: 1px solid var(--line); color: var(--soft);
+      padding: 8px 14px; display: flex; gap: 10px; font-size: 9px;
+    }
+    .m-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+    .m-tile {
+      aspect-ratio: 3/4; border-radius: 6px; background: var(--accent);
+      color: var(--accent-ink); display: flex; align-items: center; justify-content: center;
+      font-size: 14px; border: 1px solid var(--line);
+    }
+    .m-tile.up { background: var(--raised); color: var(--ink); border-color: var(--accent); }
+    .m-tile.won { background: var(--raised); color: var(--ink); border-color: var(--gold); opacity: 0.85; }
+    .m-stats { display: flex; gap: 12px; font-weight: 600; margin-top: 8px; font-size: 10px; }
+    .m-para { height: 5px; border-radius: 3px; background: var(--line); margin: 5px 0; }
+    .m-para.w60 { width: 60%; }
+    .m-para.w80 { width: 80%; }
+    .m-legal-h { font-weight: 700; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Clear Enough To Lead — App Mockups</h1>
+  <p class="subtitle">Every screen in both themes. Palette: warm cream + plum (light) / deep plum + lavender + gold (dark). Type: humanist sans for UI, serif for body copy.</p>
+
+  <h2>Home</h2>
+  <div class="row">
+    <figure>
+      <div class="frame light">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span class="active">Home</span><span>Podcast</span><span>Game</span><span class="m-toggle">☾</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">Leadership, life, and stress management — for women who are managing everything anyway.</div>
+          <div class="m-sub">Hosted by Jani.</div>
+          <span class="m-btn">Listen to the podcast</span><span class="m-btn ghost">Play the focus game</span>
+          <div class="m-card"><span class="m-tag">Leadership</span><b>The Bar Is Clear Enough</b><div class="m-para w80"></div><div class="m-para w60"></div></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Home — light</figcaption>
+    </figure>
+    <figure>
+      <div class="frame dark">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span class="active">Home</span><span>Podcast</span><span>Game</span><span class="m-toggle">☀</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">Leadership, life, and stress management — for women who are managing everything anyway.</div>
+          <div class="m-sub">Hosted by Jani.</div>
+          <span class="m-btn">Listen to the podcast</span><span class="m-btn ghost">Play the focus game</span>
+          <div class="m-card"><span class="m-tag">Leadership</span><b>The Bar Is Clear Enough</b><div class="m-para w80"></div><div class="m-para w60"></div></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Home — dark</figcaption>
+    </figure>
+  </div>
+
+  <h2>Podcast — episode list</h2>
+  <div class="row">
+    <figure>
+      <div class="frame light">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span class="active">Podcast</span><span>Game</span><span class="m-toggle">☾</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">The podcast</div>
+          <div class="m-card"><span class="m-tag">Leadership</span><span class="m-badge">Planned</span><b>1. The Bar Is Clear Enough</b><div class="m-para w80"></div></div>
+          <div class="m-card"><span class="m-tag">Life</span><span class="m-badge">Planned</span><b>2. Nobody Told Me This Would Happen At Work</b><div class="m-para w80"></div></div>
+          <div class="m-card"><span class="m-tag">Stress Mgmt</span><span class="m-badge">Planned</span><b>3. The Burnout Math</b><div class="m-para w80"></div></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Episode list — light</figcaption>
+    </figure>
+    <figure>
+      <div class="frame dark">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span class="active">Podcast</span><span>Game</span><span class="m-toggle">☀</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">The podcast</div>
+          <div class="m-card"><span class="m-tag">Leadership</span><span class="m-badge">Planned</span><b>1. The Bar Is Clear Enough</b><div class="m-para w80"></div></div>
+          <div class="m-card"><span class="m-tag">Life</span><span class="m-badge">Planned</span><b>2. Nobody Told Me This Would Happen At Work</b><div class="m-para w80"></div></div>
+          <div class="m-card"><span class="m-tag">Stress Mgmt</span><span class="m-badge">Planned</span><b>3. The Burnout Math</b><div class="m-para w80"></div></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Episode list — dark</figcaption>
+    </figure>
+  </div>
+
+  <h2>Podcast — episode detail</h2>
+  <div class="row">
+    <figure>
+      <div class="frame light">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span class="active">Podcast</span><span>Game</span><span class="m-toggle">☾</span></div>
+        </div>
+        <div class="m-body">
+          <span class="m-tag">Leadership</span><span class="m-badge">Planned</span>
+          <div class="m-h1">Episode 1: The Bar Is Clear Enough</div>
+          <div class="m-player">▶ &nbsp;Audio coming soon — this episode is in production.</div>
+          <div class="m-legal-h">About this episode</div>
+          <div class="m-para"></div><div class="m-para"></div><div class="m-para w80"></div>
+          <div class="m-legal-h">Show notes</div>
+          <div class="m-para w80"></div><div class="m-para w60"></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Episode page — light</figcaption>
+    </figure>
+    <figure>
+      <div class="frame dark">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span class="active">Podcast</span><span>Game</span><span class="m-toggle">☀</span></div>
+        </div>
+        <div class="m-body">
+          <span class="m-tag">Leadership</span><span class="m-badge">Planned</span>
+          <div class="m-h1">Episode 1: The Bar Is Clear Enough</div>
+          <div class="m-player">▶ &nbsp;Audio coming soon — this episode is in production.</div>
+          <div class="m-legal-h">About this episode</div>
+          <div class="m-para"></div><div class="m-para"></div><div class="m-para w80"></div>
+          <div class="m-legal-h">Show notes</div>
+          <div class="m-para w80"></div><div class="m-para w60"></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Episode page — dark</figcaption>
+    </figure>
+  </div>
+
+  <h2>Concentration game</h2>
+  <div class="row">
+    <figure>
+      <div class="frame light">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span>Podcast</span><span class="active">Game</span><span class="m-toggle">☾</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">Concentration</div>
+          <div class="m-stats"><span>Moves: 7</span><span>Matches: 2 / 6</span><span>Best: 9</span></div>
+          <div class="m-grid">
+            <div class="m-tile won">🌿</div><div class="m-tile">?</div><div class="m-tile up">☕</div><div class="m-tile">?</div>
+            <div class="m-tile">?</div><div class="m-tile won">🌿</div><div class="m-tile">?</div><div class="m-tile up">🎧</div>
+            <div class="m-tile won">💜</div><div class="m-tile">?</div><div class="m-tile won">💜</div><div class="m-tile">?</div>
+          </div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Game — light</figcaption>
+    </figure>
+    <figure>
+      <div class="frame dark">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span>Podcast</span><span class="active">Game</span><span class="m-toggle">☀</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">Concentration</div>
+          <div class="m-stats"><span>Moves: 7</span><span>Matches: 2 / 6</span><span>Best: 9</span></div>
+          <div class="m-grid">
+            <div class="m-tile won">🌿</div><div class="m-tile">?</div><div class="m-tile up">☕</div><div class="m-tile">?</div>
+            <div class="m-tile">?</div><div class="m-tile won">🌿</div><div class="m-tile">?</div><div class="m-tile up">🎧</div>
+            <div class="m-tile won">💜</div><div class="m-tile">?</div><div class="m-tile won">💜</div><div class="m-tile">?</div>
+          </div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Game — dark</figcaption>
+    </figure>
+  </div>
+
+  <h2>Legal pages (Terms of Service / Privacy Policy)</h2>
+  <div class="row">
+    <figure>
+      <div class="frame light">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span>Podcast</span><span>Game</span><span class="m-toggle">☾</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">Privacy Policy</div>
+          <div class="m-sub"><em>Last updated: August 6, 2026</em></div>
+          <div class="m-para"></div><div class="m-para w80"></div>
+          <div class="m-legal-h">1. Information we collect</div>
+          <div class="m-para"></div><div class="m-para w80"></div><div class="m-para w60"></div>
+          <div class="m-legal-h">2. How we use information</div>
+          <div class="m-para"></div><div class="m-para w60"></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Legal page — light</figcaption>
+    </figure>
+    <figure>
+      <div class="frame dark">
+        <div class="m-header">Clear <span class="amp">&nbsp;Enough&nbsp;</span> To Lead
+          <div class="m-nav"><span>Home</span><span>Podcast</span><span>Game</span><span class="m-toggle">☀</span></div>
+        </div>
+        <div class="m-body">
+          <div class="m-h1">Privacy Policy</div>
+          <div class="m-sub"><em>Last updated: August 6, 2026</em></div>
+          <div class="m-para"></div><div class="m-para w80"></div>
+          <div class="m-legal-h">1. Information we collect</div>
+          <div class="m-para"></div><div class="m-para w80"></div><div class="m-para w60"></div>
+          <div class="m-legal-h">2. How we use information</div>
+          <div class="m-para"></div><div class="m-para w60"></div>
+        </div>
+        <div class="m-footer"><span>© 2026 CETL</span><span>Terms</span><span>Privacy</span></div>
+      </div>
+      <figcaption>Legal page — dark</figcaption>
+    </figure>
+  </div>
+</body>
+</html>
