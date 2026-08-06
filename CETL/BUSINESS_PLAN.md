@@ -1,7 +1,7 @@
 # Clear Enough To Lead (CETL) — Business Plan
 
 **Founder:** Jani
-**Date:** July 2026
+**Date:** August 2026 — Version 2.0 (modernized and internally reconciled)
 **Tagline:** *Leadership, life, and stress management for women who are managing everything anyway.*
 
 > **How this plan was made.** This plan was generated from the CETL repository's own
@@ -48,10 +48,16 @@ work and runs a household at home — who is ready to build something for hersel
    ADHD learner needs.
 
 **The model:** premium cohorts ($299 beta rising toward $500–$950, consistent with
-cohort-pricing benchmarks[^18][^19]) plus an alumni community membership, with the
-podcast feeding the funnel. Founder planning assumption: roughly **$20K–$35K revenue in
-Year 1**, growing toward **$100K+ by Year 3**. CETL is deliberately founder-run,
-low-overhead, and profitable at small scale — not venture-scale.
+cohort-pricing benchmarks[^25][^19]) plus an alumni community membership, with the
+podcast feeding the funnel. Founder planning assumption: **~$10–12K revenue in Year 1**
+(an audience-building year with two cohorts, starting from a zero audience), growing
+toward **~$112–122K by Year 3** — figures reconciled with §8.2. CETL is deliberately
+founder-run, low-overhead, and profitable at small scale.
+
+**The ask:** CETL seeks **$25,000 in non-dilutive funding** (grants and/or an SBA-style
+microloan) to compress the launch runway — full use-of-funds in §8.4. CETL is a
+lifestyle-scale business by design; it is a fit for grantmakers, microlenders, and
+revenue-based funders, and is explicitly **not** seeking venture equity.
 
 ---
 
@@ -73,10 +79,27 @@ path the curriculum teaches (zero background → web projects → working Claude
 including the agent tooling that generated this plan). The teacher *is* the customer,
 five steps ahead — that authenticity is the moat.
 
-### Legal & structure (founder to complete)
-Single-member LLC recommended at launch; business bank account; liability waiver and
-terms of service for the workgroup; guest release forms for the podcast; and a prominent
-"education, not medical advice" disclaimer given the health-adjacent audience.
+### Traction to date (August 2026)
+CETL is pre-revenue but not pre-work. Already built and verifiable:
+
+- **Working software, built by the founder:** a content-generation agent and MCP server
+  powering CETL's curriculum, podcast, and marketing production; a business-plan agent
+  that gathers project data and produces this document and its Word edition; and
+  production document-automation tooling built in the founder's professional practice.
+  The teaching promise — "you will build a working agent" — is demonstrated by the
+  founder's own shipped agents (see the companion Portfolio document).
+- **Curriculum:** all four Build With Claude modules scoped with defined outcomes and
+  artifacts; lesson content in active development.
+- **Podcast:** three launch episodes scoped and summarized (*The Bar Is Clear Enough*,
+  *Nobody Told Me This Would Happen At Work*, *The Burnout Math*).
+- **Research base:** an independently fact-checked evidence file (24 sources) grounding
+  the market, pain points, and product design in this plan.
+
+### Legal & structure
+Formation plan, committed for Phase 0 (within 60 days of funding or of the Phase 0
+start, whichever is first): single-member LLC; business bank account; liability waiver
+and terms of service for the workgroup; guest release forms for the podcast; and a
+prominent "education, not medical advice" disclaimer given the health-adjacent audience.
 
 ---
 
@@ -169,7 +192,7 @@ who already trust the voice.
   strongly suspected.
 - Leads people — a team at work, a family at home, usually both.
 - Can spend $500–$1,500 on professional development; courses around $500 on professional
-  topics are commonly employer-reimbursable.[^18]
+  topics are commonly employer-reimbursable.[^25]
 - The real job-to-be-done: *"Prove to myself my brain still works — and build something
   that's mine."*
 
@@ -237,7 +260,7 @@ co-pilot and a room full of women who get it.*
 4. **Email list as the conversion asset.** Podcast → free starter guide → nurture →
    cohort waitlist; launches to the list 3–4×/year.
 5. **Beta cohort as marketing.** First cohort discounted at $299 explicitly as a beta —
-   discounted first cohorts with later price rises are standard practice[^18] — in
+   discounted first cohorts with later price rises are standard practice[^25] — in
    exchange for testimonials and completion data.
 
 Founder assumption: $0 paid acquisition in Year 1; paid channels tested only after two
@@ -254,9 +277,9 @@ benchmarks they rest on are cited.*
 
 - Live-component cohort programs typically price at **$800–$2,500** (full range
   $500–$5,000+),[^19] and Maven's guidance puts full cohort courses at **$950–$3,500+**,
-  with ~$500 recommended for a first-time instructor's short course.[^18]
+  with ~$500 recommended for a first-time instructor's short course.[^25]
 - Cohorts sustain a premium over self-paced because accountability and community are
-  the product[^18] — which is CETL's entire design.
+  the product[^25] — which is CETL's entire design.
 - CETL deliberately prices below career-switch programs ($1,599+ at Skillcrush[^20]):
   the promise is capability and confidence, not job placement.
 
@@ -283,13 +306,40 @@ flat-fee host-read integrations instead,[^23] and niche professional-audience sh
 roughly 60% higher rates once established.[^24] The plan therefore treats podcast money
 as a Year 2–3 bonus and its Year 1 value as enrollment.
 
-### 8.3 Costs
+### 8.3 Costs and break-even (founder assumptions)
 
-Lean by design: recording gear and hosting (~$1–2K one-time), site/email/community
-tooling (~$150–300/mo), cohort platform (Maven's ~10% share[^18] or a flat-fee
-alternative), LLC/insurance/accounting (~$1–2K/yr), Claude subscriptions for teaching.
-Break-even lands inside the first two cohorts (founder assumption). The binding
-constraint is founder time and energy — addressed in §10.
+| Expense line | Year 1 |
+|---|---|
+| Recording gear + podcast hosting (one-time + annual) | ~$1,500 |
+| Site, email, and delivery tooling (~$30–150/mo, Zoom + email stack per §9) | ~$1,000 |
+| LLC formation, insurance, accounting | ~$1,500 |
+| Podcast editing (per-episode contract) | ~$1,200 |
+| Claude subscriptions for teaching and demos | ~$500 |
+| Contingency (~15%) | ~$850 |
+| **Total Year 1 operating costs** | **~$6,500** |
+
+Against ~$10–12K of Year 1 revenue (§8.2), **break-even occurs during the second
+cohort**, without funding. The $25K ask (§8.4) does not change viability — it compresses
+the runway and buys production quality earlier. The binding constraint is founder time
+(~10 hrs/week) — addressed in §10.
+
+### 8.4 Funding ask & use of funds
+
+**Ask: $25,000, non-dilutive** (grants preferred; SBA-style microloan acceptable — at
+Year 2 projected revenue the repayment burden is manageable).
+
+| Use | Amount | What it unlocks |
+|---|---|---|
+| Curriculum production (recording, captioning, accessibility) | $6,000 | All four modules polished and ADA-friendly at launch, not after |
+| Podcast production year one (editing, artwork, distribution) | $5,000 | Weekly cadence sustained through the beta instead of pausing |
+| Marketing & audience build (site, email tooling, launch content) | $4,000 | Hits the 150-subscriber beta gate (§4.2) months sooner |
+| Legal, LLC, insurance, accounting | $2,500 | Formation complete before the first paid seat |
+| Equipment (recording + teaching setup) | $2,000 | Removes the founder's single-device failure point |
+| Founder time buyout / contingency | $5,500 | Protects the ~10 hrs/week from being the plan's breaking point |
+| **Total** | **$25,000** | Beta cohort launches on the §9 timeline with production quality |
+
+**Milestones the funding is accountable to:** email list ≥150 (month 4); beta cohort of
+8–12 taught (month 6); ≥70% beta completion; cohort 2 at $500 (month 9–12).
 
 ---
 
@@ -311,7 +361,7 @@ attendance, completion, and artifacts shipped; collect testimonials.
 **Phase 2 (months 6–12):** revise curriculum from beta learnings; raise price to ~$500;
 run cohort 2; open CETL Circle to alumni; start the guest-podcast circuit.
 
-**Phase 3 (months 12–24):** price toward $650–$950 as social proof accumulates;[^18][^19]
+**Phase 3 (months 12–24):** price toward $650–$950 as social proof accumulates;[^25][^19]
 evaluate Maven as an added distribution channel once testimonials exist;[^18] pilot one
 corporate/ERG workshop; first flat-fee podcast sponsorships.[^23]
 
@@ -377,7 +427,7 @@ conversion; community churn; podcast downloads per episode.
 
 [^17]: Grand View Research. "ADHD Apps Market Size & Trends Report" — $1.9B (2025) projected to $6.7B by 2033 (17.5% CAGR); used here as the closest proxy for consumer ADHD-support spending. https://www.grandviewresearch.com/industry-analysis/adhd-apps-market-report
 
-[^18]: Maven. "In online ed, content is no longer king — cohorts are" (orig. a16z essay by Wes Kao, Maven co-founder) — Harvard's 2014 online case-method courses with peer collaboration reached 85% completion vs. single-digit MOOC rates of that era; Maven raised a $20M a16z-led Series A; and Maven, "How to decide the price & length of your course" — recommends first-time instructors run a 1–2 week course at ~$500; full cohort courses typically $950–$3,500+; cohorts can charge a premium over self-paced due to accountability and community; discounted beta first cohorts with later price increases are standard; professional-topic courses around $500 are commonly employer-reimbursable. https://maven.com/resources/a16z-cohorts-are-king ; https://maven.com/resources/course-price-and-length
+[^18]: Maven. "In online ed, content is no longer king — cohorts are" (orig. a16z essay by Wes Kao, Maven co-founder) — Harvard's 2014 online case-method courses with peer collaboration reached 85% completion vs. single-digit MOOC rates of that era; Maven raised a $20M a16z-led Series A and operates on roughly a 10% revenue share. https://maven.com/resources/a16z-cohorts-are-king
 
 [^19]: Disco. "Pricing Models for Cohort-Based Courses" — live-component cohort programs typically $800–$2,500 (range $500–$5,000+); recommends hybrid premium-cohort + lower-priced ongoing community membership. https://www.disco.co/blog/pricing-models-for-cohort-based-courses-guide
 
@@ -390,3 +440,5 @@ conversion; community churn; podcast downloads per episode.
 [^23]: Pod Partnerships. "Podcast advertising CPM benchmarks: what brands actually pay in 2026" — shows under ~5,000 downloads/episode should sell flat-fee host-read integrations rather than CPM; niche professional-audience mid-rolls command premium rates. https://podpartnerships.com/blogs/podcast-advertising-cpm-benchmarks
 
 [^24]: InfluenceFlow. "Podcast Sponsorship Rate Cards: The Complete 2026 Guide" — niche professional-audience podcasts command ~60% higher CPMs; micro podcasts typically charge $18–35 CPM or $100–500 flat per episode. https://influenceflow.io/resources/podcast-sponsorship-rate-cards-the-complete-2026-guide-for-creators-brands/
+
+[^25]: Maven. "How to decide the price & length of your course" — recommends first-time instructors run a 1–2 week course at ~$500; full cohort courses typically $950–$3,500+; cohorts can charge a premium over self-paced due to accountability and community; discounted beta first cohorts with later price increases are standard; professional-topic courses around $500 are commonly employer-reimbursable. https://maven.com/resources/course-price-and-length
