@@ -1,7 +1,7 @@
 # Clear Enough To Lead (CETL) — Business Plan
 
 **Founder:** Jani
-**Date:** August 2026 — Version 2.0 (modernized and internally reconciled)
+**Date:** August 2026 — Version 2.1 (LLC registered; grant application kit added)
 **Tagline:** *Leadership, life, and stress management for women who are managing everything anyway.*
 
 > **How this plan was made.** This plan was generated from the CETL repository's own
@@ -96,10 +96,10 @@ CETL is pre-revenue but not pre-work. Already built and verifiable:
   the market, pain points, and product design in this plan.
 
 ### Legal & structure
-Formation plan, committed for Phase 0 (within 60 days of funding or of the Phase 0
-start, whichever is first): single-member LLC; business bank account; liability waiver
-and terms of service for the workgroup; guest release forms for the podcast; and a
-prominent "education, not medical advice" disclaimer given the health-adjacent audience.
+**The LLC is registered (August 2026).** Remaining formation items, committed for
+Phase 0: business bank account; liability waiver and terms of service for the
+workgroup; guest release forms for the podcast; and a prominent "education, not
+medical advice" disclaimer given the health-adjacent audience.
 
 ---
 
