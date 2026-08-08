@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rez Wiz — California State Resume &amp; SOQ Builder</title>
+<style>
+/* ============ Rez Wiz design tokens — palette from client swatch ============ */
+:root{
+  --maroon:#8A2432;
+  --crimson:#D2372A;
+  --amber:#E68F3C;
+  --cream:#F2ECDF;
+  --paper:#FBF8F1;
+  --slate:#26333D;
+  --slate-2:#32414E;
+  --bg:var(--cream);
+  --panel:var(--paper);
+  --panel-2:#EFE7D6;
+  --ink:#2A2622;
+  --ink-soft:#6B6156;
+  --line:#DED4C0;
+  --accent:var(--crimson);
+  --accent-ink:#FFFFFF;
+  --link:#A02B22;
+  --focus:#E68F3C;
+  --shadow:0 10px 30px rgba(42,38,34,.10);
+  --display:Impact,'Haettenschweiler','Franklin Gothic Bold','Arial Black',sans-serif;
+  --body:Arial,'Helvetica Neue',Helvetica,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#1F2A33; --panel:#26333D; --panel-2:#2E3C47;
+    --ink:#F0EADC; --ink-soft:#B4A997;
+    --line:#3C4B58; --link:#F0A45B; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1F2A33; --panel:#26333D; --panel-2:#2E3C47;
+  --ink:#F0EADC; --ink-soft:#B4A997;
+  --line:#3C4B58; --link:#F0A45B; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{
+  --bg:#F2ECDF; --panel:#FBF8F1; --panel-2:#EFE7D6;
+  --ink:#2A2622; --ink-soft:#6B6156;
+  --line:#DED4C0; --link:#A02B22; --shadow:0 10px 30px rgba(42,38,34,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+img{max-width:100%}
+a{color:var(--link)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:2px}
+
+/* ============ Masthead ============ */
+.stripe{height:10px;background:linear-gradient(90deg,var(--maroon) 0 34%,var(--crimson) 34% 67%,var(--amber) 67% 100%);background-size:300% 100%;animation:stripeShift 14s linear infinite}
+@keyframes stripeShift{from{background-position:0 0}to{background-position:300% 0}}
+header.mast{position:sticky;top:0;z-index:40;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.mastrow{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:10px 20px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-size:2rem;letter-spacing:.03em;text-transform:uppercase;line-height:1;display:flex;align-items:baseline;gap:.35rem;text-decoration:none;color:var(--ink)}
+.logo .rez{color:var(--maroon)}
+:root[data-theme="dark"] .logo .rez{color:var(--amber)}
+@media (prefers-color-scheme: dark){.logo .rez{color:var(--amber)}}
+:root[data-theme="light"] .logo .rez{color:var(--maroon)}
+.logo .wiz{color:var(--crimson)}
+.logo .spark{font-size:1.1rem;color:var(--amber);animation:twinkle 2.6s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.35;transform:scale(.8) rotate(0deg)}50%{opacity:1;transform:scale(1.15) rotate(20deg)}}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav.tabs a{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.86rem;text-decoration:none;color:var(--ink-soft);padding:8px 12px;border-radius:6px;border:1px solid transparent}
+nav.tabs a:hover{color:var(--ink);background:var(--panel-2)}
+nav.tabs a[aria-current="page"]{color:var(--accent-ink);background:var(--maroon);border-color:var(--maroon)}
+.calcareers-pill{display:inline-flex;align-items:center;gap:8px;background:var(--amber);color:#3A2410;font-weight:bold;font-size:.85rem;padding:8px 14px;border-radius:999px;text-decoration:none;white-space:nowrap}
+.calcareers-pill:hover{filter:brightness(1.06)}
+
+/* ============ Layout ============ */
+main{max-width:1180px;margin:0 auto;padding:26px 20px 80px}
+section.view{display:none}
+section.view.active{display:block;animation:viewIn .35s ease}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1,h2,h3{font-family:var(--display);letter-spacing:.02em;text-transform:uppercase;line-height:1.05;text-wrap:balance;margin:0 0 .5em}
+h1{font-size:clamp(2.4rem,6vw,4.4rem)}
+h2{font-size:1.6rem;color:var(--maroon)}
+:root[data-theme="dark"] h2{color:var(--amber)}
+@media (prefers-color-scheme: dark){h2{color:var(--amber)}}
+:root[data-theme="light"] h2{color:var(--maroon)}
+h3{font-size:1.15rem}
+p.lead{font-size:1.15rem;max-width:62ch;color:var(--ink-soft)}
+.eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.18em;font-size:.8rem;color:var(--crimson)}
+
+/* ============ Hero ============ */
+.hero{position:relative;overflow:hidden;border-radius:16px;background:var(--slate);color:#F4EEE1;padding:56px 40px 64px;box-shadow:var(--shadow)}
+.hero h1 .hl{color:var(--amber)}
+.hero p{max-width:58ch;font-size:1.12rem;color:#D8CFC0}
+.orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;pointer-events:none}
+.orb.o1{width:340px;height:340px;background:var(--maroon);top:-120px;right:-60px;animation:drift 16s ease-in-out infinite alternate}
+.orb.o2{width:260px;height:260px;background:var(--crimson);bottom:-100px;left:22%;animation:drift 20s ease-in-out infinite alternate-reverse}
+.orb.o3{width:220px;height:220px;background:var(--amber);top:30%;left:-80px;animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.15)}}
+.hero .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;position:relative;z-index:1}
+.btn{font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:1rem;border:none;cursor:pointer;border-radius:8px;padding:13px 22px;text-decoration:none;display:inline-block;color:var(--accent-ink);background:var(--crimson);transition:transform .15s ease,filter .15s ease}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn.secondary{background:transparent;border:2px solid var(--amber);color:var(--amber)}
+.btn.quiet{background:var(--panel-2);color:var(--ink);font-size:.85rem;padding:9px 14px}
+.btn.small{font-size:.82rem;padding:8px 13px}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:26px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+.card h3{color:var(--maroon)}
+:root[data-theme="dark"] .card h3{color:var(--amber)}
+@media (prefers-color-scheme: dark){.card h3{color:var(--amber)}}
+:root[data-theme="light"] .card h3{color:var(--maroon)}
+.card p{color:var(--ink-soft);font-size:.95rem;margin:.3em 0 0}
+
+/* ============ Forms ============ */
+.split{display:grid;grid-template-columns:minmax(340px,1fr) minmax(340px,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.split{grid-template-columns:1fr}}
+fieldset{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px;margin:0 0 18px}
+legend{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:.95rem;color:var(--crimson);padding:0 8px}
+label{display:block;font-size:.8rem;font-weight:bold;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);margin:10px 0 4px}
+input[type=text],input[type=email],input[type=tel],textarea,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:.95rem}
+textarea{min-height:84px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.entry{border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:12px;background:var(--panel-2)}
+.entry .rowhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.entry .rowhead strong{font-family:var(--display);letter-spacing:.04em;text-transform:uppercase;font-size:.85rem;color:var(--ink-soft)}
+.linkbtn{background:none;border:none;color:var(--crimson);font-size:.8rem;font-weight:bold;cursor:pointer;text-transform:uppercase;letter-spacing:.05em}
+.hint{font-size:.83rem;color:var(--ink-soft);margin-top:6px}
+
+/* ============ Job match ============ */
+.match-panel{border:2px solid var(--amber);border-radius:12px;background:var(--panel);padding:18px;margin-top:18px}
+.match-panel h3{display:flex;align-items:center;gap:8px;color:var(--crimson)}
+.match-badge{display:inline-block;background:var(--amber);color:#3A2410;font-family:var(--body);font-weight:bold;font-size:.72rem;letter-spacing:.05em;border-radius:999px;padding:3px 10px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.job-card{display:flex;justify-content:space-between;gap:14px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;background:var(--bg)}
+.job-card b{display:block}
+.job-card small{color:var(--ink-soft)}
+.job-card a{font-weight:bold;font-size:.85rem;white-space:nowrap}
+.kw-chip{display:inline-block;background:var(--maroon);color:#fff;border-radius:999px;font-size:.72rem;padding:2px 9px;margin:2px 3px 0 0}
+
+/* ============ Preview / templates ============ */
+.preview-shell{position:sticky;top:86px}
+.doc{background:#fff;color:#1d1d1f;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:34px 38px;min-height:420px;font-size:.82rem;line-height:1.45;overflow-x:auto}
+.doc h1,.doc h2,.doc h3{text-transform:none;letter-spacing:0}
+.template-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0 20px}
+.tpl-card{border:2px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;padding:14px;text-align:left;font-family:var(--body)}
+.tpl-card.sel{border-color:var(--crimson);box-shadow:0 0 0 3px rgba(210,55,42,.18)}
+.tpl-card .swatchrow{display:flex;height:10px;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.tpl-card .swatchrow i{flex:1}
+.tpl-card b{font-family:var(--display);text-transform:uppercase;letter-spacing:.05em}
+.tpl-card small{color:var(--ink-soft);display:block;margin-top:3px}
+/* — template styles (applied inside .doc) — */
+.t-classic{font-family:Georgia,'Times New Roman',serif}
+.t-classic .r-name{font-size:1.7em;text-align:center;letter-spacing:.04em}
+.t-classic .r-contact{text-align:center;border-bottom:2px solid #8A2432;padding-bottom:8px;margin-bottom:14px}
+.t-classic h3.r-sec{color:#8A2432;border-bottom:1px solid #ccc;font-family:Georgia,serif;font-size:1em;text-transform:uppercase;letter-spacing:.12em;margin:16px 0 6px}
+.t-modern{font-family:Arial,Helvetica,sans-serif}
+.t-modern .r-head{background:#8A2432;color:#fff;margin:-34px -38px 16px;padding:26px 38px}
+.t-modern .r-name{font-family:var(--display);font-size:2em;letter-spacing:.04em;text-transform:uppercase}
+.t-modern .r-contact{color:#F2C79A}
+.t-modern h3.r-sec{color:#D2372A;font-size:.95em;text-transform:uppercase;letter-spacing:.14em;margin:16px 0 6px;border-left:4px solid #E68F3C;padding-left:8px}
+.t-slate{font-family:Arial,Helvetica,sans-serif}
+.t-slate .r-head{background:#26333D;color:#F2ECDF;margin:-34px -38px 16px;padding:26px 38px;border-bottom:6px solid #E68F3C}
+.t-slate .r-name{font-family:var(--display);font-size:2em;text-transform:uppercase;letter-spacing:.05em}
+.t-slate h3.r-sec{background:#F2ECDF;color:#26333D;display:inline-block;padding:2px 10px;font-size:.85em;text-transform:uppercase;letter-spacing:.12em;margin:16px 0 6px}
+.t-ats{font-family:Arial,Helvetica,sans-serif}
+.t-ats .r-name{font-size:1.5em;font-weight:bold}
+.t-ats h3.r-sec{font-size:1em;text-transform:uppercase;margin:14px 0 4px;border-bottom:1px solid #000}
+.doc .r-item{margin:0 0 10px}
+.doc .r-item .r-role{font-weight:bold}
+.doc .r-item .r-meta{font-style:italic;font-size:.93em}
+.doc ul{margin:4px 0 0 18px;padding:0}
+.export-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+
+/* ============ Legal ============ */
+.legal{max-width:75ch;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px 32px}
+.legal h3{margin-top:1.4em;color:var(--maroon)}
+:root[data-theme="dark"] .legal h3{color:var(--amber)}
+@media (prefers-color-scheme: dark){.legal h3{color:var(--amber)}}
+:root[data-theme="light"] .legal h3{color:var(--maroon)}
+.legal li{margin:.35em 0}
+.updated{font-size:.8rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em}
+
+footer{border-top:1px solid var(--line);background:var(--panel);margin-top:40px}
+.footrow{max-width:1180px;margin:0 auto;padding:22px 20px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:.85rem;color:var(--ink-soft)}
+.footrow a{color:var(--link)}
+.disclaimer{max-width:60ch}
+
+@media print{
+  header.mast,footer,.no-print,nav.tabs,.stripe{display:none !important}
+  body{background:#fff}
+  main{max-width:none;padding:0}
+  section.view{display:none !important}
+  #printable{display:block !important}
+  .doc{border:none;box-shadow:none;border-radius:0;padding:0;font-size:11pt}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="stripe" aria-hidden="true"></div>
+<header class="mast">
+  <div class="mastrow">
+    <a class="logo" href="#home"><span class="spark" aria-hidden="true">✦</span><span class="rez">Rez</span><span class="wiz">Wiz</span></a>
+    <a class="calcareers-pill" href="https://www.calcareers.ca.gov/" target="_blank" rel="noopener">🌐 CalCareers — Official State Jobs Site ↗</a>
+    <nav class="tabs" aria-label="Main">
+      <a href="#home">Home</a>
+      <a href="#builder">Resume Builder</a>
+      <a href="#soq">SOQ Writer</a>
+      <a href="#templates">Templates &amp; Export</a>
+      <a href="#jobs">Job Match</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#terms">Terms</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="view" id="view-home">
+  <div class="hero">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="eyebrow" style="color:var(--amber)">California State Hiring, Demystified</div>
+    <h1>Stand out.<br><span class="hl">Land the state job.</span></h1>
+    <p>Rez Wiz builds resumes and Statements of Qualifications (SOQs) shaped the way California state hiring panels expect them — mirroring the duty statement, answering every SOQ factor in order, and formatted to state conventions.</p>
+    <div class="cta-row">
+      <a class="btn" href="#builder">Start My Resume</a>
+      <a class="btn secondary" href="#soq">Write My SOQ</a>
+      <a class="btn secondary" href="https://www.calcareers.ca.gov/" target="_blank" rel="noopener">Browse CalCareers ↗</a>
+    </div>
+  </div>
+  <div class="feature-grid">
+    <div class="card"><h3>🧭 Duty-Statement Driven</h3><p>State job postings on CalCareers define exactly what each job contains and what the SOQ must include. Rez Wiz guides you to mirror that language.</p></div>
+    <div class="card"><h3>🔮 Jobs That Might Interest You</h3><p>Type keywords like <b>manager</b> or <b>supervisor</b> anywhere in your resume and Rez Wiz surfaces matching state classifications with one-click CalCareers searches.</p></div>
+    <div class="card"><h3>📄 Four Output Templates</h3><p>Capitol Classic, Golden State Modern, Sacramento Slate, and an ATS-safe State Standard — print to PDF or download as a Word file.</p></div>
+    <div class="card"><h3>🔒 Private By Design</h3><p>Everything you type stays in your own browser. Nothing is uploaded, sold, or shared. See the Privacy Policy.</p></div>
+  </div>
+</section>
+
+<!-- ================= BUILDER ================= -->
+<section class="view" id="view-builder">
+  <div class="eyebrow">Step 1</div>
+  <h2>Resume Builder</h2>
+  <p class="lead">Fill in your details — the live preview updates as you type, and your work auto-saves in this browser. Keywords you use (like “manager” or “supervisor”) power the <b>Jobs That Might Interest You</b> panel below the form.</p>
+  <div class="export-row no-print">
+    <button type="button" class="btn quiet" id="load-sample">↻ Load sample resume</button>
+    <button type="button" class="btn quiet" id="clear-all">✕ Clear everything &amp; start fresh</button>
+  </div>
+  <div class="split">
+    <div>
+      <form id="resume-form" autocomplete="on">
+        <fieldset>
+          <legend>Contact</legend>
+          <div class="grid2">
+            <div><label for="f-name">Full name</label><input type="text" id="f-name" data-k="name" placeholder="Alex Sacramento"></div>
+            <div><label for="f-title">Target job title / classification</label><input type="text" id="f-title" data-k="title" placeholder="Staff Services Manager I"></div>
+            <div><label for="f-email">Email</label><input type="email" id="f-email" data-k="email" placeholder="alex@example.com"></div>
+            <div><label for="f-phone">Phone</label><input type="tel" id="f-phone" data-k="phone" placeholder="(916) 555-0100"></div>
+            <div><label for="f-city">City, State</label><input type="text" id="f-city" data-k="city" placeholder="Sacramento, CA"></div>
+            <div><label for="f-link">LinkedIn / portfolio (optional)</label><input type="text" id="f-link" data-k="link" placeholder="linkedin.com/in/alex"></div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Professional Summary</legend>
+          <label for="f-summary">3–4 lines tying your experience to the duty statement</label>
+          <textarea id="f-summary" data-k="summary" placeholder="Analyst with 6 years of program experience supervising staff, managing budgets, and advising executives…"></textarea>
+          <p class="hint">Tip: reuse the exact nouns from the posting's duty statement — panels scan for them.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Work Experience</legend>
+          <div id="exp-list"></div>
+          <button type="button" class="btn quiet no-print" id="add-exp">+ Add position</button>
+          <p class="hint">State applications value month/year dates and measurable results ("supervised 12 staff", "managed $2.4M contract").</p>
+        </fieldset>
+        <fieldset>
+          <legend>Education &amp; Certifications</legend>
+          <div id="edu-list"></div>
+          <button type="button" class="btn quiet no-print" id="add-edu">+ Add education / certification</button>
+        </fieldset>
+        <fieldset>
+          <legend>Skills</legend>
+          <label for="f-skills">Comma-separated</label>
+          <textarea id="f-skills" data-k="skills" placeholder="Supervision, budget analysis, stakeholder management, CalHR rules…"></textarea>
+        </fieldset>
+      </form>
+
+      <div class="match-panel no-print" id="match-panel" hidden>
+        <h3>🔮 Jobs That Might Interest You <span class="match-badge">Live</span></h3>
+        <p class="hint">Based on keywords in your resume: <span id="match-kws"></span></p>
+        <div id="match-list"></div>
+        <p class="hint">Links open the official <a href="https://www.calcareers.ca.gov/" target="_blank" rel="noopener">CalCareers</a> search for that classification.</p>
+      </div>
+    </div>
+
+    <div class="preview-shell">
+      <div class="export-row no-print">
+        <span class="eyebrow" style="align-self:center">Live preview</span>
+        <a class="btn small" href="#templates">Choose template &amp; export →</a>
+      </div>
+      <div class="doc t-modern" id="live-preview" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SOQ ================= -->
+<section class="view" id="view-soq">
+  <div class="eyebrow">Step 2</div>
+  <h2>Statement of Qualifications (SOQ) Writer</h2>
+  <p class="lead">Most state postings require an SOQ and score it like an exam. Paste each factor from the job posting exactly as written, then answer it. Rez Wiz assembles a correctly formatted SOQ document.</p>
+  <div class="split">
+    <div>
+      <fieldset>
+        <legend>Posting details</legend>
+        <div class="grid2">
+          <div><label for="s-jc">Job Control (JC) number</label><input type="text" id="s-jc" data-sk="jc" placeholder="JC-501983"></div>
+          <div><label for="s-dept">Department</label><input type="text" id="s-dept" data-sk="dept" placeholder="California Department of Education"></div>
+          <div><label for="s-class">Classification</label><input type="text" id="s-class" data-sk="cls" placeholder="Associate Governmental Program Analyst"></div>
+          <div><label for="s-limit">Page limit from posting</label><input type="text" id="s-limit" data-sk="limit" placeholder="2 pages, Arial 12 pt"></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>SOQ factors &amp; your responses</legend>
+        <div id="soq-list"></div>
+        <button type="button" class="btn quiet no-print" id="add-soq">+ Add factor</button>
+      </fieldset>
+      <div class="card">
+        <h3>📏 State SOQ Rules of Thumb</h3>
+        <p>• Follow the posting's instructions <b>exactly</b> — font, page limit, and order are scored.<br>
+        • Default convention: Arial 12 pt, 1-inch margins, your name and JC number on every page.<br>
+        • Restate each factor as a heading, then answer in the same order.<br>
+        • Use the STAR pattern: Situation → Task → Action → Result, with numbers.<br>
+        • Address every part of a multi-part factor; don't just repeat your resume.</p>
+      </div>
+    </div>
+    <div class="preview-shell">
+      <div class="export-row no-print">
+        <span class="eyebrow" style="align-self:center">SOQ preview</span>
+        <button class="btn small" id="print-soq">Print / PDF</button>
+        <button class="btn small" id="doc-soq">Download .doc</button>
+      </div>
+      <div class="doc" id="soq-preview" style="font-family:Arial,Helvetica,sans-serif" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TEMPLATES ================= -->
+<section class="view" id="view-templates">
+  <div class="eyebrow">Step 3</div>
+  <h2>Templates &amp; Export</h2>
+  <p class="lead">Pick a look, then print to PDF or download a Word-compatible file. The State Standard template is the safest for automated screening; the styled templates shine for interviews and networking.</p>
+  <div class="template-picker" id="tpl-picker" role="radiogroup" aria-label="Resume template">
+    <button class="tpl-card" data-tpl="t-classic"><span class="swatchrow"><i style="background:#8A2432"></i><i style="background:#fff;border:1px solid #ddd"></i><i style="background:#8A2432"></i></span><b>Capitol Classic</b><small>Centered serif, maroon rules — traditional government style</small></button>
+    <button class="tpl-card sel" data-tpl="t-modern"><span class="swatchrow"><i style="background:#8A2432"></i><i style="background:#D2372A"></i><i style="background:#E68F3C"></i></span><b>Golden State Modern</b><small>Bold maroon banner with amber section accents</small></button>
+    <button class="tpl-card" data-tpl="t-slate"><span class="swatchrow"><i style="background:#26333D"></i><i style="background:#E68F3C"></i><i style="background:#F2ECDF"></i></span><b>Sacramento Slate</b><small>Dark slate header, gold keyline — executive feel</small></button>
+    <button class="tpl-card" data-tpl="t-ats"><span class="swatchrow"><i style="background:#000"></i><i style="background:#fff;border:1px solid #ddd"></i><i style="background:#000"></i></span><b>State Standard (ATS-safe)</b><small>Plain single-column Arial — maximum compatibility</small></button>
+  </div>
+  <div class="export-row no-print">
+    <button class="btn" id="print-resume">🖨 Print / Save as PDF</button>
+    <button class="btn secondary" id="doc-resume" style="border-color:var(--crimson);color:var(--crimson)">⬇ Download .doc</button>
+  </div>
+  <div class="doc t-modern" id="tpl-preview"></div>
+</section>
+
+<!-- ================= JOBS ================= -->
+<section class="view" id="view-jobs">
+  <h2>Job Match — California State Classifications</h2>
+  <p class="lead">All state hiring runs through <a href="https://www.calcareers.ca.gov/" target="_blank" rel="noopener">CalCareers</a>, where each posting's duty statement defines what the job contains and what the SOQ must include. Search a keyword below, or just type in the Resume Builder and matches appear automatically.</p>
+  <fieldset class="no-print">
+    <legend>Search classifications</legend>
+    <label for="job-search">Keyword (e.g. manager, supervisor, analyst, IT…)</label>
+    <input type="text" id="job-search" placeholder="manager">
+  </fieldset>
+  <div id="jobs-all"></div>
+</section>
+
+<!-- ================= PRIVACY ================= -->
+<section class="view" id="view-privacy">
+  <h2>Privacy Policy</h2>
+  <div class="legal">
+    <p class="updated">Effective date: August 6, 2026</p>
+    <p>This Privacy Policy explains how <b>Rez Wiz</b> ("we," "us") handles information when you use this resume and Statement of Qualifications builder (the "Service"). It is written to satisfy the California Consumer Privacy Act as amended by the California Privacy Rights Act (CCPA/CPRA), and it addresses children's online protections, including the contexts covered by the Children's Internet Protection Act (CIPA) and the federal Children's Online Privacy Protection Act (COPPA).</p>
+
+    <h3>1. The Short Version</h3>
+    <p>Rez Wiz runs entirely in your web browser. The resume and SOQ content you type is stored only in your browser's local storage on your own device. We do not transmit, collect, sell, share, or rent your personal information. We use no advertising, no analytics trackers, and no cookies.</p>
+
+    <h3>2. Information We Collect</h3>
+    <ul>
+      <li><b>Information you type</b> (name, contact details, work history, SOQ responses): saved locally in your browser only. It never leaves your device through the Service.</li>
+      <li><b>Automatically collected information:</b> none. The Service sets no cookies and embeds no third-party trackers, pixels, or analytics.</li>
+    </ul>
+
+    <h3>3. How Information Is Used</h3>
+    <p>Your locally stored content is used solely to render your resume and SOQ previews and exports, on your device. Clearing your browser data, or using the browser's private mode, removes it.</p>
+
+    <h3>4. Sale and Sharing of Personal Information</h3>
+    <p>We do <b>not</b> sell personal information and have not done so in the preceding 12 months. We do not "share" personal information for cross-context behavioral advertising as defined by the CCPA/CPRA. Because no personal information is collected by us, there is nothing to sell or share.</p>
+
+    <h3>5. Your California Privacy Rights (CCPA/CPRA)</h3>
+    <p>California residents have the right to: know what personal information is collected, used, shared, or sold; access it; correct it; delete it; limit use of sensitive personal information; opt out of sale or sharing; and be free from discrimination for exercising these rights. Because Rez Wiz stores your data only on your own device, you can exercise access, correction, and deletion directly: edit any field at any time, or delete everything with your browser's "clear site data" control. To ask questions or exercise any right, contact the site operator listed in Section 10. We will respond within 45 days as required by law.</p>
+
+    <h3>6. Children's Privacy (COPPA &amp; CIPA)</h3>
+    <ul>
+      <li>The Service is intended for adults and job seekers age 16 and older, and is not directed to children under 13. We do not knowingly collect personal information from children under 13 (COPPA). Because the Service collects nothing on our side, no child data is received or retained by us.</li>
+      <li>The Service contains no obscene, harmful, or age-inappropriate content, no chat or messaging features, and no user-to-user disclosure of personal information, supporting use in CIPA-compliant environments such as schools and public libraries that operate federally mandated internet-safety filtering.</li>
+      <li>If you believe a child under 13 has provided personal information in a context involving the operator, contact us and we will delete it.</li>
+    </ul>
+
+    <h3>7. External Links</h3>
+    <p>The Service links to the State of California's CalCareers website (calcareers.ca.gov). Once you leave Rez Wiz, the destination site's own privacy policy governs. Rez Wiz is not affiliated with, or endorsed by, the State of California.</p>
+
+    <h3>8. Data Security</h3>
+    <p>Because your content stays on your own device, the primary safeguards are your device's — use a locked, personal device for sensitive drafting, and avoid saving personal data in shared or public computers (use private browsing there instead).</p>
+
+    <h3>9. Changes to This Policy</h3>
+    <p>Material changes will be posted on this page with a new effective date.</p>
+
+    <h3>10. Contact</h3>
+    <p>Questions or requests: contact the site operator through the repository or channel where you obtained Rez Wiz.</p>
+  </div>
+</section>
+
+<!-- ================= TERMS ================= -->
+<section class="view" id="view-terms">
+  <h2>Terms &amp; Conditions</h2>
+  <div class="legal">
+    <p class="updated">Effective date: August 6, 2026</p>
+    <h3>1. Acceptance</h3>
+    <p>By using Rez Wiz (the "Service") you agree to these Terms &amp; Conditions. If you do not agree, do not use the Service.</p>
+    <h3>2. What the Service Is</h3>
+    <p>Rez Wiz is a free, browser-based tool that helps you draft resumes and Statements of Qualifications for California state employment applications. It provides formatting, guidance, and links to the official CalCareers website.</p>
+    <h3>3. No Affiliation with the State of California</h3>
+    <p>Rez Wiz is an independent tool. It is not produced, sponsored, or endorsed by the State of California, CalHR, or any state department. "CalCareers" is the State's official job site; always rely on the actual job posting — its duty statement, filing instructions, and SOQ requirements — as the authoritative source.</p>
+    <h3>4. No Guarantee of Employment</h3>
+    <p>Using the Service does not guarantee an interview, exam result, eligibility, or job offer. Hiring decisions belong solely to the hiring departments.</p>
+    <h3>5. Your Content and Responsibility</h3>
+    <p>You own the content you create. You are responsible for its accuracy and truthfulness — submitting false information on a state application (e.g., the STD 678) can disqualify you or be unlawful. Review every export before submitting it.</p>
+    <h3>6. Acceptable Use</h3>
+    <p>You agree not to use the Service to create fraudulent documents, to misrepresent identity or credentials, or to violate any law or third-party right.</p>
+    <h3>7. Disclaimer of Warranties</h3>
+    <p>The Service is provided "as is" and "as available," without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement. Guidance reflects common state-hiring conventions but individual postings control.</p>
+    <h3>8. Limitation of Liability</h3>
+    <p>To the maximum extent permitted by law, the Service's operator shall not be liable for indirect, incidental, special, consequential, or exemplary damages, or for lost opportunities, arising from use of the Service.</p>
+    <h3>9. Changes</h3>
+    <p>We may update the Service and these Terms; continued use after changes constitutes acceptance. Material changes will be posted here with a new effective date.</p>
+    <h3>10. Governing Law</h3>
+    <p>These Terms are governed by the laws of the State of California, without regard to conflict-of-law rules.</p>
+  </div>
+</section>
+
+<!-- Hidden print target -->
+<div id="printable" style="display:none"><div class="doc" id="print-doc"></div></div>
+
+</main>
+
+<footer>
+  <div class="footrow">
+    <span>✦ <b>Rez Wiz</b> © 2026</span>
+    <a href="#privacy">Privacy Policy</a>
+    <a href="#terms">Terms &amp; Conditions</a>
+    <a href="https://www.calcareers.ca.gov/" target="_blank" rel="noopener">CalCareers ↗</a>
+    <span class="disclaimer">Not affiliated with or endorsed by the State of California. Your data stays in your browser.</span>
+  </div>
+</footer>
+
+<script>
+/* ============================ Data ============================ */
+const CAL = 'https://www.calcareers.ca.gov/';
+const searchUrl = kw => 'https://www.calcareers.ca.gov/CalHRPublic/Search/JobSearchResults.aspx#kw=' + encodeURIComponent(kw);
+
+const JOBS = [
+  {keys:['manager','management','managing'], title:'Staff Services Manager I / II / III', blurb:'The State\'s core management series — supervises analysts and programs across nearly every department.', kw:'Staff Services Manager'},
+  {keys:['manager','project'], title:'Project Manager (IT Manager / Project Director)', blurb:'Leads technology and capital projects; common in CDT, Caltrans, and large departments.', kw:'Project Manager'},
+  {keys:['supervisor','supervise','supervising','supervision'], title:'Supervising Program Technician II / III', blurb:'First-line supervision of program technician teams processing high-volume work.', kw:'Supervising Program Technician'},
+  {keys:['supervisor','office'], title:'Office Services Supervisor I / II', blurb:'Supervises clerical and office support operations.', kw:'Office Services Supervisor'},
+  {keys:['analyst','analysis','analytical'], title:'Associate Governmental Program Analyst (AGPA)', blurb:'Journey-level analyst classification — policy, program, budget, and personnel analysis.', kw:'Associate Governmental Program Analyst'},
+  {keys:['analyst','entry'], title:'Staff Services Analyst (SSA)', blurb:'Entry/developmental analyst level; the most common gateway into state service.', kw:'Staff Services Analyst'},
+  {keys:['director','executive','chief','deputy'], title:'Career Executive Assignment (C.E.A.)', blurb:'Executive leadership roles setting departmental policy.', kw:'Career Executive Assignment'},
+  {keys:['it','information technology','software','developer','programmer','data','cyber','network'], title:'Information Technology Specialist I / II / III', blurb:'Software, data, security, and infrastructure roles under the IT classification consolidation.', kw:'Information Technology Specialist'},
+  {keys:['engineer','engineering'], title:'Transportation Engineer / Associate Engineer', blurb:'Civil and specialty engineering, heavily recruited by Caltrans and DWR.', kw:'Engineer'},
+  {keys:['accountant','accounting','fiscal','auditor','budget'], title:'Accountant I / Accounting Officer / Auditor I', blurb:'Fiscal control, reporting, and audit roles across control agencies.', kw:'Accountant'},
+  {keys:['attorney','legal','law','counsel'], title:'Attorney / Attorney III / Legal Analyst', blurb:'Legal practice and analysis for departments, boards, and the AG\'s office.', kw:'Attorney'},
+  {keys:['teacher','education','instructor','school'], title:'Education Programs Consultant', blurb:'Statewide education policy and program leadership at CDE — requires a credential.', kw:'Education Programs Consultant'},
+  {keys:['nurse','health','medical','clinical'], title:'Registered Nurse / Health Program Specialist', blurb:'Clinical and health-program roles at CDPH, DHCS, CDCR, and state hospitals.', kw:'Registered Nurse'},
+  {keys:['office','clerical','administrative','assistant','receptionist'], title:'Office Technician / Office Assistant', blurb:'Administrative support backbone of every state office.', kw:'Office Technician'},
+  {keys:['custodian','maintenance','facilities','janitor'], title:'Custodian / Building Maintenance Worker', blurb:'Facilities operations for state buildings, parks, and campuses.', kw:'Custodian'},
+  {keys:['scientist','environmental','science','research'], title:'Environmental Scientist / Research Data Analyst', blurb:'Science and research roles at CalEPA boards, CDFW, and health departments.', kw:'Environmental Scientist'},
+  {keys:['human resources','hr','personnel'], title:'Personnel Specialist / HR Analyst', blurb:'Transactions, classification, and pay administration in departmental HR offices.', kw:'Personnel Specialist'},
+];
+
+/* ============================ State ============================ */
+const KEY='rezwiz.v1';
+const blankExp = () => ({role:'',org:'',dates:'',duties:''});
+const blankEdu = () => ({deg:'',school:'',year:''});
+const blankSoq = () => ({factor:'',answer:''});
+const BLANK = {
+  name:'',title:'',email:'',phone:'',city:'',link:'',summary:'',skills:'',
+  exp:[blankExp()], edu:[blankEdu()],
+  soq:{jc:'',dept:'',cls:'',limit:'',items:[blankSoq()]},
+  tpl:'t-modern'
+};
+/* Sample profile shown on first visit so every page renders populated. */
+const SAMPLE = {
+  name:'Alex Sacramento',
+  title:'Staff Services Manager I',
+  email:'alex.sacramento@example.com',
+  phone:'(916) 555-0100',
+  city:'Sacramento, CA',
+  link:'linkedin.com/in/alexsacramento',
+  summary:'Program analyst with six years of increasingly responsible experience in California state service, supervising analyst teams, managing program budgets, and advising executive leadership. Known for translating statute and CalHR policy into workable procedures and for building audit-ready program records.',
+  skills:'Supervision & staff development, Budget & contract management, Policy analysis, Legislative bill analysis, Stakeholder engagement, FI$Cal, Microsoft 365, Report writing',
+  exp:[
+    {role:'Associate Governmental Program Analyst', org:'California Department of Education — Sacramento, CA', dates:'06/2021 – Present',
+     duties:'Lead a unit of 4 analysts administering a statewide program serving 1,100 local educational agencies\nManage a $2.4M contract portfolio; monitor invoices, deliverables, and vendor performance\nDraft policy guidance, management reports, and executive briefings for division leadership\nTrain and mentor new analysts; developed the unit desk manual and onboarding plan'},
+    {role:'Staff Services Analyst', org:'Department of General Services — West Sacramento, CA', dates:'05/2018 – 06/2021',
+     duties:'Processed and analyzed 300+ purchase requests annually for compliance with State Contracting Manual policy\nReconciled program budgets and prepared quarterly expenditure projections for management\nCoordinated interagency workgroups and produced formal meeting minutes and action logs'}
+  ],
+  edu:[
+    {deg:'B.A., Public Policy', school:'California State University, Sacramento', year:'2017'},
+    {deg:'Certificate, Leadership Development Program', school:'CalHR', year:'2023'}
+  ],
+  soq:{
+    jc:'JC-458210', dept:'California Department of Education', cls:'Staff Services Manager I', limit:'2 pages maximum, Arial 12 pt',
+    items:[
+      {factor:'Describe your experience planning, organizing, and directing the work of a multidisciplinary team, including how you set priorities and evaluated performance.',
+       answer:'As lead Associate Governmental Program Analyst at the California Department of Education, I direct the daily work of a four-analyst unit administering a statewide program serving 1,100 local educational agencies. I set weekly priorities against statutory deadlines, built a shared workload tracker, and hold monthly one-on-ones with documented expectations and development goals. As a result, on-time deliverable completion rose from 82 percent to 98 percent within two quarters, and the tracker was adopted division-wide.'},
+      {factor:'Describe your experience interpreting and applying laws, rules, and policies, and communicating requirements to varied audiences.',
+       answer:'In my current role I interpret Education Code, federal grant terms, and CalHR policy to answer program questions from districts and internal staff. When a regulation change affected subgrantee reporting, I analyzed the revised requirements, rewrote the program guidance in plain language, and delivered webinar training to more than 200 district staff. Follow-up help-desk tickets on the topic dropped by roughly half the following quarter.'}
+    ]
+  },
+  tpl:'t-modern'
+};
+let state = JSON.parse(JSON.stringify(SAMPLE));
+try{ const saved = JSON.parse(localStorage.getItem(KEY)); if(saved && saved.exp) state = Object.assign(state, saved); }catch(e){}
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} };
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ============================ Router ============================ */
+const VIEWS=['home','builder','soq','templates','jobs','privacy','terms'];
+function route(){
+  let h=(location.hash||'#home').slice(1); if(!VIEWS.includes(h)) h='home';
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('active', s.id==='view-'+h));
+  document.querySelectorAll('nav.tabs a').forEach(a=>{
+    if(a.getAttribute('href')==='#'+h) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+  });
+  window.scrollTo({top:0});
+}
+window.addEventListener('hashchange',route);
+
+/* ============================ Builder form ============================ */
+function bindScalars(){
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    el.value = state[el.dataset.k]||'';
+    el.addEventListener('input',()=>{ state[el.dataset.k]=el.value; save(); renderPreviews(); scanKeywords(); });
+  });
+  document.querySelectorAll('[data-sk]').forEach(el=>{
+    el.value = state.soq[el.dataset.sk]||'';
+    el.addEventListener('input',()=>{ state.soq[el.dataset.sk]=el.value; save(); renderSoq(); });
+  });
+}
+function renderExp(){
+  const host=document.getElementById('exp-list');
+  host.innerHTML = state.exp.map((e,i)=>`
+    <div class="entry">
+      <div class="rowhead"><strong>Position ${i+1}</strong>${state.exp.length>1?`<button type="button" class="linkbtn" data-del-exp="${i}">Remove</button>`:''}</div>
+      <div class="grid2">
+        <div><label>Job title</label><input type="text" value="${esc(e.role)}" data-exp="${i}" data-f="role" placeholder="Program Analyst"></div>
+        <div><label>Employer</label><input type="text" value="${esc(e.org)}" data-exp="${i}" data-f="org" placeholder="Dept. of Example, State of CA"></div>
+        <div><label>Dates</label><input type="text" value="${esc(e.dates)}" data-exp="${i}" data-f="dates" placeholder="06/2021 – Present"></div>
+      </div>
+      <label>Key duties &amp; results (one per line)</label>
+      <textarea data-exp="${i}" data-f="duties" placeholder="Supervised 8 staff processing 1,200 cases/month&#10;Managed $1.5M budget…">${esc(e.duties)}</textarea>
+    </div>`).join('');
+  host.querySelectorAll('[data-exp]').forEach(el=>el.addEventListener('input',()=>{
+    state.exp[+el.dataset.exp][el.dataset.f]=el.value; save(); renderPreviews(); scanKeywords();
+  }));
+  host.querySelectorAll('[data-del-exp]').forEach(b=>b.addEventListener('click',()=>{
+    state.exp.splice(+b.dataset.delExp,1); save(); renderExp(); renderPreviews(); scanKeywords();
+  }));
+}
+function renderEdu(){
+  const host=document.getElementById('edu-list');
+  host.innerHTML = state.edu.map((e,i)=>`
+    <div class="entry">
+      <div class="rowhead"><strong>Entry ${i+1}</strong>${state.edu.length>1?`<button type="button" class="linkbtn" data-del-edu="${i}">Remove</button>`:''}</div>
+      <div class="grid2">
+        <div><label>Degree / certificate</label><input type="text" value="${esc(e.deg)}" data-edu="${i}" data-f="deg" placeholder="B.A., Public Administration"></div>
+        <div><label>School / issuer</label><input type="text" value="${esc(e.school)}" data-edu="${i}" data-f="school" placeholder="CSU Sacramento"></div>
+        <div><label>Year</label><input type="text" value="${esc(e.year)}" data-edu="${i}" data-f="year" placeholder="2019"></div>
+      </div>
+    </div>`).join('');
+  host.querySelectorAll('[data-edu]').forEach(el=>el.addEventListener('input',()=>{
+    state.edu[+el.dataset.edu][el.dataset.f]=el.value; save(); renderPreviews();
+  }));
+  host.querySelectorAll('[data-del-edu]').forEach(b=>b.addEventListener('click',()=>{
+    state.edu.splice(+b.dataset.delEdu,1); save(); renderEdu(); renderPreviews();
+  }));
+}
+function renderSoqForm(){
+  const host=document.getElementById('soq-list');
+  host.innerHTML = state.soq.items.map((s,i)=>`
+    <div class="entry">
+      <div class="rowhead"><strong>Factor ${i+1}</strong>${state.soq.items.length>1?`<button type="button" class="linkbtn" data-del-soq="${i}">Remove</button>`:''}</div>
+      <label>Factor — paste exactly as written in the posting</label>
+      <textarea data-soq="${i}" data-f="factor" style="min-height:56px" placeholder="Describe your experience supervising professional staff…">${esc(s.factor)}</textarea>
+      <label>Your response (STAR: situation, task, action, result)</label>
+      <textarea data-soq="${i}" data-f="answer" style="min-height:110px" placeholder="As lead analyst at…, I supervised… resulting in…">${esc(s.answer)}</textarea>
+    </div>`).join('');
+  host.querySelectorAll('[data-soq]').forEach(el=>el.addEventListener('input',()=>{
+    state.soq.items[+el.dataset.soq][el.dataset.f]=el.value; save(); renderSoq();
+  }));
+  host.querySelectorAll('[data-del-soq]').forEach(b=>b.addEventListener('click',()=>{
+    state.soq.items.splice(+b.dataset.delSoq,1); save(); renderSoqForm(); renderSoq();
+  }));
+}
+
+/* ============================ Keyword matching ============================ */
+let scanT=null;
+function scanKeywords(){
+  clearTimeout(scanT);
+  scanT=setTimeout(()=>{
+    const hay=[state.title,state.summary,state.skills,...state.exp.map(e=>e.role+' '+e.duties)].join(' ').toLowerCase();
+    const hits=[], kws=new Set();
+    JOBS.forEach(j=>{
+      const matched=j.keys.filter(k=>hay.includes(k));
+      if(matched.length){ hits.push(j); matched.forEach(k=>kws.add(k)); }
+    });
+    const panel=document.getElementById('match-panel');
+    if(!hits.length){ panel.hidden=true; return; }
+    panel.hidden=false;
+    document.getElementById('match-kws').innerHTML=[...kws].slice(0,8).map(k=>`<span class="kw-chip">${esc(k)}</span>`).join('');
+    document.getElementById('match-list').innerHTML=hits.slice(0,6).map(j=>jobCard(j)).join('');
+  },350);
+}
+const jobCard = j => `
+  <div class="job-card">
+    <div><b>${esc(j.title)}</b><small>${esc(j.blurb)}</small></div>
+    <a href="${searchUrl(j.kw)}" target="_blank" rel="noopener">Search on CalCareers ↗</a>
+  </div>`;
+function renderJobsAll(filter){
+  const f=(filter||'').toLowerCase().trim();
+  const list=JOBS.filter(j=>!f || j.title.toLowerCase().includes(f) || j.keys.some(k=>k.includes(f)||f.includes(k)));
+  document.getElementById('jobs-all').innerHTML =
+    (list.length?list.map(jobCard).join(''):'<p class="hint">No classification matched — try "manager", "supervisor", "analyst", or search directly on <a href="'+CAL+'" target="_blank" rel="noopener">CalCareers</a>.</p>');
+}
+
+/* ============================ Resume rendering ============================ */
+function resumeHTML(){
+  const contact=[state.email,state.phone,state.city,state.link].filter(Boolean).map(esc).join(' · ');
+  const skills=state.skills.split(',').map(s=>s.trim()).filter(Boolean);
+  const banner = `
+    <div class="r-head">
+      <div class="r-name">${esc(state.name)||'Your Name'}</div>
+      <div>${esc(state.title)||''}</div>
+      <div class="r-contact">${contact}</div>
+    </div>`;
+  const plainHead = `
+    <div class="r-name">${esc(state.name)||'Your Name'}</div>
+    ${state.title?`<div><b>${esc(state.title)}</b></div>`:''}
+    <div class="r-contact">${contact}</div>`;
+  const useBanner = state.tpl==='t-modern'||state.tpl==='t-slate';
+  let h = useBanner?banner:plainHead;
+  if(state.summary) h+=`<h3 class="r-sec">Professional Summary</h3><p>${esc(state.summary)}</p>`;
+  const exps=state.exp.filter(e=>e.role||e.org||e.duties);
+  if(exps.length){
+    h+='<h3 class="r-sec">Work Experience</h3>'+exps.map(e=>`
+      <div class="r-item">
+        <span class="r-role">${esc(e.role)}</span>${e.org?` — ${esc(e.org)}`:''}
+        ${e.dates?`<div class="r-meta">${esc(e.dates)}</div>`:''}
+        ${e.duties?`<ul>${e.duties.split('\n').map(d=>d.trim()).filter(Boolean).map(d=>`<li>${esc(d)}</li>`).join('')}</ul>`:''}
+      </div>`).join('');
+  }
+  const edus=state.edu.filter(e=>e.deg||e.school);
+  if(edus.length){
+    h+='<h3 class="r-sec">Education &amp; Certifications</h3>'+edus.map(e=>`
+      <div class="r-item"><span class="r-role">${esc(e.deg)}</span>${e.school?` — ${esc(e.school)}`:''}${e.year?` (${esc(e.year)})`:''}</div>`).join('');
+  }
+  if(skills.length) h+=`<h3 class="r-sec">Skills</h3><p>${skills.map(esc).join(' · ')}</p>`;
+  if(!state.name&&!exps.length&&!state.summary) h+='<p style="color:#999">Start typing in the form — your resume appears here.</p>';
+  return h;
+}
+function soqHTML(){
+  const s=state.soq;
+  let h=`<div style="text-align:right;font-size:.9em">${esc(state.name)||'Your Name'}${s.jc?' — '+esc(s.jc):''}</div>
+  <h2 style="text-align:center;font-size:1.15em;margin:10px 0 2px">Statement of Qualifications</h2>
+  <div style="text-align:center;font-size:.95em;margin-bottom:14px">${[s.cls,s.dept,s.jc].filter(Boolean).map(esc).join(' · ')}</div>`;
+  const items=s.items.filter(i=>i.factor||i.answer);
+  if(items.length){
+    h+=items.map((i,n)=>`
+      <p><b>${n+1}. ${esc(i.factor)||'(factor)'}</b></p>
+      <p>${esc(i.answer).replace(/\n/g,'<br>')||'<i style="color:#999">Your response…</i>'}</p>`).join('');
+  } else {
+    h+='<p style="color:#999">Add SOQ factors on the left — your formatted SOQ appears here.</p>';
+  }
+  if(s.limit) h+=`<p style="font-size:.8em;color:#777;border-top:1px solid #ddd;margin-top:16px;padding-top:6px">Posting format requirement: ${esc(s.limit)}</p>`;
+  return h;
+}
+function renderPreviews(){
+  const html=resumeHTML();
+  const live=document.getElementById('live-preview'); live.className='doc '+state.tpl; live.innerHTML=html;
+  const tp=document.getElementById('tpl-preview'); tp.className='doc '+state.tpl; tp.innerHTML=html;
+}
+function renderSoq(){ document.getElementById('soq-preview').innerHTML=soqHTML(); }
+
+/* ============================ Templates & export ============================ */
+document.getElementById('tpl-picker').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-tpl]'); if(!btn) return;
+  state.tpl=btn.dataset.tpl; save();
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('sel',c===btn));
+  renderPreviews();
+});
+function printDoc(html, tplClass){
+  const pd=document.getElementById('print-doc');
+  pd.className='doc '+(tplClass||''); pd.innerHTML=html;
+  document.getElementById('printable').style.display='block';
+  window.print();
+  document.getElementById('printable').style.display='none';
+}
+function downloadDoc(html, filename){
+  const css=document.querySelector('style').innerHTML;
+  const blob=new Blob(['<html><head><meta charset="utf-8"><style>'+css+'</style></head><body><div class="doc '+state.tpl+'">'+html+'</div></body></html>'],{type:'application/msword'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+const fname = base => ((state.name||'RezWiz').replace(/[^A-Za-z0-9]+/g,'_')+'_'+base+'.doc');
+document.getElementById('print-resume').addEventListener('click',()=>printDoc(resumeHTML(),state.tpl));
+document.getElementById('doc-resume').addEventListener('click',()=>downloadDoc(resumeHTML(),fname('Resume')));
+document.getElementById('print-soq').addEventListener('click',()=>printDoc(soqHTML(),''));
+document.getElementById('doc-soq').addEventListener('click',()=>downloadDoc(soqHTML(),fname('SOQ')));
+
+/* ============================ Add buttons & search ============================ */
+function setFormValues(){
+  document.querySelectorAll('[data-k]').forEach(el=>{ el.value = state[el.dataset.k]||''; });
+  document.querySelectorAll('[data-sk]').forEach(el=>{ el.value = state.soq[el.dataset.sk]||''; });
+}
+function refreshAll(){
+  setFormValues(); renderExp(); renderEdu(); renderSoqForm();
+  renderPreviews(); renderSoq(); scanKeywords();
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('sel',c.dataset.tpl===state.tpl));
+}
+document.getElementById('load-sample').addEventListener('click',()=>{
+  state = JSON.parse(JSON.stringify(SAMPLE)); save(); refreshAll();
+});
+document.getElementById('clear-all').addEventListener('click',()=>{
+  state = JSON.parse(JSON.stringify(BLANK)); save(); refreshAll();
+});
+document.getElementById('add-exp').addEventListener('click',()=>{state.exp.push(blankExp());save();renderExp();});
+document.getElementById('add-edu').addEventListener('click',()=>{state.edu.push(blankEdu());save();renderEdu();});
+document.getElementById('add-soq').addEventListener('click',()=>{state.soq.items.push(blankSoq());save();renderSoqForm();});
+document.getElementById('job-search').addEventListener('input',e=>renderJobsAll(e.target.value));
+
+/* ============================ Init ============================ */
+bindScalars(); renderExp(); renderEdu(); renderSoqForm();
+renderPreviews(); renderSoq(); renderJobsAll(''); scanKeywords();
+document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('sel',c.dataset.tpl===state.tpl));
+route();
+</script>
+</body>
+</html>
