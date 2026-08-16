@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDE Facilities LOF Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root {
+  --navy:#1a2744; --navy-mid:#243460; --gold:#c8a84b; --gold-light:#e8d08a;
+  --cream:#f7f4ee; --sage:#edf0eb; --border:#d4cebd; --text:#1a1a1a;
+  --muted:#6b6659; --red:#b91c1c; --green:#166534; --white:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+header{background:var(--navy);padding:18px 36px;display:flex;align-items:center;gap:18px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:100;}
+.seal{width:48px;height:48px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:20px;color:var(--navy);flex-shrink:0;}
+.header-text h1{font-family:'DM Serif Display',serif;font-size:18px;color:var(--white);}
+.header-text p{font-size:10px;color:var(--gold-light);font-family:'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.container{max-width:1060px;margin:0 auto;padding:32px 20px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:4px;margin-bottom:18px;overflow:hidden;}
+.card-head{background:var(--navy);padding:13px 22px;display:flex;align-items:center;gap:12px;}
+.card-step{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;min-width:54px;}
+.card-title{font-family:'DM Serif Display',serif;font-size:15px;color:var(--white);}
+.card-body{padding:22px;}
+.field-group{margin-bottom:14px;}
+.field-group label{display:block;font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.field-group input,.field-group select{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--cream);color:var(--text);outline:none;transition:border-color .18s;}
+.field-group input:focus,.field-group select:focus{border-color:var(--navy);}
+.field-hint{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:6px;}
+.field-hint a{color:var(--navy);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:580px){.grid-2{grid-template-columns:1fr;}}
+.upload-zone{border:2px dashed var(--border);border-radius:4px;padding:36px;text-align:center;cursor:pointer;background:var(--sage);transition:all .18s;position:relative;}
+.upload-zone:hover,.upload-zone.over{border-color:var(--navy);background:#e2e8f0;}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:32px;margin-bottom:10px;}
+.upload-label{font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);margin-bottom:5px;}
+.upload-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+.file-pill{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:var(--white);padding:5px 14px;border-radius:20px;font-size:12px;font-family:'DM Mono',monospace;margin-top:12px;}
+.file-pill .rm{cursor:pointer;opacity:.7;font-size:14px;line-height:1;}
+.file-pill .rm:hover{opacity:1;}
+.btn{padding:10px 26px;border:none;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-primary{background:var(--navy);color:var(--white);}
+.btn-primary:hover:not(:disabled){background:var(--navy-mid);}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:hover:not(:disabled){background:var(--gold-light);}
+.btn-gold:disabled{opacity:.45;cursor:not-allowed;}
+.btn-outline{background:transparent;border:1.5px solid var(--navy);color:var(--navy);}
+.btn-outline:hover{background:var(--navy);color:var(--white);}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.status-bar{display:none;align-items:center;gap:10px;background:var(--sage);border:1px solid var(--border);border-radius:3px;padding:11px 16px;font-family:'DM Mono',monospace;font-size:12px;color:var(--navy);margin-top:14px;}
+.status-bar.show{display:flex;}
+.spinner{width:15px;height:15px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.prog-wrap{margin-top:8px;display:none;}
+.prog-wrap.show{display:block;}
+.prog-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s ease;width:0%;}
+.error-box{display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:3px;padding:13px 16px;color:var(--red);font-size:13px;margin-top:12px;}
+.error-box.show{display:block;}
+#results{display:none;margin-top:8px;}
+#results.show{display:block;}
+.sum-strip{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.s-pill{padding:6px 14px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;}
+.sp-total{background:var(--navy);color:var(--white);}
+.sp-viol{background:var(--red);color:var(--white);}
+.sp-ok{background:var(--green);color:var(--white);}
+.sp-pa{background:#e5e7eb;color:#374151;}
+.table-wrap{overflow-x:auto;}
+.ftable{width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1px solid var(--border);}
+.ftable th{background:var(--navy);color:var(--white);padding:10px 13px;text-align:left;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:500;}
+.ftable th:nth-child(1){width:26%;}
+.ftable th:nth-child(2){width:14%;}
+.ftable th:nth-child(3){width:30%;}
+.ftable th:nth-child(4){width:30%;}
+.ftable td{padding:11px 13px;border:1px solid var(--border);vertical-align:top;line-height:1.55;}
+.ftable tr:nth-child(even) td{background:var(--cream);}
+td[contenteditable="true"]{outline:none;cursor:text;}
+td[contenteditable="true"]:focus{background:#fef9ec!important;box-shadow:inset 0 0 0 2px var(--gold);}
+.area-name{font-weight:600;color:var(--navy);display:block;}
+.loc-line{font-size:11px;color:var(--muted);margin-top:2px;}
+.loc-name{text-decoration:underline;font-weight:500;}
+.std-badge{display:inline-block;padding:2px 7px;border-radius:2px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;margin:1px 0;white-space:nowrap;}
+.b-pa{background:#e5e7eb;color:#374151;}
+.b-ansi{background:#fef9c3;color:#713f12;}
+.b-ufas{background:#dbeafe;color:#1e3a8a;}
+.b-1991{background:#d1fae5;color:#064e3b;}
+.b-2010{background:#fee2e2;color:#7f1d1d;}
+.b-na{background:#f3f4f6;color:#9ca3af;}
+.none-cell{color:var(--muted);font-style:italic;}
+.cite-tag{display:block;margin-top:6px;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--navy);}
+.viol-row td{border-left:3px solid var(--red);}
+.cell-edit{outline:none;cursor:text;border-bottom:1px dashed var(--border);min-width:120px;display:inline-block;padding:0 3px;}
+.cell-edit:focus{background:#fef9ec;box-shadow:inset 0 -2px 0 var(--gold);border-bottom-color:transparent;}
+.cell-edit:empty::before{content:attr(data-ph);color:var(--muted);font-style:italic;}
+.std-pick{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:3px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);}
+.std-pick:focus{outline:none;border-color:var(--navy);}
+.export-bar{display:flex;align-items:center;gap:10px;padding:14px 22px;background:var(--sage);border-top:1px solid var(--border);flex-wrap:wrap;}
+.export-note{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);flex:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="seal">CDE</div>
+  <div class="header-text">
+    <h1>Facilities LOF Generator</h1>
+    <p>Civil Rights Review &middot; CRR 20 / CRR 21 &middot; Building Accessibility</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Step 1: School Info -->
+  <div class="card">
+    <div class="card-head"><span class="card-step">Step 01</span><span class="card-title">School &amp; Review Information</span></div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div class="field-group"><label>School Name</label><input type="text" id="schoolName" placeholder="e.g. Pacific Career &amp; Technology High School"></div>
+        <div class="field-group"><label>District Name</label><input type="text" id="districtName" placeholder="e.g. Twin Rivers Unified School District"></div>
+        <div class="field-group">
+          <label>Review Cycle</label>
+          <select id="reviewCycle">
+            <option value="CRR 20">CRR 20 &mdash; 2025-26</option>
+            <option value="CRR 21">CRR 21 &mdash; 2024-25</option>
+          </select>
+        </div>
+        <div class="field-group"><label>Review Date / Period</label><input type="text" id="reviewDate" placeholder="e.g. December 2025"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Upload -->
+  <div class="card">
+    <div class="card-head"><span class="card-step">Step 02</span><span class="card-title">Upload Completed Facilities Review Guide</span></div>
+    <div class="card-body">
+      <div class="upload-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".pdf,.docx,.doc">
+        <div class="upload-icon">📋</div>
+        <div class="upload-label">Drop file here or click to browse</div>
+        <div class="upload-sub">Accepts PDF or Word (.docx) &mdash; the completed Facilities Self-Assessment packet</div>
+        <div id="filePill" style="display:none;">
+          <span class="file-pill">
+            <span id="fileName">—</span>
+            <span class="rm" id="removeBtn">&#x2715;</span>
+          </span>
+        </div>
+      </div>
+      <div class="status-bar" id="extractStatus"><div class="spinner"></div><span id="extractMsg">Extracting text…</span></div>
+      <div class="error-box" id="extractError"></div>
+    </div>
+  </div>
+
+  <!-- Step 3: Results -->
+  <div id="results">
+    <div class="card">
+      <div class="card-head"><span class="card-step">Step 03</span><span class="card-title">Enter &amp; Edit Findings</span></div>
+      <div class="card-body">
+        <p style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:16px;">All cells are editable. Click location / construction / modified to type the values. Pick the applicable standard from the dropdown. Type the violation and corrective action; leave as &ldquo;None.&rdquo; for compliant or Program Access rows.</p>
+        <div class="sum-strip" id="sumStrip"></div>
+        <div class="table-wrap">
+          <table class="ftable" id="ftable">
+            <thead>
+              <tr>
+                <th>Area Reviewed with Construction &amp; Alteration Date(s)</th>
+                <th>Applicable Building Standard</th>
+                <th>Accessibility Violation</th>
+                <th>Corrective Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ftbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="export-bar">
+        <span class="export-note">All violation and corrective action cells are editable. Review carefully before exporting.</span>
+        <button class="btn btn-outline btn-sm" onclick="resetTool()">Start Over</button>
+        <button class="btn btn-gold" id="exportBtn" onclick="exportToWord()">&#11015; Export to Word (.docx)</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let extractedText = '';
+let findingsData = [];
+
+// ── File handling ─────────────────────────────────────────────────────────────
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); });
+document.getElementById('removeBtn').addEventListener('click', e => { e.stopPropagation(); clearFile(); });
+
+const AREA_ORDER = [
+  "Accessible Parking",
+  "Accessible Routes/Walkways from accessible parking",
+  "Stairways and Steps",
+  "Ramps",
+  "Curb Ramps",
+  "Entrances, Doors, and Gates",
+  "Rooms, Offices, and Administration",
+  "Elevators/Lifts",
+  "Accessible Drinking Fountains",
+  "Cafeteria",
+  "Library",
+  "CTE Classrooms",
+  "Labs/Shops",
+  "Gymnasium/Auditorium/Weight Room/Other",
+  "Stadium/Field",
+  "Dressing, Fitting, and Locker Rooms",
+  "Restrooms",
+  "Public Telephones",
+];
+
+function clearFile() {
+  extractedText = ''; fileInput.value = '';
+  document.getElementById('filePill').style.display = 'none';
+  hide('extractStatus'); hide('extractError');
+  document.getElementById('results').classList.remove('show');
+  findingsData = [];
+}
+
+async function handleFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['pdf','docx','doc'].includes(ext)) { showErr('extractError','Please upload a PDF or Word (.docx) file.'); return; }
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('filePill').style.display = 'block';
+  hide('extractError'); show('extractStatus');
+  document.getElementById('extractMsg').textContent = ext === 'pdf' ? 'Extracting text from PDF…' : 'Extracting text from Word document…';
+  try {
+    extractedText = ext === 'pdf' ? await extractPDF(file) : await extractDOCX(file);
+    document.getElementById('extractMsg').textContent = '✓ Extracted ' + extractedText.length.toLocaleString() + ' characters. Findings table ready below.';
+    buildBlankFindings();
+    renderResults();
+  } catch(err) { hide('extractStatus'); showErr('extractError','Could not read file: ' + err.message); }
+}
+
+function buildBlankFindings() {
+  findingsData = AREA_ORDER.map(area => ({
+    area,
+    locations: [{name:"", constructed:"", modified:""}],
+    standards: ["N/A"],
+    hasViolation: false,
+    violation: "None.",
+    violationCite: "",
+    corrective: "None.",
+    correctiveCite: ""
+  }));
+}
+
+async function extractPDF(file) {
+  const ab = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data:ab}).promise;
+  let text = '';
+  for(let i=1;i<=pdf.numPages;i++) {
+    const pg = await pdf.getPage(i);
+    const c = await pg.getTextContent();
+    text += c.items.map(x=>x.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+async function extractDOCX(file) {
+  const ab = await file.arrayBuffer();
+  const r = await mammoth.extractRawText({arrayBuffer:ab});
+  return r.value;
+}
+
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderResults() {
+  const tbody = document.getElementById('ftbody');
+  tbody.innerHTML = '';
+
+  findingsData.forEach((row, i) => {
+    const tr = document.createElement('tr');
+
+    // Col 1: area name (header) + editable location/dates
+    const td1 = document.createElement('td');
+    const locHtml = '<div class="loc-line">Location: <span class="cell-edit" contenteditable="true" data-field="locName" data-row="'+i+'">click to enter location/building</span></div>'
+                  + '<div class="loc-line">Constructed: <span class="cell-edit" contenteditable="true" data-field="constructed" data-row="'+i+'">click to enter date</span></div>'
+                  + '<div class="loc-line">Modified: <span class="cell-edit" contenteditable="true" data-field="modified" data-row="'+i+'">click to enter date or N/A</span></div>';
+    td1.innerHTML = '<span class="area-name">' + esc(row.area) + ':</span>' + locHtml;
+    tr.appendChild(td1);
+
+    // Col 2: standards (editable — click to pick)
+    const td2 = document.createElement('td');
+    td2.innerHTML = '<select class="std-pick" data-row="'+i+'">'
+      + '<option value="">— select —</option>'
+      + '<option value="Program Access">Program Access</option>'
+      + '<option value="ANSI A117.1">ANSI A117.1</option>'
+      + '<option value="UFAS">UFAS</option>'
+      + '<option value="1991 ADA">1991 ADA</option>'
+      + '<option value="2010 ADA">2010 ADA</option>'
+      + '<option value="N/A">N/A</option>'
+      + '</select>';
+    tr.appendChild(td2);
+
+    // Col 3: violation (editable)
+    const td3 = document.createElement('td');
+    td3.contentEditable = 'true';
+    td3.dataset.field = 'violation'; td3.dataset.row = i;
+    td3.innerHTML = '<span class="none-cell">None.</span>';
+    tr.appendChild(td3);
+
+    // Col 4: corrective (editable)
+    const td4 = document.createElement('td');
+    td4.contentEditable = 'true';
+    td4.dataset.field = 'corrective'; td4.dataset.row = i;
+    td4.innerHTML = '<span class="none-cell">None.</span>';
+    tr.appendChild(td4);
+
+    tbody.appendChild(tr);
+  });
+
+  // Wire up edits to keep findingsData in sync
+  tbody.querySelectorAll('.cell-edit').forEach(el => {
+    el.addEventListener('blur', () => {
+      const row = +el.dataset.row, field = el.dataset.field;
+      const v = el.innerText.trim();
+      if (field === 'locName')      findingsData[row].locations[0].name = v;
+      if (field === 'constructed')  findingsData[row].locations[0].constructed = v;
+      if (field === 'modified')     findingsData[row].locations[0].modified = v;
+    });
+  });
+  tbody.querySelectorAll('td[contenteditable="true"]').forEach(el => {
+    el.addEventListener('blur', () => {
+      const row = +el.dataset.row, field = el.dataset.field;
+      if (!field) return;
+      const v = el.innerText.trim();
+      findingsData[row][field] = (v === '' ? 'None.' : v);
+      findingsData[row].hasViolation = (v !== '' && v !== 'None.');
+      // Mark row visually
+      const tr = el.parentElement;
+      if (findingsData[row].hasViolation) tr.classList.add('viol-row');
+      else tr.classList.remove('viol-row');
+      updateSummary();
+    });
+  });
+  tbody.querySelectorAll('.std-pick').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const row = +sel.dataset.row;
+      findingsData[row].standards = sel.value ? [sel.value] : ["N/A"];
+      updateSummary();
+    });
+  });
+
+  updateSummary();
+  show('results');
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+function updateSummary() {
+  let viol=0, ok=0, pa=0;
+  findingsData.forEach(r => {
+    const isPA = (r.standards||[]).every(s => s==='Program Access'||s==='N/A');
+    if (r.hasViolation && !isPA) viol++;
+    else if (isPA) pa++;
+    else ok++;
+  });
+  document.getElementById('sumStrip').innerHTML =
+    '<span class="s-pill sp-total">' + findingsData.length + ' Areas</span>' +
+    '<span class="s-pill sp-viol">' + viol + ' Violation' + (viol!==1?'s':'') + '</span>' +
+    '<span class="s-pill sp-ok">' + ok + ' Compliant</span>' +
+    '<span class="s-pill sp-pa">' + pa + ' Program Access / N/A</span>';
+}
+
+// ── Word Export ───────────────────────────────────────────────────────────────
+async function exportToWord() {
+  const btn = document.getElementById('exportBtn');
+  btn.disabled = true; btn.textContent = 'Generating…';
+
+  try {
+    const school = document.getElementById('schoolName').value || 'School';
+    const cycle = document.getElementById('reviewCycle').value;
+    const crrNum = cycle.includes('20') ? '20' : '21';
+
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+      AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign, UnderlineType, HeadingLevel } = docx;
+
+    const cb = {style:BorderStyle.SINGLE,size:4,color:"999999"};
+    const borders = {top:cb,bottom:cb,left:cb,right:cb};
+    const CW = [2808,1368,2592,2592];
+
+    const t = (text,o={}) => new TextRun({text,font:"Arial",size:20,...o});
+    const b = (text,o={}) => t(text,{bold:true,...o});
+    const u = text => t(text,{underline:{type:UnderlineType.SINGLE}});
+    const p = (children,o={}) => { if(typeof children==='string') children=[t(children)]; return new Paragraph({children,spacing:{after:80},...o}); };
+
+    const mkCell = (paras, w, shade) => new TableCell({
+      borders, margins:{top:80,bottom:80,left:120,right:120},
+      width:{size:w,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP,
+      ...(shade?{shading:{fill:shade,type:ShadingType.CLEAR}}:{}),
+      children:paras
+    });
+    const hCell = (text, w) => new TableCell({
+      borders, margins:{top:80,bottom:80,left:120,right:120},
+      width:{size:w,type:WidthType.DXA}, shading:{fill:"1a2744",type:ShadingType.CLEAR},
+      verticalAlign:VerticalAlign.CENTER,
+      children:[p([b(text,{color:"FFFFFF"})],{alignment:AlignmentType.CENTER})]
+    });
+
+    const rows = Array.from(document.getElementById('ftbody').rows);
+
+    const tableRows = [
+      new TableRow({tableHeader:true, children:[
+        hCell("Area Reviewed with Construction and Alteration Date(s)",CW[0]),
+        hCell("Applicable Building Standard",CW[1]),
+        hCell("Accessibility Violation",CW[2]),
+        hCell("Corrective Actions",CW[3])
+      ]}),
+      ...rows.map((tr,i) => {
+        const fd = findingsData[i]||{};
+        const col1 = [p([b((fd.area||'')+ ':')])];
+        (fd.locations||[]).forEach(loc => {
+          if(loc.name) col1.push(p([u(loc.name)]));
+          if(loc.constructed) col1.push(p([t('Constructed: '+loc.constructed)]));
+          if(loc.modified) col1.push(p([t('Modified: '+loc.modified)]));
+        });
+        const col2 = (fd.standards||[]).map(s=>p([t(s)]));
+        const vText = tr.cells[2].innerText.trim()||'None.';
+        const cText = tr.cells[3].innerText.trim()||'None.';
+        return new TableRow({children:[
+          mkCell(col1,CW[0]),
+          mkCell(col2,CW[1]),
+          mkCell([p([t(vText)])],CW[2]),
+          mkCell([p([t(cText)])],CW[3])
+        ]});
+      })
+    ];
+
+    const boilerplate = [
+      new Paragraph({heading:HeadingLevel.HEADING_1,children:[b('CRR '+crrNum+': Accessible Facilities',{size:28})],spacing:{after:120}}),
+      p([b("Applicable Requirements: "),t("28 CFR Sections 35, 35.151, 35.151(a); 34 CFR Sections 104.22, 104.22(a), 104.23, 104.23(a), 104.23(c) and 36 Appendix D.")]),
+      p([u("Program Access/Readily Accessible \u2013 Existing Facility under 504")]),
+      p([t('For existing recipient facilities under 504 that were built or altered beginning June 3, 1977, or earlier, a recipient shall operate its program or activity so that when each part is viewed in its entirety, it is \u201creadily accessible\u201d to disabled persons. A recipient is not required to make each of its existing facilities or every part of a facility accessible to and useable by persons with disabilities.')],{spacing:{after:120}}),
+      p([u("American National Standards Institute (ANSI) \u2013 New Construction under 504")]),
+      p([t('Each facility or part of a facility constructed by, on behalf of, or for the use of a recipient under 504 that were built or altered between June 4, 1977, and January 17, 1991, inclusive, shall be designed and constructed in such manner that the facility or part of the facility is readily accessible to and usable by persons with disabilities. Conformance with the \u201cAmerican National Standard Specifications for Making Buildings and Facilities Accessible to, and Usable by, the Physically Disabled\u201d published by the American National Standards Institute, Inc. (ANSI) A117.1\u20131961 (R1971) Later versions of ANSI A117.1 do not apply.')],{spacing:{after:120}}),
+      p([u("Uniform Federal Accessibility Standards (UFAS) \u2013 New Construction under 504")]),
+      p([t('Each facility or part of a facility constructed by, on behalf of, or for the use of a recipient or public entity under 504 that were built or altered between January 18, 1991, and January 26, 1992, inclusive, shall be designed and constructed in such manner that the facility or part of the facility is readily accessible to and usable by persons with disabilities. Conformance with the Uniform Federal Accessibility Standards (UFAS) (Appendix A to 41 CFR Section 101-19.6). Departures from particular technical and scoping requirements permitted where substantially equivalent or greater access to and usability of the building is provided.')],{spacing:{after:120}}),
+      p([u("1991 Americans with Disabilities Act (ADA) \u2013 New Construction under 504")]),
+      p([t('Each facility or part of a facility constructed by, on behalf of, or for the use of a recipient or public entity is designed and constructed in such manner that the facility or part of the facility is readily accessible to and usable by persons with disabilities. UFAS or the 1991 Americans with Disabilities Act (ADA) Standard apply to facilities constructed or altered on or after January 27, 1992 and before September 15, 2010.')],{spacing:{after:120}}),
+      p([u("2010 Americans with Disabilities Act (ADA) \u2013 New Construction under 504")]),
+      p([t('Each facility or part of a facility constructed by, on behalf of, or for the use of a recipient or public entity is designed and constructed in such a manner that the facility or part of the facility is readily accessible to and usable by persons with disabilities. The 2010 ADA Standards apply to facilities constructed on or after March 15, 2012.')],{spacing:{after:200}}),
+      p([b('Summary of Analysis, Findings, and Required Corrective Actions (CRR '+crrNum+'):')]),
+      p([t('Facilities listed below were assessed under program accessibility, ANSI, UFAS, 1991 ADA, and 2010 ADA standards. The Office of Civil Rights requires all corrective actions to be made in accordance with 2010 ADA standards; therefore, certain areas will not require corrective action as the noted deficiency is within the 2010 ADA standards.')],{spacing:{after:200}}),
+    ];
+
+    const doc2 = new Document({
+      styles:{default:{document:{run:{font:"Arial",size:20}}},
+        paragraphStyles:[{id:"Heading1",name:"Heading 1",basedOn:"Normal",next:"Normal",
+          run:{size:28,bold:true,font:"Arial"},paragraph:{spacing:{before:200,after:100}}}]},
+      sections:[{
+        properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},
+        children:[...boilerplate, new Table({width:{size:9360,type:WidthType.DXA},columnWidths:CW,rows:tableRows})]
+      }]
+    });
+
+    const buf = await Packer.toBuffer(doc2);
+    const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (school||'School').replace(/[^a-zA-Z0-9]/g,'_') + '_Facilities_LOF.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+
+  } catch(err) { alert('Export failed: ' + err.message); }
+  finally { btn.disabled=false; btn.textContent='\u2B07 Export to Word (.docx)'; }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function stdClass(s) {
+  if(!s) return 'b-na';
+  if(s.includes('Program')) return 'b-pa';
+  if(s.includes('ANSI')) return 'b-ansi';
+  if(s.includes('UFAS')) return 'b-ufas';
+  if(s.includes('1991')) return 'b-1991';
+  if(s.includes('2010')) return 'b-2010';
+  return 'b-na';
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function show(id){ const el=document.getElementById(id); if(el) el.classList.add('show'); }
+function hide(id){ const el=document.getElementById(id); if(el) el.classList.remove('show'); }
+function showErr(id,msg){ const el=document.getElementById(id); if(el){ el.textContent=msg; el.classList.add('show'); } }
+function resetTool(){
+  if(!confirm('Clear everything and start over?')) return;
+  clearFile();
+  document.getElementById('ftbody').innerHTML='';
+  document.getElementById('sumStrip').innerHTML='';
+  findingsData=[]; extractedText='';
+}
+</script>
+</body>
+</html>

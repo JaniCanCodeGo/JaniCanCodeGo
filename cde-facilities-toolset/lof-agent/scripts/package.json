@@ -1,0 +1,14 @@
+{
+  "name": "facilities-lof-generator",
+  "version": "2.0.0",
+  "private": true,
+  "description": "CRR 20/21 Facilities Letter of Findings generator (CDE OEO)",
+  "main": "generate_lof.js",
+  "scripts": {
+    "generate": "node generate_lof.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "docx": "^9.0.2"
+  }
+}
