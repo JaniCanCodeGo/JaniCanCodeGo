@@ -718,9 +718,24 @@ function printDoc(html, tplClass){
   window.print();
   document.getElementById('printable').style.display='none';
 }
-function downloadDoc(html, filename){
+let dlCap=null, dlCapTried=false;
+async function getDownloads(){
+  if(!dlCapTried){
+    dlCapTried=true;
+    try{ if(window.claude && window.claude.use) dlCap=await window.claude.use('downloads'); }catch(e){ dlCap=null; }
+  }
+  return dlCap;
+}
+async function downloadDoc(html, filename){
   const css=document.querySelector('style').innerHTML;
-  const blob=new Blob(['<html><head><meta charset="utf-8"><style>'+css+'</style></head><body><div class="doc '+state.tpl+'">'+html+'</div></body></html>'],{type:'application/msword'});
+  const full='<html><head><meta charset="utf-8"><style>'+css+'</style></head><body><div class="doc '+state.tpl+'">'+html+'</div></body></html>';
+  const dl=await getDownloads();
+  if(dl){
+    /* In-browser viewer: offer via the platform save dialog (.html opens in Word too) */
+    try{ await dl.save({filename: filename.replace(/\.doc$/i,'.html'), data: full}); }catch(e){}
+    return;
+  }
+  const blob=new Blob([full],{type:'application/msword'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download=filename; a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
