@@ -614,8 +614,7 @@ footer .disp{color:#F2A900;font-size:1.2rem}
 
   /* ---- hash routing across the 7 pages ---- */
   var pages = ["home","bill","numbers","story","healing","podcast","yourstory"];
-  function show(){
-    var h = (location.hash || "#home").replace("#","");
+  function show(h){
     if(pages.indexOf(h) === -1) h = "home";
     pages.forEach(function(p){
       var sec = document.getElementById("page-"+p);
@@ -627,8 +626,22 @@ footer .disp{color:#F2A900;font-size:1.2rem}
     });
     window.scrollTo(0,0);
   }
-  window.addEventListener("hashchange", show);
-  show();
+  /* sandboxed frames (like published artifacts) block hash navigation, so
+     page switching is driven by click, with the hash as a fallback for
+     direct #page links in a normal tab */
+  document.addEventListener("click", function(e){
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if(!a) return;
+    var h = a.getAttribute("href").slice(1);
+    if(pages.indexOf(h) === -1) return;
+    e.preventDefault();
+    try{ history.replaceState(null,"","#"+h); }catch(err){}
+    show(h);
+  });
+  window.addEventListener("hashchange", function(){
+    show((location.hash || "#home").replace("#",""));
+  });
+  show((location.hash || "#home").replace("#",""));
 
   /* ---- chart tooltips ---- */
   var tip = document.getElementById("tooltip");
