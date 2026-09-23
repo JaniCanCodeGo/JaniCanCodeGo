@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Civil Rights Review - Building Accessibility</title>
+<style>
+/* CDE OEO palette. DM fonts referenced by family name only; system fallbacks, no CDN. */
+:root {
+  --navy:#1A2744; --navy-mid:#243460; --gold:#C8A84B; --gold-light:#E8D08A;
+  --cream:#F7F4EE; --sage:#EDF0EB; --border:#D4CEBD; --text:#1a1a1a;
+  --muted:#6B6659; --red:#b91c1c; --green:#166534; --white:#ffffff;
+  --serif:'DM Serif Display',Georgia,'Times New Roman',serif;
+  --sans:'DM Sans',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'DM Mono','SF Mono',Consolas,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--cream);color:var(--text);min-height:100vh;font-size:14px;}
+header{background:var(--navy);padding:16px 28px;display:flex;align-items:center;gap:16px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:200;}
+.seal{width:46px;height:46px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:19px;color:var(--navy);flex-shrink:0;}
+.header-text h1{font-family:var(--serif);font-size:18px;color:var(--white);font-weight:400;}
+.header-text p{font-size:10px;color:var(--gold-light);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.header-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);max-width:1340px;margin:0 auto;gap:24px;padding:24px 20px;align-items:start;}
+@media(max-width:940px){.layout{grid-template-columns:1fr;}}
+/* Sticky table of contents */
+nav.toc{position:sticky;top:92px;background:var(--white);border:1px solid var(--border);border-radius:4px;max-height:calc(100vh - 116px);overflow-y:auto;padding:10px 0;}
+@media(max-width:940px){nav.toc{position:static;max-height:220px;}}
+nav.toc .toc-head{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 16px 8px;}
+nav.toc a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 16px;font-size:12px;color:var(--navy);text-decoration:none;border-left:3px solid transparent;line-height:1.35;}
+nav.toc a:hover{background:var(--sage);border-left-color:var(--gold);}
+nav.toc a .cnt{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--sage);border:1px solid var(--border);border-radius:10px;padding:0 7px;flex-shrink:0;}
+main{min-width:0;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:4px;margin-bottom:20px;overflow:hidden;}
+.card-head{background:var(--navy);padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.card-step{font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;min-width:64px;}
+.card-title{font-family:var(--serif);font-size:16px;color:var(--white);font-weight:400;}
+.card-sub{font-size:11px;color:var(--gold-light);font-family:var(--mono);width:100%;}
+.card-body{padding:20px;}
+.section-note{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:14px;line-height:1.5;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:3px;font-family:var(--sans);font-size:14px;background:var(--cream);color:var(--text);outline:none;transition:border-color .18s;}
+.fg textarea{min-height:56px;resize:vertical;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--navy);}
+.hint{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:3px;line-height:1.5;}
+/* Field table rows */
+table.fields{width:100%;border-collapse:collapse;background:var(--white);}
+table.fields td{padding:8px 10px;border:1px solid var(--border);vertical-align:top;}
+table.fields td.lbl{width:52%;font-size:13px;line-height:1.45;}
+table.fields td.lbl .fh{display:block;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px;line-height:1.5;}
+table.fields tr.subhdr td{background:var(--sage);font-family:var(--serif);font-size:13px;color:var(--navy);letter-spacing:.02em;}
+table.fields tr.fnote td{background:var(--cream);font-size:11px;font-style:italic;color:var(--muted);line-height:1.5;}
+table.fields input[type=text],table.fields select,table.fields textarea{width:100%;padding:6px 9px;border:1px solid var(--border);border-radius:3px;font-family:var(--sans);font-size:13px;background:var(--cream);outline:none;}
+table.fields textarea{min-height:44px;resize:vertical;}
+table.fields input:focus,table.fields select:focus,table.fields textarea:focus{border-color:var(--navy);}
+/* Instance shells */
+.instance{border:1px solid var(--border);border-radius:4px;margin-bottom:16px;overflow:hidden;background:var(--white);}
+.inst-head{background:var(--sage);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+.inst-title{font-family:var(--mono);font-size:11px;color:var(--navy);letter-spacing:.06em;text-transform:uppercase;font-weight:600;}
+.inst-head .spacer{flex:1;}
+.inst-body{padding:14px;}
+.ident-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:640px){.ident-grid{grid-template-columns:1fr;}}
+.ident-grid .wide{grid-column:1 / -1;}
+/* Buttons */
+.btn{padding:8px 18px;border:none;border-radius:3px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-primary{background:var(--navy);color:var(--white);}
+.btn-primary:hover{background:var(--navy-mid);}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-outline{background:transparent;border:1.5px solid var(--navy);color:var(--navy);}
+.btn-outline:hover{background:var(--navy);color:var(--white);}
+.btn-danger{background:transparent;border:1.5px solid var(--red);color:var(--red);}
+.btn-danger:hover{background:var(--red);color:var(--white);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.add-bar{padding:4px 0 2px;}
+/* Toolbar / status */
+.toolbar-note{font-size:10px;font-family:var(--mono);color:var(--gold-light);}
+.savemsg{font-size:10px;font-family:var(--mono);color:var(--gold-light);min-width:110px;text-align:right;}
+/* Privacy footer */
+footer.privacy-footer{background:#FBF3DC;border-top:3px solid var(--gold);padding:18px 28px 26px;font-size:13px;line-height:1.6;color:var(--text);margin-top:8px;}
+footer.privacy-footer .inner{max-width:1340px;margin:0 auto;}
+footer.privacy-footer strong{color:var(--navy);}
+footer.privacy-footer .imp{font-weight:700;color:var(--red);}
+/* Signature block */
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:22px;}
+@media(max-width:640px){.sig-grid{grid-template-columns:1fr;}}
+.sig-line{border-top:1px solid var(--text);padding-top:5px;font-size:11px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:34px;}
+.sig-img-slot{min-height:0;}
+.sig-img-slot img{max-height:60px;max-width:100%;height:auto;display:block;}
+.sig-tools{margin-top:16px;padding:12px;border:1px dashed var(--border);border-radius:4px;background:var(--sage);}
+.sig-tools .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.sig-tools a{color:var(--red);font-size:12px;}
+#sigPadWrap{margin-top:10px;}
+#sigPad{border:1px solid var(--border);background:var(--white);border-radius:3px;touch-action:none;max-width:100%;display:block;}
+#sigPadWrap .row{margin-top:8px;}
+/* Print */
+@media print{
+  header,nav.toc,.header-actions,.add-bar,.btn,.no-print{display:none !important;}
+  body{background:var(--white);font-size:11px;}
+  .layout{display:block;padding:0;max-width:none;}
+  .card{border:1px solid #999;break-inside:avoid-page;margin-bottom:14px;box-shadow:none;}
+  section.area{break-before:page;}
+  .card-head{background:var(--white) !important;border-bottom:2px solid var(--navy);-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .card-title{color:var(--navy);}
+  .card-step,.card-sub{color:var(--muted);}
+  .instance{break-inside:avoid-page;}
+  table.fields input,table.fields select,table.fields textarea,.fg input,.fg select,.fg textarea{border:none;border-bottom:1px solid #999;border-radius:0;background:var(--white);}
+  #printHeaderRepeat{display:block !important;}
+  #printPrivacyFooter{display:block !important;}
+  .sig-tools{display:none !important;}
+  footer.privacy-footer{display:none !important;}
+}
+#printHeaderRepeat{display:none;font-family:var(--serif);font-size:15px;color:var(--navy);margin-bottom:12px;}
+#printPrivacyFooter{display:none;font-size:10px;color:var(--muted);border-top:1px solid #999;margin-top:16px;padding-top:8px;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="seal">CDE</div>
+  <div class="header-text">
+    <h1>Civil Rights Review - Building Accessibility</h1>
+    <p>Civil Rights Review &middot; CRR 20 &middot; Building Accessibility &middot; Office of Equal Opportunity</p>
+  </div>
+  <div class="header-actions">
+    <span class="savemsg" id="saveMsg"></span>
+    <button class="btn btn-outline btn-sm" style="border-color:var(--gold);color:var(--gold-light);" onclick="window.print()">Print / PDF</button>
+    <button class="btn btn-gold btn-sm" id="btnWord" onclick="downloadWord()">Download Word (.doc)</button>
+    <button class="btn btn-danger btn-sm" style="border-color:#E8A9A9;color:#E8A9A9;" onclick="clearAll()">Clear</button>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Section navigation"></nav>
+  <main>
+    <div id="printHeaderRepeat">California Department of Education, Office of Equal Opportunity: Civil Rights Review - Building Accessibility</div>
+
+    <!-- Header block -->
+    <div class="card" id="sec-header">
+      <div class="card-head"><span class="card-step">Intake</span><span class="card-title">School &amp; Review Information</span></div>
+      <div class="card-body">
+        <p class="section-note">This form is completed by the school site. It collects facility data only. Record what you observe and measure; do not leave measurements blank if they can be taken. If a value cannot be measured, note why in the Additional Information field for that area. Never estimate a measurement.</p>
+        <div class="grid-2">
+          <div class="fg"><label for="f-schoolName">School Name</label><input id="f-schoolName" type="text" data-h="schoolName" placeholder="e.g. Pacific Career and Technology High School"></div>
+          <div class="fg"><label for="f-districtName">District Name</label><input id="f-districtName" type="text" data-h="districtName" placeholder="e.g. Twin Rivers Unified School District"></div>
+          <div class="fg"><label for="f-cdsCode">CDS Code (14 digits)</label><input id="f-cdsCode" type="text" data-h="cdsCode" placeholder="e.g. 34674470000000"></div>
+          <div class="fg">
+            <label for="f-reviewCycle">Review Cycle (CRR 20)</label>
+            <select id="f-reviewCycle" data-h="reviewCycle">
+              <option value="">Select...</option>
+              <option value="2026-2027">2026-2027</option>
+              <option value="2027-2028">2027-2028</option>
+              <option value="2028-2029">2028-2029</option>
+              <option value="2029-2030">2029-2030</option>
+              <option value="2030-2031">2030-2031</option>
+            </select>
+          </div>
+          <div class="fg"><label for="f-reviewDate">Review Date / Site Visit Date</label><input id="f-reviewDate" type="text" data-h="reviewDate" placeholder="e.g. December 10, 2025"></div>
+          <div class="fg"><label for="f-preparerName">Preparer Name</label><input id="f-preparerName" type="text" data-h="preparerName" placeholder="Name of site staff completing this form"></div>
+          <div class="fg"><label for="f-preparerTitle">Preparer Title</label><input id="f-preparerTitle" type="text" data-h="preparerTitle" placeholder="e.g. Director of Facilities"></div>
+          <div class="fg"><label for="f-preparerContact">Preparer Email / Phone</label><input id="f-preparerContact" type="text" data-h="preparerContact" placeholder="Optional"></div>
+        </div>
+        <div class="sig-tools no-print" id="sigTools">
+          <div class="row">
+            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('sigFile').click()">Add signature image</button>
+            <input type="file" id="sigFile" accept="image/*" style="display:none" aria-label="Signature image file">
+            <button type="button" class="btn btn-outline btn-sm" id="sigDrawBtn">Draw signature</button>
+            <a href="#" id="sigRemove" style="display:none;" aria-label="Remove signature image">Remove signature</a>
+          </div>
+          <div id="sigPadWrap" style="display:none;">
+            <canvas id="sigPad" width="400" height="100" role="img" aria-label="Signature drawing area. Draw your signature with a mouse or finger, then choose Accept."></canvas>
+            <div class="row">
+              <button type="button" class="btn btn-outline btn-sm" id="sigPadClear">Clear</button>
+              <button type="button" class="btn btn-primary btn-sm" id="sigPadAccept">Accept</button>
+              <button type="button" class="btn btn-outline btn-sm" id="sigPadCancel">Cancel</button>
+            </div>
+          </div>
+          <p class="hint">For certificate-based digital signatures (Adobe), print to PDF and sign the PDF in Adobe Acrobat.</p>
+        </div>
+        <div class="sig-grid">
+          <div>
+            <div class="sig-img-slot" id="sigPreview"></div>
+            <div class="sig-line">Preparer Signature</div>
+            <div class="fg" style="margin-top:10px;"><label for="f-sigDate">Signature Date</label><input id="f-sigDate" type="text" data-h="sigDate" placeholder="e.g. December 10, 2025"></div>
+          </div>
+          <div><div class="sig-line">Site Administrator Signature</div><div class="sig-line">Date</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+
+    <div id="printPrivacyFooter">Privacy Notice: This form runs entirely in your web browser on your device. No data you enter is transmitted, collected, retained, saved, monitored, or tracked by the California Department of Education or anyone else. Nothing is sent over the internet. Your entries exist only in this browser tab while it is open. IMPORTANT: If you close this tab or browser, or your device restarts, all entered data will be permanently lost and cannot be retrieved. Print or download your work before closing. If you step away, your work remains only until the tab is closed.</div>
+  </main>
+</div>
+
+<footer class="privacy-footer" id="privacyFooter">
+  <div class="inner">
+    <strong>Privacy Notice:</strong> This form runs entirely in your web browser on your device. No data you enter is transmitted, collected, retained, saved, monitored, or tracked by the California Department of Education or anyone else. Nothing is sent over the internet. Your entries exist only in this browser tab while it is open. <span class="imp">IMPORTANT: If you close this tab or browser, or your device restarts, all entered data will be permanently lost and cannot be retrieved.</span> Print or download your work before closing. If you step away, your work remains only until the tab is closed.
+  </div>
+</footer>
+
+<script>
+'use strict';
+/* ==========================================================================
+   CDE OEO Civil Rights Review - Building Accessibility: site data form.
+   Completed by the LEA / school site. Data collection only.
+   Data-driven: CONFIG describes every section; one engine renders all.
+   Hint text next to measurement fields mirrors the Word guide.
+   No network calls. Autosaves to sessionStorage only (cleared when the
+   tab or browser closes). No em-dash characters.
+   ========================================================================== */
+
+/* ---------------- Field shorthand ----------------------------------------
+   Each field: [kind, label, hint]
+   kind: 'q' text | 'ta' textarea | 'yn' Yes/No | 'yna' Yes/No/NA
+         'hdr' subsection header | 'note' italic note
+--------------------------------------------------------------------------- */
+var SIGN_HINT = '60 in centerline; 57 to 63 in band, verify per cycle';
+
+function doorBlock(){
+  return [
+    ['q','Width of doorway(s) (inches)','Min 32 in'],
+    ['q','Height of door handle (inches)','Max 48 in'],
+    ['yn','Door openable without grasping or twisting wrist?',''],
+    ['q','If not, type of hardware on door',''],
+    ['yna','Automatic door opener provided?',''],
+    ['yna','Door closer takes at least 3 seconds to close?',''],
+    ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
+    ['q','Threshold height, exterior (inches)','Max 1/2 in'],
+    ['q','Threshold height, interior (inches)','Max 1/2 in'],
+    ['yna','Carpeting or mats 1/2 in or less?','']
+  ];
+}
+function signageBlock(){
+  return [
+    ['hdr','Signage',''],
+    ['yn','Identification signage provided?',''],
+    ['q','Height of signage, floor to centerline (inches)',SIGN_HINT],
+    ['q','Height of characters on signage (inches)',''],
+    ['yn','Signs mounted adjacent to latch side of door?',''],
+    ['yna','At double doors, signs on nearest adjacent wall?',''],
+    ['yn','Protruding objects within 3 in of sign?',''],
+    ['yn','Non-glare finish on signs?',''],
+    ['yn','Characters raised plus Grade II Braille?','']
+  ];
+}
+function alarmBlock(){
+  return [
+    ['hdr','Alarms',''],
+    ['yn','Visual alarm provided?',''],
+    ['yn','Light flashes clear or normal white?',''],
+    ['yn','Audible alarm provided?',''],
+    ['yn','Alarm exceeds prevailing sound level in room?','']
+  ];
+}
+var ADDL = ['ta','Additional Information / Observations',''];
+
+/* ---------------- Section configuration ---------------------------------- */
+var CONFIG = [
+{ key:'parking', title:'Accessible Parking (Parking Lots)', repeat:true, unit:'Parking Lot', fields:[
+  ['hdr','Space Counts',''],
+  ['q','Total number of parking spaces',''],
+  ['q','Total number of accessible spaces',''],
+  ['q','Total number of van accessible spaces',''],
+  ['yn','At least 1 of every 6 accessible spaces is van accessible?',''],
+  ['yn','Accessible spaces located closest to nearest accessible route?',''],
+  ['hdr','Dimensions (inches)',''],
+  ['q','Width of accessible parking space','Min 96 in'],
+  ['q','Width of access aisle','Min 60 in standard; van min 96 in (ANSI/UFAS/1991); min 60 in under 2010 if space is 132 in'],
+  ['q','Width of van accessible space','Min 132 in OR 96 in with 60 in aisle (2010); min 96 in plus 96 in aisle (earlier)'],
+  ['q','Width of van access aisle','Min 60 in (2010 with 132 in space); min 96 in (earlier)'],
+  ['q','Vertical clearance, van parking / access aisles (inches)','Min 98 in'],
+  ['yn','Ground surface slope less than 1:48?',''],
+  ['yn','Access aisle slope less than 1:48?',''],
+  ['hdr','Surface Condition',''],
+  ['yn','Parking surface stable, firm, and slip resistant?',''],
+  ['yn','Surface free of potholes, heaving, or broken pavement at accessible spaces and along the accessible route?',''],
+  ['q','Describe any surface deficiencies and locations',''],
+  ['hdr','Markings and Signage',''],
+  ['yn','Accessible spaces marked with lines?',''],
+  ['yn','Access aisle marked to discourage parking in it?',''],
+  ['yn','Vertical ISA sign present?',''],
+  ['q','Height of ISA signage (inches)',''],
+  ['yn','ISA contrasts light-on-dark or dark-on-light?',''],
+  ['yn','Van accessible spaces marked with lines?',''],
+  ['yn','"Van Accessible" signs posted at van spaces?',''],
+  ['q','Height of Van Accessible ISA signage (inches)',''],
+  ['yn','Individuals required to wheel/walk behind parked cars?',''],
+  ['yna','Detectable warnings at curb ramps in transit facilities?',''],
+  ADDL
+]},
+{ key:'loading', title:'Passenger Loading Zones', repeat:false, fields:[
+  ['yn','Passenger loading zone provided?','If No, mark N/A and skip remaining fields'],
+  ['yn','Loading zone on an accessible route?',''],
+  ['q','Access aisle width (inches)','Min 60 in'],
+  ['q','Access aisle length (feet)','Min 20 ft'],
+  ['yn','Access aisle at the same level as the vehicle pull-up space?',''],
+  ['yn','Access aisle marked to discourage parking in it?',''],
+  ['q','Vertical clearance at the zone and along the vehicle route (inches)','Min 114 in'],
+  ['yn','Curb ramp provided between the loading zone and the walkway?','If yes, complete Curb Ramps section'],
+  ADDL
+]},
+{ key:'routes', title:'Accessible Routes / Walkways', repeat:false, fields:[
+  ['yn','At least one accessible route from arrival points to entrance?',''],
+  ['yna','Inaccessible entrances marked with directional signage?',''],
+  ['q','Width of public walkways (inches)','Min 36 in'],
+  ['q','Overhead clearance (inches)','Min 80 in'],
+  ['yna','60 in passing space at intervals along route?','2010 ADA, if route is under 60 in wide; max 200 ft intervals'],
+  ['yn','Path stable, firm, slip-resistant, accessible?',''],
+  ['q','Surface material (concrete / asphalt / pavers / other)',''],
+  ['yn','Walkways continuous, no steps or abrupt level changes?',''],
+  ['yn','Walkways blend to common level at driveways / lots?',''],
+  ['yn','Curb cuts at driveways and parking lots?',''],
+  ['yn','Protruding objects present?','Over 4 in projection with leading edge between 27 in and 80 in above finish floor'],
+  ['q','If yes, describe protruding objects',''],
+  ['note','Running slope over 1:20 makes the route a ramp: complete the Ramps section for that segment.',''],
+  ADDL
+]},
+{ key:'curbramps', title:'Curb Ramps', repeat:true, unit:'Curb Ramp', fields:[
+  ['q','Width of ramp run, not counting flared sides (inches)','Min 36 in'],
+  ['q','Rise measurement (inches)',''],
+  ['q','Length measurement (inches)',''],
+  ['q','Running slope, denominator (e.g. 12 = 1:12)','Max 1:12'],
+  ['q','Cross slope, denominator','Max 1:48 (2 percent)'],
+  ['q','Gutter slope measurement',''],
+  ['yn','Curb ramp has flared sides?',''],
+  ['q','Flared sides ratio, denominator','Max 1:10'],
+  ['yn','Landing provided at top of curb ramp?',''],
+  ['q','Top landing, length x width (inches)','Min 36 in x 36 in'],
+  ['yn','Curb ramp placed diagonally at intersection?',''],
+  ['q','If yes, clear space measurement (inches)',''],
+  ['yn','Raised islands in crossings?',''],
+  ['q','If yes, curb ramp separation, L x W (inches)',''],
+  ['yn','Surface stable, firm, slip-resistant?',''],
+  ['yn','Detectable warnings provided?','Where required; verify per cycle'],
+  ['q','Detectable warning dome size plus spacing',''],
+  ['yn','Detectable warnings light/dark contrast?',''],
+  ['yn','Gratings in walking surface?',''],
+  ['yn','Grating space over 1/2 in in one direction?',''],
+  ['q','Obstructions present? (describe)',''],
+  ADDL
+]},
+{ key:'entrances', title:'Entrances, Doors, and Gates', repeat:true, unit:'Entrance', fields:[].concat(
+  signageBlock(),
+  [['yn','Entrance marked with ISA?',''],
+   ['yn','ISA contrasts light-on-dark or dark-on-light?',''],
+   ['yna','Inaccessible entrances have directional signage to accessible entrance?',''],
+   ['hdr','Door Hardware and Dimensions',''],
+   ['q','Total number of accessible entrances',''],
+   ['q','Total number of exits',''],
+   ['yna','Ramp leading to entrance?','If yes, complete Ramps section']],
+  doorBlock(),
+  [['yn','Floor level within 5 feet of door (direction door swings)?',''],
+   ['q','Doorway platform measurement beyond each side (inches)',''],
+   ['yn','Sharp inclines and abrupt level changes avoided at threshold?',''],
+   ['yn','Main entrance a fire door?','']],
+  alarmBlock(),
+  [ADDL]
+)},
+{ key:'stairs', title:'Stairways and Steps', repeat:true, unit:'Stairway', fields:[
+  ['q','Stair location (interior / exterior)',''],
+  ['yn','Steps avoid abrupt nosing?',''],
+  ['q','Stair width (inches)','Min 44 in for public stairs'],
+  ['yn','Handrails provided on both sides?',''],
+  ['q','Height of handrails (inches)','30 to 34 in: ANSI/UFAS; 34 to 38 in: 1991/2010 ADA'],
+  ['q','Length of handrails (inches)',''],
+  ['yn','Do steps have risers?',''],
+  ['q','Height of risers (inches)','Max 7 in'],
+  ['q','Tread depth (inches)','Min 11 in'],
+  ['yn','Color/tonal contrast on stair nosings?','Contrast strip recommended; verify instrument wording'],
+  ADDL
+]},
+{ key:'ramps', title:'Ramps', repeat:true, unit:'Ramp', fields:[
+  ['q','Ramp serves which area?',''],
+  ['q','Rise measurement (inches)',''],
+  ['q','Length measurement (inches)',''],
+  ['q','Max rise per run (inches)','Max 30 in before an intermediate landing'],
+  ['q','Running slope, denominator','Max 1:12'],
+  ['q','Cross slope, denominator','Max 1:48'],
+  ['yn','Surface stable, firm, slip-resistant?',''],
+  ['yn','Accessible landing at top and bottom?',''],
+  ['q','Top landing, L x W (inches)','Min 60 in x 60 in'],
+  ['q','Bottom landing, L x W (inches)','Min 60 in x 60 in'],
+  ['yn','Intermediate landing between runs?',''],
+  ['yn','Ramp changes direction?',''],
+  ['q','Intermediate / direction-change landing, L x W (inches)','Min 60 in x 60 in'],
+  ['yn','Landing subject to wet conditions?',''],
+  ['q','If yes, landing drainage slope (ratio)',''],
+  ['q','Clear width of ramp between handrails (inches)','Min 36 in'],
+  ['yn','Handrails on both sides?','Required both sides when rise exceeds 6 in'],
+  ['q','Height of handrails (inches)','30 to 34 in: ANSI/UFAS; 34 to 38 in: 1991/2010 ADA'],
+  ['yn','Handrails smooth, extend beyond top and bottom?',''],
+  ['yn','Handrails continuous?',''],
+  ['q','If not continuous, length of horizontal extensions (inches)',''],
+  ['q','Height of edge protection (inches)','Edge protection required: curb, barrier, or extended surface'],
+  ['yn','Ramp has switchback or dogleg?',''],
+  ADDL
+]},
+{ key:'elevators', title:'Elevators', repeat:true, unit:'Elevator', fields:[
+  ['yn','Building has multiple stories?',''],
+  ['yn','Elevator available and usable by individuals with physical disabilities?',''],
+  ['yn','Unassisted access to elevator?',''],
+  ['hdr','Call Controls',''],
+  ['q','Height of call button, floor to panel center (inches)','15 to 48 in'],
+  ['q','Car call button size, diameter (inches)','Min 3/4 in (2010 ADA)'],
+  ['yn','Buttons easy to push or touch-sensitive?',''],
+  ['yn','Visible and audible signals at each hoistway entrance?',''],
+  ['yn','Hall lantern provided?',''],
+  ['yn','Call buttons have visible/audible signals when registered?',''],
+  ['yn','Audible signals: once for up, twice for down (or verbal annunciator)?',''],
+  ['hdr','Hoistway and Car',''],
+  ['yn','Floor designations: raised characters plus Braille on both door jambs?',''],
+  ['q','Floor designation character height (inches)','Min 2 in'],
+  ['q','Type of entrance door (center / side / other)',''],
+  ['q','Width of elevator entrance door (inches)','Min 32 in'],
+  ['yn','Door reopens if obstructed, remains open min 20 seconds?',''],
+  ['yn','Door reopening device sensitive to light touch or contact?','No physical contact required; verify sensitivity rule per cycle'],
+  ['q','Car interior, W x D (inches)','Min 51 W x 51 D center door; 68 W x 51 D side door (2010 ADA)'],
+  ['q','Width of car door (inches)','Min 32 in'],
+  ['yn','Emergency alarm/stop at bottom of panel?',''],
+  ['q','Height of emergency communications, floor to bottom of panel (inches)','Max 48 in'],
+  ['yna','If not accessible, accessible elevator clearly identified with ISA?',''],
+  ADDL
+]},
+{ key:'lifts', title:'Lifts (Platform Lifts)', repeat:true, unit:'Lift', fields:[
+  ['yn','Platform lift provides unassisted entry and exit?',''],
+  ['yn','Walkways have leveled platform-to-runway clearance?',''],
+  ['q','Clear space for approach, L x W (inches)',''],
+  ['q','Height of controls, floor to panel center (inches)','15 to 48 in'],
+  ['yn','Low-energy, power-operated doors or gates?',''],
+  ['yn','Doors remain open minimum 20 seconds?',''],
+  ['q','Width of end doors and gates (inches)','Min 32 in'],
+  ['q','Width of side doors and gates (inches)','Min 32 in'],
+  ['q','Lift interior, W x D (inches)','Min 32 in W x 48 in D'],
+  ADDL
+]},
+{ key:'rooms', title:'Rooms and Offices', repeat:true, unit:'Room / Office', roomName:true, fields:[].concat(
+  [['q','Room number(s)',''],
+   ['yn','Room/office on accessible route?','']],
+  signageBlock(),
+  [['hdr','Doors',''],
+   ['q','Number of entrances and exits',''],
+   ['yn','Fire door or exterior hinged door?','']],
+  doorBlock(),
+  [['hdr','Counters and Workstations',''],
+   ['yn','Accessible sales/services reception countertop?',''],
+   ['q','Forward reach approach (inches)','Max 48 in'],
+   ['q','Parallel approach (inches)',''],
+   ['yn','Accessible reception countertop?',''],
+   ['q','Height of reception countertop (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010 (with min 36 in wide lowered section)'],
+   ['q','Countertop length x width (inches)',''],
+   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['yn','Supplies accessible by persons with disabilities?','']],
+  alarmBlock(),
+  [ADDL]
+)},
+{ key:'cafeteria', title:'Cafeteria (including Service Areas)', repeat:false, fields:[].concat(
+  signageBlock(),
+  [['hdr','Entrance and Doors',''],
+   ['q','Number of entrances and exits',''],
+   ['yn','Cafeteria on accessible route?',''],
+   ['yna','Ramps leading to cafeteria?','If yes, complete Ramps section']],
+  doorBlock(),
+  alarmBlock(),
+  [['hdr','Indoor Fixed Seating',''],
+   ['q','Total number of fixed accessible seats indoors',''],
+   ['yn','Seats and tables on accessible route?',''],
+   ['yn','Wheelchair seating space at fixed tables/counters?',''],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Wheelchair space, W x D (inches)','Min 30 in x 48 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['yn','Accessible route between food line, seating, and exit?',''],
+   ['hdr','Outdoor Fixed Seating',''],
+   ['q','Total number of fixed accessible seats outdoors',''],
+   ['yn','Outdoor seats and tables on accessible route?',''],
+   ['q','Height of outdoor fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Outdoor surface material',''],
+   ['hdr','Food Service Line(s)',''],
+   ['note','Measure all food service lines including main line, a la carte, and student store lines.',''],
+   ['q','Total number of food lines',''],
+   ['q','Food service line aisle width (inches)','Min 36 in clear'],
+   ['q','Height of food line counter / tray slide (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010'],
+   ['q','Height of sneeze guard / food display, lowest accessible item (inches)','Max 48 in forward reach'],
+   ['yn','Self-service items within reach range?',''],
+   ['q','Height of highest self-service item (inches)','Max 48 in'],
+   ['yn','Staff-assisted alternative available if self-service not accessible?',''],
+   ['hdr','Checkout Counter(s)',''],
+   ['q','Total number of checkout aisles',''],
+   ['q','Number of accessible checkout aisles','Min 1 required'],
+   ['q','Checkout aisle width (inches)','Min 36 in'],
+   ['q','Height of accessible checkout counter (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010'],
+   ['q','Width of lowered counter section (inches)','Min 36 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['q','Approach type at checkout (Forward / Parallel)',''],
+   ['q','Height of tableware and condiment areas (inches)','Max 48 in forward reach'],
+   ['hdr','Tray Return / Beverage / Vending',''],
+   ['yn','Tray return station provided?',''],
+   ['yna','Tray return on accessible route?',''],
+   ['q','Height of tray return slot (inches)','Max 48 in'],
+   ['q','Tray return clear floor space, W x D (inches)','Min 30 in x 48 in'],
+   ['yn','Self-service beverage station provided?',''],
+   ['yna','Beverage station on accessible route?',''],
+   ['q','Height of highest operable part, beverage (inches)','Max 48 in'],
+   ['q','Beverage clear floor space, W x D (inches)','Min 30 in x 48 in'],
+   ['yn','Beverage operable parts require tight grasping/pinching/twisting?',''],
+   ['yn','Beverage force to activate exceeds 5 lbs?',''],
+   ['yn','Vending machines provided?',''],
+   ['yna','Vending machines on accessible route?',''],
+   ['q','Height of vending highest operable part (inches)','Max 48 in forward reach'],
+   ['q','Vending clear floor space, W x D (inches)','Min 30 in x 48 in'],
+   ['yn','Vending force to activate exceeds 5 lbs?',''],
+   ADDL]
+)},
+{ key:'library', title:'Library', repeat:false, fields:[].concat(
+  signageBlock(),
+  [['hdr','Entrance and Doors',''],
+   ['q','Number of entrances and exits',''],
+   ['yn','Library on accessible route?',''],
+   ['yna','Ramps leading to library?','If yes, complete Ramps section'],
+   ['q','Overhead clearance of accessible route (inches)','Min 80 in']],
+  doorBlock(),
+  alarmBlock(),
+  [['hdr','Seating and Workstations',''],
+   ['yn','Wheelchair seating at fixed tables/counters?',''],
+   ['yn','Seats and tables on accessible route?',''],
+   ['q','Number of accessible seats',''],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Aisle space width (inches)','Min 36 in; 60 in passing per 2010 ADA where required'],
+   ['q','Turning space in reading areas, diameter (inches)','Min 60 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['yn','Accessible desk/workstations have sufficient clearance?',''],
+   ['yna','If insufficient, alternative option available?',''],
+   ['hdr','Computer Workstations and Adaptive Technology',''],
+   ['yn','Computer workstations available?',''],
+   ['yn','Accessible computer workstation(s) provided?',''],
+   ['q','Height of accessible workstation surface (inches)','28 to 34 in'],
+   ['yn','Adaptive technology available?',''],
+   ['q','If yes, describe adaptive technology',''],
+   ['hdr','Checkout Counter',''],
+   ['q','Number of accessible checkout areas',''],
+   ['q','Height of checkout counter top (inches)','Max 34 in: ANSI/UFAS; max 36 in: 1991/2010'],
+   ['q','Width of lowered counter section (inches)','Min 36 in'],
+   ['q','Counter top depth (inches)',''],
+   ['q','Checkout knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['q','Forward reach approach (inches)','Max 48 in'],
+   ['yn','Parallel approach available?',''],
+   ['hdr','Book Drop',''],
+   ['note','Measuring the book drop: measure from finished floor to bottom edge of drop slot, in inches. Measure clear floor space in front (W x D). Test activation force. Note approach plus location.',''],
+   ['yn','Book drop provided?',''],
+   ['yna','Book drop on accessible route?',''],
+   ['q','Height of drop slot, floor to bottom edge (inches)','Max 48 in forward reach; side reach max 54 in pre-2010, max 48 in under 2010 ADA'],
+   ['q','Book drop clear floor space, W x D (inches)','Min 30 in x 48 in'],
+   ['q','Force required to activate book drop (pounds)','Max 5 lbs'],
+   ['yn','Operable parts require tight grasping/pinching/twisting?',''],
+   ['q','Approach type (Forward / Side)',''],
+   ['q','Book drop location (Exterior / Interior)',''],
+   ['hdr','Card Catalog and Stack Aisles',''],
+   ['q','Card catalog aisle width (inches)','Min 36 in'],
+   ['q','Card catalog operable part height (inches)','Max 48 in forward reach'],
+   ['q','Stack aisle width (inches)','Min 36 in'],
+   ['q','Overhead clearance in stack aisles (inches)','Min 80 in'],
+   ADDL]
+)},
+{ key:'cte', title:'CTE Classrooms', repeat:true, unit:'CTE Classroom', fields:[].concat(
+  [['q','Room number(s)',''],
+   ['q','Program / Course name',''],
+   ['yn','Classroom on accessible route?','']],
+  signageBlock(),
+  [['hdr','Doors',''],
+   ['q','Number of entrances and exits','']],
+  doorBlock(),
+  [['hdr','Seating and Workstations',''],
+   ['yn','Wheelchair seating at fixed tables/counters?',''],
+   ['q','Number of accessible seats',''],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Aisle space width (inches)','Min 36 in'],
+   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['yn','Accessible desk/workstations have sufficient clearance?',''],
+   ['yna','If insufficient, alternative option available?',''],
+   ['yn','Supplies accessible by persons with disabilities?','']],
+  alarmBlock(),
+  [ADDL]
+)},
+{ key:'labs', title:'CTE Labs and Shops', repeat:true, unit:'CTE Lab / Shop', fields:[].concat(
+  [['q','Room number(s)',''],
+   ['q','Program / Course name',''],
+   ['yn','Lab/shop on accessible route?','']],
+  signageBlock(),
+  [['hdr','Doors',''],
+   ['q','Number of entrances and exits','']],
+  doorBlock(),
+  [['hdr','Workstations',''],
+   ['yn','Wheelchair seating at fixed tables/counters?',''],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Aisle space width (inches)','Min 36 in'],
+   ['q','Knee clearance, H / W / D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['yn','Accessible desk/workstations have sufficient clearance?',''],
+   ['yn','Supplies accessible by persons with disabilities?',''],
+   ['q','Height of soap dispenser at classroom sink (inches)','Max 48 in'],
+   ['q','Height of paper towel dispenser at classroom sink (inches)','Max 48 in']],
+  alarmBlock(),
+  [ADDL]
+)},
+{ key:'gym', title:'Gymnasium / Auditorium / Weight Room / Assembly', repeat:false, fields:[].concat(
+  [['note','Complete for gymnasium, auditorium, weight room, or other large assembly space. If the campus has separate gym and auditorium buildings, note both in Additional Information.',''],
+   ['q','Space type (Gym / Auditorium / Weight Room / MP Room / Black Box / Other)',''],
+   ['q','Room number(s)','']],
+  signageBlock(),
+  [['hdr','Entrance and Doors',''],
+   ['yn','Space on accessible route?',''],
+   ['q','Number of entrances and exits','']],
+  doorBlock(),
+  alarmBlock(),
+  [['hdr','Wheelchair Seating',''],
+   ['q','Total number of all seating',''],
+   ['q','Total number of wheelchair spaces','Count per 2010 ADA Table 221.2.1.1 by seating capacity; dispersed'],
+   ['yn','Wheelchair seating in different locations throughout venue?',''],
+   ['yn','Companion seat provided with each wheelchair space?',''],
+   ['yn','Accessible route to wheelchair designated seats?',''],
+   ['yna','Ramp to seating area?','If yes, complete Ramps section'],
+   ['yn','Line of sight for wheelchair spaces comparable to ambulatory seating?',''],
+   ['q','Wheelchair space dimensions, W x D (inches)','Min 36 in W x 48 in D (60 in deep for side entry; verify per cycle)'],
+   ['yn','Can supplies be accessed by persons with disabilities?',''],
+   ['hdr','Assistive Listening Systems',''],
+   ['yn','Audio amplification system provided?',''],
+   ['yn','Adequate number of assistive listening systems (ALS) provided?','Receivers scale with capacity per 2010 ADA 219; verify per cycle'],
+   ['q','Type of ALS (Induction Loop / FM / IR / Other)',''],
+   ['q','Number of receivers available',''],
+   ['q','If fixed audio amplification, distance from stage (ft)',''],
+   ['yn','Signage indicating availability of assistive listening devices?',''],
+   ['hdr','Fixed Seating / Tables (Weight Room / Other)',''],
+   ['yna','Wheelchair seating at fixed tables/counters?',''],
+   ['q','Number of accessible seats',''],
+   ['q','Height of fixed tables/countertops (inches)','28 to 34 in'],
+   ['q','Wheelchair space, W x D (inches)','Min 30 in x 48 in'],
+   ['q','Knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+   ['yna','Accessible desk/workstations have sufficient clearance?',''],
+   ADDL]
+)},
+{ key:'stadium', title:'Stadium / Field', repeat:false, fields:[
+  ['yn','Accessible route to area?',''],
+  ['q','Route surface material (asphalt / concrete / gravel / dirt)',''],
+  ['q','Total number of wheelchair designated seats/spaces',''],
+  ['yn','Wheelchair designated seating provided?',''],
+  ['yn','Accessible route to wheelchair designated seats?',''],
+  ['yn','Companion seats provided with wheelchair spaces?',''],
+  ['yn','Ramp to wheelchair seating area?','If yes, complete Ramps section'],
+  ['q','Accessible route clear width (inches)','Min 36 in'],
+  ['yn','Accessible route to the field and team/player seating?',''],
+  ['yn','Accessible toilet facilities serving the venue?',''],
+  ADDL
+]},
+{ key:'locker', title:'Locker Rooms', repeat:true, unit:'Locker Room', designation:true, fields:[
+  ['yn','Locker room on accessible route?',''],
+  ['hdr','Signage and Entry Door',''],
+  ['yn','Identification signage provided?',''],
+  ['q','Height of signage, floor to centerline (inches)',SIGN_HINT],
+  ['q','Height of characters on signage (inches)',''],
+  ['yn','Signs mounted adjacent to latch side of door?',''],
+  ['yn','Characters raised plus Grade II Braille?',''],
+  ['q','Width of entrance doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
+  ['hdr','Interior Maneuvering',''],
+  ['yn','Locker room has foyer?',''],
+  ['q','Measurement between doors in foyer (inches)',''],
+  ['q','Turning space, diameter (inches)','Min 60 in'],
+  ['yn','Doors swing into turning spaces?',''],
+  ['hdr','Lockers and Amenities',''],
+  ['q','Number of accessible lockers','Min 5 percent of each type (2010 ADA 225)'],
+  ['q','Height of accessible locker operable parts (inches)','Max 48 in forward reach'],
+  ['yn','Mirror provided?',''],
+  ['q','Height of mirror, floor to reflecting edge (inches)','Max 40 in'],
+  ['yn','Accessible benches provided?',''],
+  ['q','Height of benches, floor to top (inches)','17 to 19 in'],
+  ['q','Depth of benches (inches)','20 to 24 in'],
+  ['yn','Back support on benches (or bench against wall)?',''],
+  ['q','Clear floor space adjacent to bench, W x D (inches)','Min 30 in x 48 in'],
+  ['hdr','Shower Rooms',''],
+  ['yn','Showers in use?',''],
+  ['q','Number of showers',''],
+  ['yn','Accessible shower provided?',''],
+  ['q','Shower type (Transfer 36 x 36 / Roll-in 60 x 30 min)',''],
+  ['q','Accessible shower, W x D (inches)',''],
+  ['yn','Shower has curb?',''],
+  ['q','Height of curb in shower (inches)','Max 1/2 in at transfer shower'],
+  ['yn','Shower grab bars provided?',''],
+  ['q','Location of shower grab bars',''],
+  ['q','Height of shower grab bars, floor to centerline (inches)','33 to 36 in'],
+  ['q','Length of shower grab bars (inches)',''],
+  ['yn','Accessible shower seat provided?',''],
+  ['q','Height of shower seat, floor to top (inches)','17 to 19 in'],
+  ['yn','Handheld shower/spray unit provided?',''],
+  ['q','Handheld shower hose length (inches)','Min 59 in (2010 ADA)'],
+  ['hdr','Restroom Amenities (within Locker Room)',''],
+  ['yn','Separate restroom entrance?',''],
+  ['q','Width of restroom entrance (inches)','Min 32 in'],
+  ['q','Restroom turning space, diameter (inches)','Min 60 in'],
+  ['yn','Hot water available?',''],
+  ['yna','Hot water pipes under sink covered?','Pipes insulated or shielded'],
+  ['q','Height of sink, floor to rim (inches)','Max 34 in'],
+  ['q','Lavatory knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+  ['q','Height of soap dispenser (inches)','Max 48 in'],
+  ['q','Height of restroom mirror, floor to reflecting edge (inches)','Max 40 in'],
+  ['q','Height of paper towel dispenser (inches)','Max 48 in'],
+  ['hdr','Accessible Stall (within Locker Room)',''],
+  ['yn','Designated accessible stall?',''],
+  ['q','Width of accessible stall (inches)','Min 60 in'],
+  ['q','Depth of accessible stall (inches)','Min 56 in'],
+  ['yn','Stall door swings out?',''],
+  ['q','Width of stall door (inches)','Min 32 in'],
+  ['yn','Grab bars in accessible stall?',''],
+  ['q','Location of grab bars (side / rear / both)',''],
+  ['q','Height of grab bars, floor to centerline (inches)','33 to 36 in'],
+  ['q','Height of toilet seat, floor to seat edge (inches)','17 to 19 in'],
+  ['q','Height of flush controls (inches)','Max 44 in, on the open side'],
+  ['yn','Flush valve on transfer/open side of toilet?',''],
+  ['q','Height of toilet paper dispenser (inches)',''],
+  ['q','Urinal height, floor to rim (inches)','Max 17 in'],
+  ['q','Width of space around urinal (inches)','Min 30 in'],
+  ADDL
+]},
+{ key:'restrooms', title:'Restrooms', repeat:true, unit:'Restroom', designation:true, fields:[
+  ['yn','Restroom on accessible route?',''],
+  ['q','Total number of accessible restrooms in building',''],
+  ['yna','If no accessible restroom in building, directional signage to nearest?',''],
+  ['hdr','Entry Door and Signage',''],
+  ['yn','Accessible door signage (ISA)?',''],
+  ['q','Height of accessible signage, floor to centerline (inches)',SIGN_HINT],
+  ['yn','ISA contrasts light-on-dark or dark-on-light?',''],
+  ['yn','Characters raised plus Grade II Braille?',''],
+  ['yn','Signage mounted adjacent to latch side of door?',''],
+  ['yn','Entrance doors swing out?',''],
+  ['q','Width of entrance doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
+  ['yn','Restroom has foyer?',''],
+  ['q','Measurement between doors in foyer (inches)',''],
+  ['hdr','Interior Maneuvering',''],
+  ['q','Turning space, diameter (inches)','Min 60 in diameter OR T-turn'],
+  ['hdr','Amenities',''],
+  ['yn','Hot water available?',''],
+  ['yna','Hot water pipes under sink covered?','Pipes insulated or shielded'],
+  ['q','Height of sink, floor to rim (inches)','Max 34 in'],
+  ['yn','Sink usable by wheelchair users?',''],
+  ['q','Lavatory knee clearance, H/W/D (inches)','Min 27 in H / 30 in W / 19 in D'],
+  ['q','Height of soap dispenser (inches)','Max 48 in'],
+  ['q','Height of mirror, floor to reflecting edge (inches)','Max 40 in'],
+  ['q','Height of paper towel dispenser (inches)','Max 48 in'],
+  ['q','Height of automatic hand dryer (inches)','Max 48 in'],
+  ['yn','Racks, dispensers, disposal units not protruding into walkways?',''],
+  ['hdr','Urinals',''],
+  ['q','Height of urinal, floor to rim (inches)','Max 17 in'],
+  ['q','Width of space around urinal (inches)','Min 30 in'],
+  ['q','Depth of space around urinal (inches)','Min 48 in'],
+  ['hdr','Accessible Stall',''],
+  ['yn','Designated accessible stall?',''],
+  ['q','Width of accessible stall (inches)','Min 60 in'],
+  ['q','Depth of accessible stall (inches)','Min 56 in'],
+  ['yn','Stall door swings out?',''],
+  ['q','Width of stall door (inches)','Min 32 in'],
+  ['yn','Grab bars in accessible stall?',''],
+  ['q','Location of grab bars (side / rear / both)',''],
+  ['q','Height of grab bars, floor to centerline (inches)','33 to 36 in'],
+  ['q','Length of grab bars (inches)','Side min 40 in (42 in per 2010 ADA 604.5.1, verify per cycle); rear min 36 in'],
+  ['q','Depth of grab bars from wall (inches)',''],
+  ['q','Height of accessible toilet seat (inches)','17 to 19 in'],
+  ['q','Height of flush controls (inches)','Max 44 in, on the open side'],
+  ['yn','Flush valve on transfer/open side of toilet?',''],
+  ['yn','Obstructions to reach toilet paper dispenser?',''],
+  ['yn','Toilet paper dispenser operable with one hand?',''],
+  ['yn','Dispenser allows continuous flow of paper?',''],
+  ['q','Height of toilet paper dispenser (inches)',''],
+  ['q','Location of toilet tissue dispenser',''],
+  ['yn','Coat hooks/shelves provided?',''],
+  ['q','Coat hook height, floor to hook (inches)','Max 48 in forward reach'],
+  ['q','Reach type for coat hook (forward / side)',''],
+  ADDL
+]},
+{ key:'fountains', title:'Accessible Drinking Fountains', repeat:true, unit:'Fountain', fields:[
+  ['yn','Drinking fountains provided?',''],
+  ['q','Number of fountains',''],
+  ['q','Number of accessible fountains',''],
+  ['yn','At least 50 percent accessible (spout 36 in or less)?','Hi-lo pairs: 50 percent low, 50 percent standing height (2010 ADA 211)'],
+  ['yn','Fountain on accessible route?',''],
+  ['yn','30 in x 48 in clear floor space in front?',''],
+  ['q','Height of spout, floor to spout outlet (inches)','Max 36 in'],
+  ['q','Height of water flow, spout to top of arc (inches)','Min 4 in'],
+  ['yn','Water flow within 4 in of spout towards front?',''],
+  ['yn','Up-front spout and control?',''],
+  ['q','Controls mounted on front or side?',''],
+  ['yn','Controls operable with closed fist?',''],
+  ['yn','Operable parts require tight grasping/pinching/twisting?',''],
+  ['yn','Force to activate exceeds 5 lbs?',''],
+  ['yn','Fountain protrudes into corridors or traffic ways?',''],
+  ['q','Knee and toe clearance beneath (inches)','Min 27 in high'],
+  ADDL
+]},
+{ key:'coolers', title:'Water Coolers and Bottle Fillers', repeat:true, unit:'Water Cooler / Bottle Filler', fields:[
+  ['yn','Bottle filler station available?',''],
+  ['yn','Station on accessible route?',''],
+  ['yn','30 in x 48 in clear floor space in front?',''],
+  ['yn','Station hand operated?',''],
+  ['yn','Station sensor operated?',''],
+  ['q','Controls mounted on front or side?',''],
+  ['q','Height of highest operable part (inches)','Max 48 in'],
+  ['yn','Controls operable with closed fist?',''],
+  ['yn','Operable parts require tight grasping/pinching/twisting?',''],
+  ['yn','Force to activate exceeds 5 lbs?',''],
+  ADDL
+]},
+{ key:'phones', title:'Public Telephones', repeat:false, fields:[
+  ['yn','Public telephone provided?','If No, mark N/A and skip remaining fields'],
+  ['q','Clear floor space, W x L (inches)','Min 30 in x 48 in'],
+  ['yn','Protruding objects?',''],
+  ['yn','Push button controls?',''],
+  ['q','Cord length, telephone to handset (inches)','Min 29 in'],
+  ['q','Approach type (Parallel / Forward)',''],
+  ['q','Distance from front edge of counter to face of telephone (inches)',''],
+  ['yn','Highest operable part within 15 to 48 in? (54 in max if side approach, pre-2010)',''],
+  ['yn','Telephone hearing aid compatible?','Verify per cycle'],
+  ['yn','Volume control provided?',''],
+  ['yna','If more than 4 pay telephones, TTY available?',''],
+  ['q','Height of TTY keypad touch surface (inches)','Max 48 in'],
+  ['yna','Telephones with TTY equipped with shelf and electrical outlet?',''],
+  ADDL
+]},
+{ key:'pools', title:'Swimming Pools / Aquatic Facilities', repeat:false, fields:[
+  ['yn','Swimming pool or aquatic facility on campus?','If No, mark N/A and skip remaining fields'],
+  ['yn','Pool deck on an accessible route?',''],
+  ['q','Number of pools and approximate wall length of each (feet)','2010 ADA 242: entry means scale with pool size'],
+  ['yn','Pool lift provided?',''],
+  ['yn','Pool lift operational and available during all open hours?',''],
+  ['yn','Sloped (zero-depth) entry provided?',''],
+  ['q','Other accessible means of entry (transfer wall, transfer system, stairs)',''],
+  ['yn','Accessible route to locker rooms and restrooms serving the pool?',''],
+  ADDL
+]},
+{ key:'egress', title:'Accessible Means of Egress / Areas of Rescue Assistance', repeat:false, fields:[
+  ['yn','Accessible means of egress provided from all occupied levels?',''],
+  ['yn','Areas of rescue assistance (or areas of refuge) designated?',''],
+  ['q','Locations of areas of rescue assistance',''],
+  ['yn','Two-way communication system provided at each area of rescue assistance?',''],
+  ['yn','Communication system tested and operational?',''],
+  ['yn','Signage identifying areas of rescue assistance, with directions?',''],
+  ['yn','Evacuation plans include procedures for individuals with mobility impairments?',''],
+  ['yn','Exit routes free of steps or barriers, or supplemented by evacuation devices?',''],
+  ADDL
+]},
+{ key:'medical', title:'Medical and First-Aid Areas (including Nurse\'s Office)', repeat:false, fields:[
+  ['yn','Medical or first-aid area on an accessible route?',''],
+  ['q','Width of doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
+  ['yn','Cot, exam table, or rest area usable by students with mobility disabilities?',''],
+  ['q','Turning space, diameter (inches)','Min 60 in'],
+  ['yn','Accessible restroom serving the health office?',''],
+  ['q','Height of supply and medication storage operable parts (inches)','Max 48 in forward reach'],
+  ['yn','Identification signage with raised characters plus Braille?',''],
+  ADDL
+]},
+{ key:'portables', title:'Portable / Temporary Classrooms', repeat:true, unit:'Portable', fields:[
+  ['q','Portable number(s) / program served',''],
+  ['yn','Portable on an accessible route?',''],
+  ['yn','Ramp provided to the portable?','If yes, also complete a Ramps instance for this ramp'],
+  ['q','Landing at door, L x W (inches)','Min 60 in x 60 in'],
+  ['q','Width of doorway (inches)','Min 32 in'],
+  ['q','Height of door handle (inches)','Max 48 in'],
+  ['yn','Door hardware operable with one hand, no tight grasping, pinching, or twisting?',''],
+  ['q','Door opening force (pounds)','Max 5 lbs: UFAS/1991/2010; max 8.5 lbs: ANSI'],
+  ['q','Threshold height (inches)','Max 1/2 in'],
+  ['yn','Identification signage with raised characters plus Braille?',''],
+  ADDL
+]}
+];
+
+/* Guide order and titles: reorder CONFIG to match the revised Word guide
+   (Civil_Rights_Review_Building_Accessibility.docx). Entries keep their key,
+   fields, and flags; only the order and titles change. */
+var GUIDE_ORDER = [
+  ['parking','Accessible Parking'],
+  ['loading','Passenger Loading Zones'],
+  ['routes','Accessible Routes / Walkways'],
+  ['curbramps','Curb Ramps'],
+  ['stadium','Stadium / Field'],
+  ['entrances','Entrances, Doors, and Gates'],
+  ['stairs','Stairways and Steps'],
+  ['ramps','Ramps'],
+  ['elevators','Elevators'],
+  ['lifts','Lifts'],
+  ['egress','Accessible Means of Egress / Areas of Rescue Assistance'],
+  ['rooms','Rooms & Offices'],
+  ['medical','Medical and First-Aid Areas (including Nurse\'s Office)'],
+  ['cafeteria','Cafeteria'],
+  ['library','Library'],
+  ['cte','CTE Classroom(s)'],
+  ['labs','CTE Labs and Shops'],
+  ['portables','Portable / Temporary Classrooms'],
+  ['gym','Gymnasium / Auditorium / Weight Room'],
+  ['pools','Swimming Pools / Aquatic Areas'],
+  ['locker','Locker Rooms'],
+  ['restrooms','Restrooms (Male / Female / Non-Gender Specific)'],
+  ['fountains','Accessible Drinking Fountains'],
+  ['coolers','Water Coolers & Bottle Fillers'],
+  ['phones','Public Telephones']
+];
+CONFIG = GUIDE_ORDER.map(function(pair){
+  var c = null;
+  for (var i = 0; i < CONFIG.length; i++){ if (CONFIG[i].key === pair[0]){ c = CONFIG[i]; break; } }
+  c.title = pair[1];
+  return c;
+});
+/* Room Name row applies to Medical per the guide */
+CONFIG.forEach(function(c){ if (c.key === 'medical') c.roomName = true; });
+/* Audit: every section must END with exactly one Additional Information field */
+CONFIG.forEach(function(c){
+  var last = c.fields[c.fields.length - 1];
+  if (!(last && last[0] === 'ta' && last[1] === ADDL[1])) c.fields.push(ADDL);
+});
+
+/* ---------------- State ---------------------------------------------------
+   S = { header:{}, sec:{ key: [ {meta:{loc,yb,mod,modid,desig,room}, v:{fi:value}} ] } }
+--------------------------------------------------------------------------- */
+var SS_KEY = 'crr_ba_form_v3';
+var S = blankState();
+function blankState(){
+  var s = {header:{reviewCycle:''}, sec:{}};
+  CONFIG.forEach(function(c){ s.sec[c.key] = [newInstance()]; });
+  return s;
+}
+function newInstance(){ return {meta:{loc:'', yb:'', altgate:'', mod:'', modid:'', desig:'', room:''}, v:{}}; }
+
+/* ---------------- Utilities ----------------------------------------------- */
+function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function el(id){ return document.getElementById(id); }
+var saveTimer = null;
+function touch(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){
+    try{ sessionStorage.setItem(SS_KEY, JSON.stringify(S)); flashSave('Autosaved (this tab only)'); }
+    catch(e){ flashSave('Autosave failed'); }
+  }, 500);
+}
+function flashSave(msg){
+  var n = el('saveMsg'); n.textContent = msg;
+  setTimeout(function(){ if(n.textContent === msg) n.textContent = ''; }, 2200);
+}
+
+/* ---------------- Rendering ----------------------------------------------- */
+function identBlock(cfg, idx){
+  var inst = S.sec[cfg.key][idx];
+  var h = '<div class="ident-grid">';
+  h += '<div class="fg wide"><label>Location / Name</label><input type="text" data-meta="loc" aria-label="Location / Name" value="' + esc(inst.meta.loc) + '" placeholder="e.g. Building B, north lot, staff lot behind gym"></div>';
+  if (cfg.roomName){
+    h += '<div class="fg wide"><label>Room Name</label><input type="text" data-meta="room" aria-label="Room Name" value="' + esc(inst.meta.room) + '" placeholder="e.g. Nurse\'s Office, Wellness Center, Career Center, Counseling Office"></div>';
+  }
+  if (cfg.designation){
+    h += '<div class="fg"><label>Designation</label><select data-meta="desig" aria-label="Designation">' +
+      ['','Male','Female','Non-Gender Specific'].map(function(o){
+        return '<option value="' + o + '"' + (inst.meta.desig === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
+      }).join('') + '</select><div class="hint">California requires Non-Gender Specific restrooms</div></div>';
+  }
+  h += '<div class="fg"><label>Year Built</label><input type="text" data-meta="yb" aria-label="Year Built" value="' + esc(inst.meta.yb) + '" placeholder="e.g. 1985 or 06/15/1985"><div class="hint">Year, or full date if known</div></div>';
+  h += '<div class="fg wide"><label>Have any alterations or ADA modifications been made since original construction?</label><select data-meta="altgate" aria-label="Have any alterations or ADA modifications been made since original construction?">' +
+    ['','Yes','No'].map(function(o){
+      return '<option value="' + o + '"' + (inst.meta.altgate === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
+    }).join('') + '<\/select><div class="hint">If Yes, complete the Alterations Log below</div></div>';
+  if (inst.meta.altgate === 'Yes'){
+    h += '<div class="fg wide"><label>Alterations Log: Element(s) Altered</label><textarea data-meta="modid" aria-label="Alterations Log: Element(s) Altered" placeholder=\'Which elements were altered, e.g. "grab bars and lavatory only"\'>' + esc(inst.meta.modid) + '</textarea></div>';
+    h += '<div class="fg wide"><label>Alterations Log: Date(s) Altered</label><textarea data-meta="mod" aria-label="Alterations Log: Date(s) Altered" placeholder=\'Date(s) altered, matching the elements above, e.g. "March 2018; 2021"\'>' + esc(inst.meta.mod) + '</textarea></div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function fieldRows(cfg, idx){
+  var inst = S.sec[cfg.key][idx];
+  var rows = cfg.fields.map(function(f, fi){
+    var kind = f[0], label = f[1], hint = f[2] || '';
+    if (kind === 'hdr') return '<tr class="subhdr"><td colspan="2">' + esc(label) + '</td></tr>';
+    if (kind === 'note') return '<tr class="fnote"><td colspan="2">' + esc(label) + '</td></tr>';
+    var val = inst.v[fi] != null ? inst.v[fi] : '';
+    var aria = ' aria-label="' + esc(label) + '"';
+    var ctl;
+    if (kind === 'yn' || kind === 'yna'){
+      var opts = ['','Yes','No'].concat(kind === 'yna' ? ['N/A'] : []);
+      ctl = '<select data-fi="' + fi + '"' + aria + '>' + opts.map(function(o){
+        return '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' + (o || 'Select...') + '</option>';
+      }).join('') + '</select>';
+    } else if (kind === 'ta'){
+      ctl = '<textarea data-fi="' + fi + '"' + aria + '>' + esc(val) + '</textarea>';
+    } else {
+      ctl = '<input type="text" data-fi="' + fi + '"' + aria + ' value="' + esc(val) + '">';
+    }
+    return '<tr><td class="lbl">' + esc(label) + (hint ? '<span class="fh">' + esc(hint) + '</span>' : '') + '</td><td>' + ctl + '</td></tr>';
+  });
+  return '<table class="fields"><tbody>' + rows.join('') + '</tbody></table>';
+}
+
+function instanceTitle(cfg, idx){
+  var inst = S.sec[cfg.key][idx];
+  var bits = [];
+  if (inst.meta.room) bits.push(inst.meta.room);
+  if (inst.meta.desig) bits.push(inst.meta.desig);
+  if (inst.meta.loc) bits.push(inst.meta.loc);
+  return bits.length ? bits.join(', ') : (cfg.unit || 'Location');
+}
+
+function renderSection(cfg){
+  var wrap = el('wrap-' + cfg.key);
+  var instances = S.sec[cfg.key];
+  var html = '';
+  instances.forEach(function(_, idx){
+    html += '<div class="instance" data-idx="' + idx + '">';
+    html += '<div class="inst-head"><span class="inst-title">' + esc(instanceTitle(cfg, idx)) + '</span><span class="spacer"></span>';
+    if (cfg.repeat && instances.length > 1){
+      html += '<button class="btn btn-danger btn-sm no-print" data-act="remove">Remove</button>';
+    }
+    html += '</div><div class="inst-body">';
+    html += identBlock(cfg, idx);
+    html += fieldRows(cfg, idx);
+    html += '</div></div>';
+  });
+  if (cfg.repeat){
+    html += '<div class="add-bar no-print"><button class="btn btn-outline btn-sm" data-act="add">+ Add another ' + esc(cfg.unit || 'location') + '</button></div>';
+  }
+  wrap.innerHTML = html;
+  updateTocCount(cfg);
+}
+
+function renderAllSections(){
+  var container = el('sections');
+  container.innerHTML = CONFIG.map(function(cfg, i){
+    var num = String(i + 1).padStart(2, '0');
+    return '<section class="card area" id="sec-' + cfg.key + '" data-key="' + cfg.key + '">' +
+      '<div class="card-head"><span class="card-step">Area ' + num + '</span><span class="card-title">' + esc(cfg.title) + '</span>' +
+      (cfg.repeat ? '<span class="card-sub">Repeatable: add one instance per ' + esc((cfg.unit || 'location').toLowerCase()) + '</span>' : '') +
+      '</div><div class="card-body"><div id="wrap-' + cfg.key + '"></div></div></section>';
+  }).join('');
+  CONFIG.forEach(renderSection);
+}
+
+function renderToc(){
+  var links = ['<div class="toc-head">Sections</div>',
+    '<a href="#sec-header">School &amp; Review Information</a>'];
+  CONFIG.forEach(function(cfg){
+    links.push('<a href="#sec-' + cfg.key + '">' + esc(cfg.title) + (cfg.repeat ? ' <span class="cnt" id="cnt-' + cfg.key + '">1</span>' : '') + '</a>');
+  });
+  el('toc').innerHTML = links.join('');
+}
+function updateTocCount(cfg){
+  var n = el('cnt-' + cfg.key);
+  if (n) n.textContent = S.sec[cfg.key].length;
+}
+
+/* ---------------- Event wiring (delegated) --------------------------------- */
+document.addEventListener('input', function(e){
+  var t = e.target;
+  if (t.dataset.h !== undefined && t.dataset.h !== ''){ S.header[t.dataset.h] = t.value; touch(); return; }
+  var instEl = t.closest && t.closest('.instance');
+  var secEl = t.closest && t.closest('section.area');
+  if (!instEl || !secEl) return;
+  var cfg = CONFIG.find(function(c){ return c.key === secEl.dataset.key; });
+  if (!cfg) return;
+  var idx = +instEl.dataset.idx;
+  var inst = S.sec[cfg.key][idx];
+  if (t.dataset.meta){
+    inst.meta[t.dataset.meta] = t.value;
+    if (t.dataset.meta === 'loc' || t.dataset.meta === 'room' || t.dataset.meta === 'desig'){
+      var titleEl = instEl.querySelector('.inst-title');
+      if (titleEl) titleEl.textContent = instanceTitle(cfg, idx);
+      updateTocCount(cfg);
+    }
+    if (t.dataset.meta === 'altgate'){ renderSection(cfg); }
+    touch(); return;
+  }
+  if (t.dataset.fi !== undefined){
+    inst.v[t.dataset.fi] = t.value;
+    touch();
+  }
+});
+document.addEventListener('change', function(e){
+  var t = e.target;
+  if (t.tagName === 'SELECT') {
+    var ev = new Event('input', {bubbles:true});
+    // selects fire change, not always input; route through same handler
+    t.dispatchEvent(ev);
+  }
+});
+document.addEventListener('click', function(e){
+  var btn = e.target.closest && e.target.closest('button[data-act]');
+  if (!btn) return;
+  var secEl = btn.closest('section.area');
+  var cfg = CONFIG.find(function(c){ return c.key === secEl.dataset.key; });
+  if (!cfg) return;
+  if (btn.dataset.act === 'add'){
+    S.sec[cfg.key].push(newInstance());
+    renderSection(cfg); touch();
+  } else if (btn.dataset.act === 'remove'){
+    var idx = +btn.closest('.instance').dataset.idx;
+    var label = instanceTitle(cfg, idx);
+    if (confirm('Remove "' + label + '" and all its entries?')){
+      S.sec[cfg.key].splice(idx, 1);
+      renderSection(cfg); touch();
+    }
+  }
+});
+
+/* ---------------- Word (.doc) export ---------------------------------------
+   Zero-library export: a complete standalone HTML document with Word-specific
+   markup, saved as a Blob of type application/msword. Word opens it directly.
+---------------------------------------------------------------------------- */
+var PRIVACY_TEXT = 'Privacy Notice: This form runs entirely in your web browser on your device. No data you enter is transmitted, collected, retained, saved, monitored, or tracked by the California Department of Education or anyone else. Nothing is sent over the internet. Your entries exist only in this browser tab while it is open. IMPORTANT: If you close this tab or browser, or your device restarts, all entered data will be permanently lost and cannot be retrieved. Print or download your work before closing. If you step away, your work remains only until the tab is closed.';
+
+var HEADER_LABELS = [
+  ['schoolName','School Name'], ['districtName','District Name'],
+  ['cdsCode','CDS Code'], ['reviewCycle','Review Cycle (CRR 20)'],
+  ['reviewDate','Review Date / Site Visit Date'], ['preparerName','Preparer Name'],
+  ['preparerTitle','Preparer Title'], ['preparerContact','Preparer Email / Phone']
+];
+/* Word table building blocks, styled to mirror the guide:
+   navy (#1A2744) banner cells with bold gold (#C8A84B) text, cream (#F7F4EE)
+   bold navy label cells, thin #D4CEBD borders, Arial. */
+var W_TD = 'border:1pt solid #D4CEBD;padding:4pt 6pt;vertical-align:top;';
+var W_NAVY = W_TD + 'background:#1A2744;color:#C8A84B;font-weight:bold;';
+var W_LBL = 'width:55%;' + W_TD + 'background:#F7F4EE;font-weight:bold;color:#1A2744;';
+
+function wVal(value){ return esc(value == null ? '' : value).replace(/\n/g,'<br>'); }
+function wordRow(label, value){
+  return '<tr><td style="' + W_LBL + '">' + esc(label) + '</td><td style="' + W_TD + '">' + wVal(value) + '</td></tr>';
+}
+function wordBanner(text){
+  return '<tr><td colspan="2" style="' + W_NAVY + '">' + esc(text) + '</td></tr>';
+}
+function wordSubhdr(label){
+  return '<tr><td colspan="2" style="' + W_TD + 'background:#EDF0EB;font-weight:bold;color:#1A2744;">' + esc(label) + '</td></tr>';
+}
+
+/* SECTION DETAILS block (plus ALTERATIONS LOG when the gate is Yes),
+   mirroring the guide's per-section header tables. */
+function wordSectionDetails(cfg, inst){
+  var t = cfg.title.toUpperCase();
+  var h = '<table>' + wordBanner('SECTION DETAILS, ' + t);
+  h += wordRow('Location / Building Name:', inst.meta.loc);
+  if (cfg.roomName) h += wordRow('Room Name:', inst.meta.room);
+  if (cfg.designation) h += wordRow('Designation:', inst.meta.desig);
+  h += wordRow('Year Built:', inst.meta.yb);
+  h += wordRow('Have any alterations or ADA modifications been made since original construction? If Yes, complete the Alterations Log below.', inst.meta.altgate);
+  h += '</table>';
+  if (inst.meta.altgate === 'Yes'){
+    h += '<table style="margin-top:6pt;">' + wordBanner('ALTERATIONS LOG, ' + t);
+    h += '<tr><td style="width:55%;' + W_NAVY + '">ELEMENT ALTERED</td><td style="' + W_NAVY + '">DATE ALTERED</td></tr>';
+    h += '<tr><td style="' + W_TD + '">' + wVal(inst.meta.modid) + '</td><td style="' + W_TD + '">' + wVal(inst.meta.mod) + '</td></tr>';
+    h += '</table>';
+  }
+  return h;
+}
+
+function buildWordHtml(){
+  var h = [];
+  h.push('<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">');
+  h.push('<head><meta charset="utf-8"><title>CRR Building Accessibility</title>');
+  h.push('<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->');
+  h.push('<style>');
+  h.push('@page WordSection1 {size:8.5in 11.0in; margin:1.0in 0.75in 1.0in 0.75in; mso-header-margin:0.5in; mso-footer-margin:0.5in;}');
+  h.push('div.WordSection1 {page:WordSection1;}');
+  h.push('body {font-family:Arial, sans-serif; font-size:12pt; color:#1a1a1a;}');
+  h.push('table, td {font-family:Arial, sans-serif; font-size:12pt;}');
+  h.push('h1 {font-size:16pt; color:#1A2744;} h2 {font-size:14pt; color:#1A2744; margin-top:14pt;} h3 {font-size:12pt; color:#243460;}');
+  h.push('table {border-collapse:collapse; width:100%;}');
+  h.push('</style></head><body><div class="WordSection1">');
+  h.push('<h1>Civil Rights Review - Building Accessibility</h1>');
+  h.push('<p style="font-size:9pt;color:#6B6659;">California Department of Education, Office of Equal Opportunity</p>');
+
+  h.push('<h2>School &amp; Review Information</h2><table>');
+  HEADER_LABELS.forEach(function(pair){ h.push(wordRow(pair[1], S.header[pair[0]] || '')); });
+  h.push('</table>');
+
+  CONFIG.forEach(function(cfg, i){
+    h.push('<h2>Area ' + (i + 1) + ': ' + esc(cfg.title) + '</h2>');
+    S.sec[cfg.key].forEach(function(inst, idx){
+      if (cfg.repeat || S.sec[cfg.key].length > 1){
+        h.push('<h3>' + esc(cfg.unit || 'Location') + ' ' + (idx + 1) +
+          (instanceTitle(cfg, idx) !== (cfg.unit || 'Location') ? ': ' + esc(instanceTitle(cfg, idx)) : '') + '</h3>');
+      }
+      h.push(wordSectionDetails(cfg, inst));
+      h.push('<table style="margin-top:6pt;">');
+      cfg.fields.forEach(function(f, fi){
+        if (f[0] === 'hdr'){ h.push(wordSubhdr(f[1])); return; }
+        if (f[0] === 'note'){ h.push('<tr><td colspan="2" style="' + W_TD + 'font-style:italic;color:#6B6659;">' + esc(f[1]) + '</td></tr>'); return; }
+        h.push(wordRow(f[1], inst.v[fi] != null ? inst.v[fi] : ''));
+      });
+      h.push('</table>');
+    });
+  });
+
+  h.push('<h2>Signatures</h2>');
+  if (S.header.sigImage){
+    h.push('<p><img src="' + S.header.sigImage + '" style="max-height:60px;height:60px;" alt="Preparer signature"></p>');
+  }
+  h.push('<table style="width:100%;"><tr>');
+  h.push('<td style="width:48%;border-top:1pt solid #1a1a1a;padding-top:3pt;font-size:8pt;color:#6B6659;">PREPARER SIGNATURE<br>' +
+    esc(S.header.preparerName || '') + (S.header.preparerTitle ? ', ' + esc(S.header.preparerTitle) : '') +
+    (S.header.sigDate ? '<br>Date: ' + esc(S.header.sigDate) : '') + '</td>');
+  h.push('<td style="width:4%;border:none;"></td>');
+  h.push('<td style="width:48%;border-top:1pt solid #1a1a1a;padding-top:3pt;font-size:8pt;color:#6B6659;">SITE ADMINISTRATOR SIGNATURE<br>Date:</td>');
+  h.push('</tr></table>');
+
+  h.push('<p style="font-size:8pt;color:#6B6659;border-top:1pt solid #999;padding-top:4pt;margin-top:14pt;">' + esc(PRIVACY_TEXT) + '</p>');
+  h.push('</div></body></html>');
+  return h.join('\n');
+}
+
+function downloadWord(){
+  var name = (S.header.schoolName || 'School').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'School';
+  var blob = new Blob(['\ufeff', buildWordHtml()], {type:'application/msword'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'CRR_Building_Accessibility_' + name + '.doc';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 400);
+  flashSave('Word file downloaded');
+}
+
+/* ---------------- Signature ------------------------------------------------
+   Image upload or drawn signature. Stored as a data URI in S.header.sigImage
+   (in-memory plus sessionStorage only, consistent with the privacy notice).
+   Certificate-based (Adobe) signing is not possible in a standalone HTML
+   page; users are directed to print to PDF and sign in Acrobat.
+---------------------------------------------------------------------------- */
+function renderSig(){
+  var slot = el('sigPreview');
+  var rm = el('sigRemove');
+  if (S.header.sigImage){
+    slot.innerHTML = '<img src="' + S.header.sigImage + '" alt="Preparer signature">';
+    rm.style.display = '';
+  } else {
+    slot.innerHTML = '';
+    rm.style.display = 'none';
+  }
+}
+function setSig(dataUri){
+  S.header.sigImage = dataUri;
+  renderSig(); touch();
+}
+el('sigFile').addEventListener('change', function(){
+  var file = this.files && this.files[0];
+  var input = this;
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){ setSig(reader.result); input.value = ''; };
+  reader.readAsDataURL(file);
+});
+el('sigRemove').addEventListener('click', function(e){
+  e.preventDefault();
+  S.header.sigImage = '';
+  renderSig(); touch();
+});
+
+/* Drawing pad: mouse and touch */
+(function(){
+  var pad = el('sigPad');
+  var ctx = pad.getContext('2d');
+  var drawing = false, hasInk = false;
+  ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1a1a1a';
+
+  function pos(e){
+    var r = pad.getBoundingClientRect();
+    var p = (e.touches && e.touches.length) ? e.touches[0] : e;
+    return { x:(p.clientX - r.left) * (pad.width / r.width), y:(p.clientY - r.top) * (pad.height / r.height) };
+  }
+  function start(e){ drawing = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); if (e.type === 'touchstart') e.preventDefault(); }
+  function move(e){ if (!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasInk = true; if (e.type === 'touchmove') e.preventDefault(); }
+  function end(){ drawing = false; }
+
+  pad.addEventListener('mousedown', start);
+  pad.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', end);
+  pad.addEventListener('touchstart', start, {passive:false});
+  pad.addEventListener('touchmove', move, {passive:false});
+  pad.addEventListener('touchend', end);
+  pad.addEventListener('touchcancel', end);
+
+  function clearPad(){ ctx.clearRect(0, 0, pad.width, pad.height); hasInk = false; }
+  el('sigDrawBtn').addEventListener('click', function(){
+    var w = el('sigPadWrap');
+    w.style.display = (w.style.display === 'none') ? '' : 'none';
+  });
+  el('sigPadClear').addEventListener('click', clearPad);
+  el('sigPadCancel').addEventListener('click', function(){ clearPad(); el('sigPadWrap').style.display = 'none'; });
+  el('sigPadAccept').addEventListener('click', function(){
+    if (!hasInk){ alert('Draw a signature first, or Cancel.'); return; }
+    setSig(pad.toDataURL('image/png'));
+    clearPad();
+    el('sigPadWrap').style.display = 'none';
+  });
+})();
+
+/* ---------------- State apply / clear -------------------------------------- */
+function applyState(data){
+  var s = blankState();
+  if (data && typeof data === 'object'){
+    s.header = Object.assign({}, s.header, data.header || {});
+    CONFIG.forEach(function(c){
+      var arr = data.sec && data.sec[c.key];
+      if (Array.isArray(arr) && arr.length){
+        s.sec[c.key] = arr.map(function(inst){
+          var n = newInstance();
+          n.meta = Object.assign(n.meta, (inst && inst.meta) || {});
+          n.v = Object.assign({}, (inst && inst.v) || {});
+          return n;
+        });
+        if (!c.repeat) s.sec[c.key] = s.sec[c.key].slice(0, 1);
+      }
+    });
+  }
+  S = s;
+  hydrateHeader(); renderAllSections();
+}
+function hydrateHeader(){
+  document.querySelectorAll('[data-h]').forEach(function(n){
+    var v = S.header[n.dataset.h];
+    n.value = (v != null) ? v : '';
+  });
+  renderSig();
+}
+function clearAll(){
+  if (!confirm('Clear the entire form? This removes all entered data, including the tab autosave copy.')) return;
+  try{ sessionStorage.removeItem(SS_KEY); } catch(e){}
+  S = blankState();
+  hydrateHeader(); renderAllSections();
+  flashSave('Cleared');
+}
+
+/* ---------------- Boot ------------------------------------------------------ */
+(function boot(){
+  renderToc();
+  var saved = null;
+  try{ saved = JSON.parse(sessionStorage.getItem(SS_KEY) || 'null'); } catch(e){}
+  if (saved){ applyState(saved); flashSave('Restored (this tab)'); }
+  else { hydrateHeader(); renderAllSections(); }
+})();
+</script>
+</body>
+</html>

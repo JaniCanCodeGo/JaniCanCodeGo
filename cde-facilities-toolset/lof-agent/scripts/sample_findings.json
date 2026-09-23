@@ -1,0 +1,47 @@
+{
+  "school": "Sample CTE High School",
+  "district": "Sample Unified School District",
+  "crr": 20,
+  "reviewDate": "2026-04-15",
+  "rows": [
+    {
+      "area": "Accessible Parking",
+      "locations": [
+        { "name": "Lot A (Main Entrance)", "constructed": "1985", "modified": "N/A" }
+      ],
+      "standards": ["ANSI A117.1"],
+      "violations": [
+        { "text": "The access aisle serving the accessible parking space measures 48 inches in width; a minimum of 60 inches is required.", "cite": "ANSI A117.1 Section 5.2" }
+      ],
+      "correctives": [
+        { "text": "Restripe the access aisle to a minimum width of 60 inches adjacent to the accessible parking space.", "cite": "2010 ADA Section 502.3" }
+      ]
+    },
+    {
+      "area": "Restrooms",
+      "locations": [
+        { "name": "Building 100 Boys Restroom", "constructed": "1968", "modified": "2018 (grab bars replaced)" }
+      ],
+      "standards": ["Program Access", "2010 ADA (grab bars)"],
+      "violations": [
+        { "text": "Side grab bar measures 30 inches in length; a minimum of 42 inches is required.", "cite": "2010 ADA Section 604.5.1" }
+      ],
+      "correctives": [
+        { "text": "Install a side grab bar a minimum of 42 inches long, mounted 33 to 36 inches above the finish floor to the centerline.", "cite": "2010 ADA Section 604.5.1" }
+      ]
+    },
+    {
+      "area": "Library",
+      "locations": [
+        { "name": "Media Center", "constructed": "1975", "modified": "N/A" }
+      ],
+      "standards": ["Program Access"],
+      "violations": [
+        { "text": "THIS SHOULD BE SUPPRESSED: book drop slot at 52 inches." , "cite": "2010 ADA Section 308.2.1" }
+      ],
+      "correctives": [
+        { "text": "THIS SHOULD BE SUPPRESSED TOO.", "cite": "1991 ADA Section 4.2" }
+      ]
+    }
+  ]
+}
