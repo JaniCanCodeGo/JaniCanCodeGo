@@ -126,5 +126,47 @@ def generate_promo_content(content_type: str, platform: str = "", about: str = "
     return agent.build_promo_prompt(content_type, platform=platform, about=about, context=context)
 
 
+@mcp.tool()
+def generate_business_plan(focus: str = "") -> str:
+    """
+    Gather everything this repo knows about CETL (manifest, curriculum, podcast
+    episodes, README, and the verified research footnotes in BUSINESS_PLAN.md)
+    and return a complete prompt for writing or refreshing the CETL business plan.
+
+    Generate the plan from the returned prompt, then save the markdown over
+    CETL/BUSINESS_PLAN.md and run `python3 business_plan_agent.py` to build
+    the Word document.
+
+    Args:
+        focus: Optional emphasis for this revision (e.g. "update year-2 financials
+               after the beta cohort" or "add a corporate-workshops section")
+    """
+    import business_plan_agent
+    return business_plan_agent.build_business_plan_prompt(focus=focus)
+
+
+@mcp.tool()
+def build_business_plan_docx() -> str:
+    """
+    Convert CETL/BUSINESS_PLAN.md into a formatted Word document at
+    outputs/CETL_Business_Plan.docx and return the file path.
+    """
+    import io
+    import contextlib
+    import os
+
+    import business_plan_agent
+
+    source = os.path.join(str(SCRIPT_DIR), "BUSINESS_PLAN.md")
+    if not os.path.exists(source):
+        return "[Error] CETL/BUSINESS_PLAN.md not found — generate the plan first."
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        out = business_plan_agent.build_docx(
+            source, os.path.join(str(SCRIPT_DIR), "outputs", "CETL_Business_Plan.docx")
+        )
+    return f"Word document written to {out}"
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
