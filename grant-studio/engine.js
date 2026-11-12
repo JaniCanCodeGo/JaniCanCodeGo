@@ -463,7 +463,7 @@ const Engine = (function () {
   function suggestClasses(goods) {
     const t = (goods || "").toLowerCase();
     const cls = [...new Set(Object.entries(NICE)
-      .filter(([k]) => new RegExp("\\b" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(t))
+      .filter(([k]) => new RegExp("\\b" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "s?\\b").test(t))
       .map(([, v]) => v))].sort((a, b) => a - b);
     return cls.length ? cls : [35];
   }
