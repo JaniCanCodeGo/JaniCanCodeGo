@@ -58,7 +58,7 @@ def suggest_classes(goods_description):
     """Suggest Nice international classes from a goods/services description."""
     text = (goods_description or "").lower()
     classes = sorted({cls for kw, cls in NICE_CLASS_HINTS.items()
-                      if re.search(r"\b" + re.escape(kw) + r"\b", text)})
+                      if re.search(r"\b" + re.escape(kw) + r"s?\b", text)})
     return classes or [35]
 
 
