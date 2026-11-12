@@ -1,0 +1,15 @@
+# Render.com deployment blueprint for Grant Writing Studio.
+# In Render: New + -> Blueprint -> pick this repo and the
+# claude/grant-writing-website-agent-vd7vl4 branch -> Apply.
+services:
+  - type: web
+    name: grant-writing-studio
+    runtime: python
+    plan: free
+    branch: claude/grant-writing-website-agent-vd7vl4
+    buildCommand: pip install -r grant_site/requirements.txt
+    startCommand: cd grant_site && uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
