@@ -17,7 +17,7 @@ try:
 except ImportError:
     HAS_ANTHROPIC = False
 
-MODEL = "claude-opus-4-8"
+MODEL = "claude-sonnet-5-5"
 
 SYSTEM = (
     "You are an expert grant writer. Rewrite the draft document you are "

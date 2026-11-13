@@ -64,13 +64,18 @@ def build_budget(grant_target, items=None, fringe_pct=None,
         factor = ((share_sum + fringe_pct / 100 * p_share) *
                   (1 + indirect_pct / 100))
         direct_total = grant_target / factor
-        direct = {cat: round(direct_total * share, 2)
+        # Whole dollars when auto-allocating; the rounding remainder lands
+        # on the indirect line so the total equals the request exactly.
+        direct = {cat: float(round(direct_total * share))
                   for cat, share in DEFAULT_ALLOCATION}
         allocated = True
 
-    fringe = round(direct.get("personnel", 0) * fringe_pct / 100, 2)
+    places = 0 if allocated else 2
+    fringe = round(direct.get("personnel", 0) * fringe_pct / 100, places)
     direct_plus_fringe = round(sum(direct.values()) + fringe, 2)
-    indirect = round(direct_plus_fringe * indirect_pct / 100, 2)
+    indirect = round(direct_plus_fringe * indirect_pct / 100, places)
+    if allocated:
+        indirect += round(grant_target) - (direct_plus_fringe + indirect)
     total = round(direct_plus_fringe + indirect, 2)
 
     for cat in ("personnel", "travel", "equipment", "supplies",

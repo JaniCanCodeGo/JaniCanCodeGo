@@ -15,18 +15,23 @@ def build_grant_narrative(org, website, painpoints, forecast, ein_result):
                 else "EIN: application in progress (SS-4 worksheet prepared; "
                      "see EIN report)")
 
+    contact = (", ".join(website.get("emails", [])[:2])
+               or org.get("contact_email")
+               or "(add contact email before filing)")
+    programs = (org.get("programs") or "its core programs").strip().rstrip(". ")
+
     sections = [
         ("Applicant Information",
          f"{name}\n{ein_line}\nWebsite: {website.get('url') or 'N/A'}\n"
-         f"Contact: {', '.join(website.get('emails', [])[:2]) or org.get('contact_email', 'on file')}"),
+         f"Contact: {contact}"),
         ("Statement of Need",
          f"{name} addresses documented community needs:\n\n" +
          "\n".join(f"• {p['pain']} (Source: {p['source']})"
                    for p in painpoints["painpoints"][:5])),
         ("Project Description and Goals",
-         f"With an award of ${amount:,.0f}, {name} will deliver "
-         f"{org.get('programs', 'its core programs')} to "
-         f"{y1['participants_served']:,} participants in Year 1.\n\n"
+         f"With an award of ${amount:,.0f}, {name} will deliver the "
+         f"following to {y1['participants_served']:,} participants in "
+         f"Year 1: {programs}.\n\n"
          "Goals:\n"
          "1. Expand program capacity and enrollment.\n"
          "2. Achieve measurable participant outcomes (pre/post gains).\n"
