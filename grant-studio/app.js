@@ -157,7 +157,10 @@
     // 1. EIN
     const einResult = await Engine.lookupEin(orgName, val("state"), val("ein"));
     step("EIN lookup / application prep", einResult.found
-      ? "EIN " + einResult.ein : "No EIN confirmed — completed SS-4 document prepared");
+      ? "EIN " + einResult.ein
+      : einResult.unavailable
+        ? "Automated search not available in the browser — enter your EIN manually or use the SS-4 document prepared below"
+        : "No EIN confirmed — completed SS-4 document prepared");
 
     // 2. Research + forecast
     const pains = Engine.researchPainpoints(focus, val("local_need"), val("county"));

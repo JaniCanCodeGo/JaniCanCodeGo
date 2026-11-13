@@ -90,7 +90,8 @@ const Engine = (function () {
       grant_target: 25000,
       merch_units: 200, merch_price: 20, merch_unit_cost: 8, merch_growth_pct: 25,
       participants: 100, participant_growth_pct: 20,
-    }, assumptions || {});
+    }, Object.fromEntries(Object.entries(assumptions || {})
+      .filter(([, v]) => v !== undefined && v !== null && v !== "")));
     for (const k of Object.keys(a)) {
       a[k] = Number(a[k]);
       if (!isFinite(a[k])) a[k] = 0;
@@ -191,14 +192,21 @@ const Engine = (function () {
       const pShare = 0.55, shareSum = ALLOC.reduce((s, [, v]) => s + v, 0);
       const factor = (shareSum + fringePct / 100 * pShare) * (1 + indirectPct / 100);
       const D = grantTarget / factor;
-      for (const [cat, share] of ALLOC) direct[cat] = Math.round(D * share * 100) / 100;
+      // Whole dollars when auto-allocating; the rounding remainder lands on
+      // the indirect line below so the total equals the request exactly.
+      for (const [cat, share] of ALLOC) direct[cat] = Math.round(D * share);
       allocated = true;
     }
-    const fringe = Math.round((direct.personnel || 0) * fringePct) / 100 * 100 / 100 * 100 / 100;
-    const fringeAmt = Math.round((direct.personnel || 0) * fringePct / 100 * 100) / 100;
-    const directPlusFringe = Object.values(direct).reduce((s, v) => s + v, 0) + fringeAmt;
-    const indirect = Math.round(directPlusFringe * indirectPct / 100 * 100) / 100;
-    const total = Math.round((directPlusFringe + indirect) * 100) / 100;
+    const r2 = v => Math.round(v * 100) / 100;
+    const fringeAmt = allocated
+      ? Math.round((direct.personnel || 0) * fringePct / 100)
+      : r2((direct.personnel || 0) * fringePct / 100);
+    const directPlusFringe = r2(Object.values(direct).reduce((s, v) => s + v, 0) + fringeAmt);
+    let indirect = allocated
+      ? Math.round(directPlusFringe * indirectPct / 100)
+      : r2(directPlusFringe * indirectPct / 100);
+    if (allocated) indirect += Math.round(grantTarget) - (directPlusFringe + indirect);
+    const total = r2(directPlusFringe + indirect);
     const lines = [];
     for (const cat of ["personnel", "travel", "equipment", "supplies", "contractual", "other"]) {
       if (direct[cat]) lines.push({ category: cat[0].toUpperCase() + cat.slice(1), amount: direct[cat], justification: JUST[cat] });
@@ -310,12 +318,13 @@ const Engine = (function () {
     return {
       title: `${name} — Grant Application Narrative`,
       sections: [
-        ["Applicant Information", `${name}\n${einLine}\nContact: ${org.contact_email || "on file"}`],
+        ["Applicant Information", `${name}\n${einLine}` +
+          (org.contact_email ? `\nContact: ${org.contact_email}` : "\nContact: (add contact email before filing)")],
         ["Statement of Need",
           `${name} addresses documented community needs:\n\n` +
           pains.painpoints.slice(0, 6).map(p => `• ${p.pain} (Source: ${p.source})`).join("\n")],
         ["Project Description and Goals",
-          `With an award of ${money(amount)}, ${name} will deliver ${org.programs || "its core programs"} to ${y1.participants_served.toLocaleString()} participants in Year 1.\n\nGoals:\n1. Expand program capacity and enrollment.\n2. Achieve measurable participant outcomes (pre/post gains).\n3. Build earned-revenue sustainability so the program continues beyond the grant period.`],
+          `With an award of ${money(amount)}, ${name} will deliver the following to ${y1.participants_served.toLocaleString()} participants in Year 1: ${(org.programs || "its core programs").trim().replace(/[.\s]+$/, "")}.\n\nGoals:\n1. Expand program capacity and enrollment.\n2. Achieve measurable participant outcomes (pre/post gains).\n3. Build earned-revenue sustainability so the program continues beyond the grant period.`],
         ["Evaluation Plan",
           "Outputs: enrollment, attendance, completion rate.\nOutcomes: pre/post assessments, participant/family satisfaction (target ≥ 85%), longitudinal tracking where feasible.\nReporting: quarterly dashboards; final report with disaggregated results."],
         ["Budget Narrative",
@@ -412,8 +421,12 @@ const Engine = (function () {
       if (exact) { result.found = true; result.ein = exact.ein; result.source = "propublica-nonprofit-explorer"; }
       else if (result.matches.length === 1) { result.found = true; result.ein = result.matches[0].ein; result.source = "propublica-nonprofit-explorer"; }
     } catch (e) {
-      result.error = "Automated EIN search unavailable from the browser (" + e.message +
-        "). Search manually at https://projects.propublica.org/nonprofits/ or https://apps.irs.gov/app/eos/";
+      result.unavailable = true;
+      result.error = "The browser edition cannot run the automated EIN search: the IRS " +
+        "records API does not allow requests from other websites (" + e.message + "). " +
+        "No search was performed. Look up the EIN manually at " +
+        "https://projects.propublica.org/nonprofits/ or https://apps.irs.gov/app/eos/ " +
+        "and enter it in the EIN field, or run the server edition, which searches automatically.";
     }
     return result;
   }
